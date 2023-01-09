@@ -1,7 +1,9 @@
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import styled, { DefaultTheme } from 'styled-components';
 
 const SidebarContainer = styled.div`
+  position: fixed;
   width: 260px;
   height: 100vh;
   background: #293042;
@@ -39,12 +41,12 @@ const inactiveColor = (theme: DefaultTheme) => `
   }
 `;
 
-const SidebarLinkContainer = styled.a<{ active?: boolean }>`
+const SidebarLinkContainer = styled.div<{ isActive?: boolean }>`
   display: flex;
   justify-content: space-between;
   padding: 0.625rem 1.625rem;
   cursor: pointer;
-  ${({ active, theme }) => (active ? activeColor : inactiveColor(theme))}
+  ${({ isActive, theme }) => (isActive ? activeColor : inactiveColor(theme))}
 `;
 
 const SidebarLinkAside = styled.div`
@@ -82,71 +84,43 @@ const SidebarLink = (props: {
   children?: string | JSX.Element;
   badge?: string | number;
   icon?: string;
-  href?: string;
-  onClick?: () => void;
+  href: string;
 }) => {
-  const { active, children, badge, icon, href, onClick } = props;
+  const { active, children, badge, icon, href } = props;
 
   return (
-    <SidebarLinkContainer active={active} href={href} onClick={onClick}>
-      <SidebarLinkAside>
-        <SidebarLinkIcon src={icon}></SidebarLinkIcon>
-        <span>{children}</span>
-      </SidebarLinkAside>
-      {badge ? <SidebarLinkBadge>{badge}</SidebarLinkBadge> : <></>}
-    </SidebarLinkContainer>
+    <Link to={href}>
+      <SidebarLinkContainer isActive={active}>
+        <SidebarLinkAside>
+          <SidebarLinkIcon src={icon}></SidebarLinkIcon>
+          <span>{children}</span>
+        </SidebarLinkAside>
+        {badge ? <SidebarLinkBadge>{badge}</SidebarLinkBadge> : <></>}
+      </SidebarLinkContainer>
+    </Link>
   );
 };
 
-const Sidebar = (props: {
-  selected: string;
-  onSelectedChange: (value: string) => void;
-}) => {
-  const { selected, onSelectedChange } = props;
+const Sidebar = () => {
+  const location = useLocation();
 
   return (
     <SidebarContainer>
       <SidebarBrand />
       <HorizontalLine />
-      <SidebarLink
-        active={selected === 'overview'}
-        badge={12}
-        onClick={() => {
-          onSelectedChange('overview');
-        }}
-      >
+      <SidebarLink active={location.pathname === '/'} href="/" badge={12}>
         Overview
       </SidebarLink>
-      <SidebarLink
-        active={selected === 'images'}
-        onClick={() => {
-          onSelectedChange('images');
-        }}
-      >
+      <SidebarLink active={location.pathname === '/images'} href="/images">
         Images
       </SidebarLink>
-      <SidebarLink
-        active={selected === 'annotate'}
-        onClick={() => {
-          onSelectedChange('annotate');
-        }}
-      >
+      <SidebarLink active={location.pathname === '/annotate'} href="/annotate">
         Annotate
       </SidebarLink>
-      <SidebarLink
-        active={selected === 'dataset'}
-        onClick={() => {
-          onSelectedChange('dataset');
-        }}
-      >
+      <SidebarLink active={location.pathname === '/dataset'} href="/dataset">
         Dataset
       </SidebarLink>
-      <SidebarLink
-        active={selected === 'model'}
-        onClick={() => {
-          onSelectedChange('model');
-        }}
-      >
+      <SidebarLink active={location.pathname === '/model'} href="/model">
         Model
       </SidebarLink>
     </SidebarContainer>
