@@ -3,5 +3,6 @@ module.exports = {
   devtool: 'cheap-module-source-map',
   devServer: {
     allowedHosts: ['all'],
+    historyApiFallback: true,
   },
 };
