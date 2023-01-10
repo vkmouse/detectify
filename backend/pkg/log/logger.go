@@ -51,6 +51,10 @@ func GinLogger() gin.HandlerFunc {
 	}
 }
 
+func Info(args ...interface{}) {
+	log.Info(args)
+}
+
 func Fatal(args ...interface{}) {
 	log.Fatal(args)
 }

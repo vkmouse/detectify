@@ -8,7 +8,9 @@ import (
 )
 
 func GeneratingPresignedURL(ctx *gin.Context) {
-	url := r2.GeneratingPresignedURL("20200524_005.png")
+	var requestBody struct{ Filename string }
+	ctx.BindJSON(&requestBody)
+	url := r2.GeneratingPresignedURL(requestBody.Filename)
 	ctx.JSON(
 		http.StatusOK,
 		gin.H{
