@@ -1,6 +1,7 @@
 package main
 
 import (
+	"detectify/config"
 	"detectify/internal/route"
 	"detectify/pkg/log"
 )
@@ -10,5 +11,5 @@ func main() {
 
 	ginRoute := route.InitRouter()
 
-	ginRoute.Run(":8080")
+	ginRoute.Run(":" + config.HttpPort)
 }
