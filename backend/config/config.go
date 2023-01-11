@@ -11,11 +11,13 @@ var (
 	HttpPort    string
 	AllowOrigin string
 
-	DbHost     string
-	DbPort     string
-	DbUser     string
-	DbPassword string
-	DbName     string
+	DbMode        string
+	MySQLHost     string
+	MySQLPort     string
+	MySQLUser     string
+	MySQLPassword string
+	MySQLName     string
+	SQLiteName    string
 
 	R2BucketName      string
 	R2AccountId       string
@@ -28,11 +30,13 @@ func init() {
 	HttpPort = os.Getenv("HTTP_PORT")
 	AllowOrigin = os.Getenv("ALLOWED_CORS_ORIGIN")
 
-	DbHost = os.Getenv("DB_HOST")
-	DbPort = os.Getenv("DB_PORT")
-	DbUser = os.Getenv("DB_USER")
-	DbPassword = os.Getenv("DB_PASSWORD")
-	DbName = os.Getenv("DB_NAME")
+	DbMode = os.Getenv("DB_MODE")
+	MySQLHost = os.Getenv("MYSQL_HOST")
+	MySQLPort = os.Getenv("MYSQL_PORT")
+	MySQLUser = os.Getenv("MYSQL_USER")
+	MySQLPassword = os.Getenv("MYSQL_PASSWORD")
+	MySQLName = os.Getenv("MYSQL_NAME")
+	SQLiteName = os.Getenv("SQLITE_NAME")
 
 	R2BucketName = os.Getenv("R2_BUCKET_NAME")
 	R2AccountId = os.Getenv("R2_ACCOUNT_ID")
