@@ -1,0 +1,6 @@
+go get -u github.com/aws/aws-sdk-go-v2/aws
+go get -u github.com/aws/aws-sdk-go-v2/config
+go get -u github.com/aws/aws-sdk-go-v2/service/dynamodb
+go get -u github.com/aws/aws-sdk-go-v2/service/s3
+go get -u github.com/gin-gonic/gin
+go get -u github.com/joho/godotenv/autoload
