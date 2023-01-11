@@ -21,20 +21,19 @@ var db *gorm.DB
 
 func InitDbContext() {
 	var err error
-	dns := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True",
-		config.DbUser,
-		config.DbPassword,
-		config.DbHost,
-		config.DbPort,
-		config.DbName,
-	)
-
-	if config.Mode == "Development" {
-		db, err = gorm.Open(sqlite.Open(""), &gorm.Config{})
-		db.Debug().AutoMigrate(&model.Message{})
-	} else if config.Mode == "Production" {
+	if config.DbMode == "MySQL" {
+		dns := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True",
+			config.MySQLUser,
+			config.MySQLPassword,
+			config.MySQLHost,
+			config.MySQLPort,
+			config.MySQLName,
+		)
 		db, err = gorm.Open(mysql.Open(dns), &gorm.Config{})
 		db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&model.Message{})
+	} else if config.DbMode == "SQLite" {
+		db, err = gorm.Open(sqlite.Open(config.SQLiteName), &gorm.Config{})
+		db.Debug().AutoMigrate(&model.Message{})
 	}
 
 	if err != nil {
