@@ -5,16 +5,19 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func GeneratingPresignedURL(ctx *gin.Context) {
-	var requestBody struct{ Filename string }
-	ctx.BindJSON(&requestBody)
-	url := r2.GeneratingPresignedURL(requestBody.Filename)
+	id := uuid.New().String()
+	url := r2.GeneratingPresignedURL(id)
 	ctx.JSON(
 		http.StatusOK,
 		gin.H{
-			"presignedURL": url,
+			"data": gin.H{
+				"id":           id,
+				"presignedURL": url,
+			},
 		},
 	)
 }
