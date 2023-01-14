@@ -1,6 +1,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled, { DefaultTheme } from 'styled-components';
+import darkTheme from '../themes/dark';
+import lightTheme from '../themes/light';
+import { useThemeToggleContext } from '../themes/Theme';
+import ThemeToggler from './ToggleSwitch';
 
 const SidebarContainer = styled.div`
   position: fixed;
@@ -8,6 +12,12 @@ const SidebarContainer = styled.div`
   height: 100vh;
   background: #293042;
   color: white;
+`;
+
+const SidebarWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 `;
 
 const SidebarBrandContainer = styled.a`
@@ -101,28 +111,68 @@ const SidebarLink = (props: {
   );
 };
 
+const SidebarFooter = styled.div`
+  display: flex;
+  align-items: end;
+  height: 300px;
+  flex-grow: 1;
+`;
+
+const ThemeToggleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding-bottom: 10px;
+`;
+
+const ThemeToggleText = styled.div`
+  padding: 10px;
+`;
+
 const Sidebar = () => {
   const location = useLocation();
+  const { setTheme } = useThemeToggleContext();
 
   return (
     <SidebarContainer>
-      <SidebarBrand />
-      <HorizontalLine />
-      <SidebarLink active={location.pathname === '/'} href="/" badge={12}>
-        Overview
-      </SidebarLink>
-      <SidebarLink active={location.pathname === '/images'} href="/images">
-        Images
-      </SidebarLink>
-      <SidebarLink active={location.pathname === '/annotate'} href="/annotate">
-        Annotate
-      </SidebarLink>
-      <SidebarLink active={location.pathname === '/dataset'} href="/dataset">
-        Dataset
-      </SidebarLink>
-      <SidebarLink active={location.pathname === '/model'} href="/model">
-        Model
-      </SidebarLink>
+      <SidebarWrapper>
+        <SidebarBrand />
+        <HorizontalLine />
+        <SidebarLink active={location.pathname === '/'} href="/" badge={12}>
+          Overview
+        </SidebarLink>
+        <SidebarLink active={location.pathname === '/images'} href="/images">
+          Images
+        </SidebarLink>
+        <SidebarLink
+          active={location.pathname === '/annotate'}
+          href="/annotate"
+        >
+          Annotate
+        </SidebarLink>
+        <SidebarLink active={location.pathname === '/dataset'} href="/dataset">
+          Dataset
+        </SidebarLink>
+        <SidebarLink active={location.pathname === '/model'} href="/model">
+          Model
+        </SidebarLink>
+        <SidebarFooter>
+          <ThemeToggleContainer>
+            <ThemeToggleText>Light</ThemeToggleText>
+            <ThemeToggler
+              onChange={(isDarkTheme) => {
+                if (isDarkTheme) {
+                  setTheme(darkTheme);
+                } else {
+                  setTheme(lightTheme);
+                }
+              }}
+            />
+            <ThemeToggleText>Dark</ThemeToggleText>
+          </ThemeToggleContainer>
+        </SidebarFooter>
+      </SidebarWrapper>
     </SidebarContainer>
   );
 };

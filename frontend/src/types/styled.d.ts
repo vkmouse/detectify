@@ -9,6 +9,7 @@ declare module 'styled-components' {
       gray500: string;
       gray600: string;
       gray700: string;
+      bodyBackground: string;
     };
   }
 }
