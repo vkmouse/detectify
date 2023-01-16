@@ -10,6 +10,13 @@ declare module 'styled-components' {
       gray600: string;
       gray700: string;
       bodyBackground: string;
+      bodyColor: string;
+      cardBackground: string;
+      progressBackground: string;
+      progressBackgroundPrimary: string;
+      scollbarTrack: string;
+      scollbarThumb: string;
+      scollbarHover: string;
     };
   }
 }

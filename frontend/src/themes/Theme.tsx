@@ -24,9 +24,27 @@ const GlobalStyle = createGlobalStyle`
     font-weight: 400;
   }
 
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: ${(props) => props.theme.colors.scollbarTrack};
+  }
+
+  ::-webkit-scrollbar-thumb {    
+    background: ${(props) => props.theme.colors.scollbarThumb};
+    border-radius: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: ${(props) => props.theme.colors.scollbarHover};
+  }
+
   body {
     margin: 0;
     background: ${(props) => props.theme.colors.bodyBackground};
+    color: ${(props) => props.theme.colors.bodyColor};
   }
 
   a {
