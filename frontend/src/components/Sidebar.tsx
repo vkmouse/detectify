@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import styled, { DefaultTheme } from 'styled-components';
+import styled, { DefaultTheme, useTheme } from 'styled-components';
 import darkTheme from '../themes/dark';
 import lightTheme from '../themes/light';
 import { useThemeToggleContext } from '../themes/Theme';
@@ -132,6 +132,7 @@ const ThemeToggleText = styled.div`
 
 const Sidebar = () => {
   const location = useLocation();
+  const theme = useTheme();
   const { setTheme } = useThemeToggleContext();
 
   return (
@@ -161,6 +162,7 @@ const Sidebar = () => {
           <ThemeToggleContainer>
             <ThemeToggleText>Light</ThemeToggleText>
             <ThemeToggler
+              checked={theme.name === darkTheme.name}
               onChange={(isDarkTheme) => {
                 if (isDarkTheme) {
                   setTheme(darkTheme);

@@ -4,6 +4,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from 'styled-components';
+import darkTheme from './dark';
 import lightTheme from './light';
 
 type State = {
@@ -55,10 +56,19 @@ const GlobalStyle = createGlobalStyle`
 
 const Theme = (props: { children: JSX.Element | JSX.Element[] }) => {
   const { children } = props;
-  const [theme, setTheme] = useState(lightTheme);
+  const initialTheme =
+    localStorage.theme === lightTheme.name ? lightTheme : darkTheme;
+  const [theme, setTheme] = useState(initialTheme);
 
   return (
-    <ThemeToggleContext.Provider value={{ setTheme }}>
+    <ThemeToggleContext.Provider
+      value={{
+        setTheme: (theme: DefaultTheme) => {
+          setTheme(theme);
+          localStorage.theme = theme.name;
+        },
+      }}
+    >
       <ThemeProvider theme={theme}>
         <GlobalStyle />
         {children}
