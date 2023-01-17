@@ -17,6 +17,7 @@ const lightTheme: DefaultTheme = {
     scollbarThumb: '#9498a1',
     scollbarHover: '#555',
   },
+  buttonDisabledOpacity: 0.65,
 };
 
 export default lightTheme;

@@ -17,6 +17,7 @@ const darkTheme: DefaultTheme = {
     scollbarThumb: '#676767',
     scollbarHover: '#555',
   },
+  buttonDisabledOpacity: 0.65,
 };
 
 export default darkTheme;

@@ -18,5 +18,6 @@ declare module 'styled-components' {
       scollbarThumb: string;
       scollbarHover: string;
     };
+    buttonDisabledOpacity: number;
   }
 }

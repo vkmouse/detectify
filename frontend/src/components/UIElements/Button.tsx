@@ -6,6 +6,11 @@ const Button = styled.button`
   border: 0;
   border-radius: 5px;
   cursor: pointer;
+
+  &:disabled {
+    opacity: ${(props) => props.theme.buttonDisabledOpacity};
+    cursor: not-allowed;
+  }
 `;
 
 const PrimaryButton = styled(Button)`
@@ -13,6 +18,9 @@ const PrimaryButton = styled(Button)`
   color: white;
   &:hover {
     background: #3266bb;
+    &:disabled {
+      background: ${(props) => props.theme.colors.primary};
+    }
   }
 `;
 
