@@ -5,11 +5,12 @@ const UploadButton = (props: {
   children: string | JSX.Element | JSX.Element[];
   accept?: string;
   directory?: boolean;
+  disabled?: boolean;
   multiple?: boolean;
   onChange?: (files: File[]) => void;
 }) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
-  const { children, accept, directory, multiple, onChange } = props;
+  const { children, accept, directory, disabled, multiple, onChange } = props;
 
   useEffect(() => {
     if (directory && inputFileRef.current !== null) {
@@ -19,7 +20,7 @@ const UploadButton = (props: {
   }, [directory]);
 
   return (
-    <Button onClick={() => inputFileRef.current?.click()}>
+    <Button disabled={disabled} onClick={() => inputFileRef.current?.click()}>
       {children}
       <input
         hidden

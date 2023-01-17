@@ -60,7 +60,7 @@ const ProgressRow = (props: { filename: string; percentage: number }) => {
           <ProgressIcon />
         </ProgressRowIconWrapper>
         <ProgressDetailsContainer>
-          {filename} - {isCompleted ? 'Uploaded' : 'Uploading'}
+          {filename}
           <ProgressBar percentage={percentage} />
           {isCompleted ? 'Completed' : `${percentage}%`}
         </ProgressDetailsContainer>
