@@ -25,6 +25,7 @@ type State = {
 enum Type {
   ADD_TO_QUEUE,
   UPDATE_PROGRESS,
+  DELETE_FROM_QUEUE,
   CLEAR_QUEUE,
 }
 
@@ -35,6 +36,9 @@ const addToQueue = (files: File[]): Action => {
 const updateProgress = (filename: string, progress: number): Action => {
   return { type: Type.UPDATE_PROGRESS, payload: { filename, progress } };
 };
+const deleteFromQueue = (filename: string): Action => {
+  return { type: Type.DELETE_FROM_QUEUE, payload: { filename } };
+};
 const clearQueue = (): Action => {
   return { type: Type.CLEAR_QUEUE };
 };
@@ -44,11 +48,6 @@ const initialState: State = {
 };
 
 const reducer = (state: State, action: Action): State => {
-  const filterOutSameFile = (filename: string) =>
-    state.uploadQueue.filter((p) => p.file.name !== filename);
-  const filterSameFile = (filename: string) =>
-    state.uploadQueue.filter((p) => p.file.name === filename);
-
   switch (action.type) {
     case Type.ADD_TO_QUEUE: {
       const { files }: { files: File[] } = action.payload;
@@ -56,17 +55,26 @@ const reducer = (state: State, action: Action): State => {
         return { file, progress: 0 };
       });
       return {
-        ...state,
         uploadQueue: [...state.uploadQueue, ...newUploadQueue],
       };
     }
 
     case Type.UPDATE_PROGRESS: {
       const { filename, progress } = action.payload;
-      const uploadQueue = filterOutSameFile(filename);
-      const current = filterSameFile(filename)[0];
-      uploadQueue.push({ file: current.file, progress });
-      return { ...state, uploadQueue: uploadQueue };
+      const uploadQueue = [...state.uploadQueue];
+      for (const item of uploadQueue) {
+        if (item.file.name === filename) {
+          item.progress = progress;
+        }
+      }
+      return { uploadQueue };
+    }
+
+    case Type.DELETE_FROM_QUEUE: {
+      const { filename } = action.payload;
+      return {
+        uploadQueue: state.uploadQueue.filter((p) => p.file.name !== filename),
+      };
     }
 
     case Type.CLEAR_QUEUE: {
@@ -142,12 +150,15 @@ const ProjectImagePage = () => {
           </UploadColumn>
           <ProgressContainer>
             <ProgressWrapper>
-              {state.uploadQueue.map((status, i) => {
+              {state.uploadQueue.map((item, i) => {
                 return (
                   <ProgressRow
                     key={i}
-                    filename={status.file.name}
-                    percentage={status.progress}
+                    filename={item.file.name}
+                    percentage={item.progress}
+                    onDeleteClick={() =>
+                      dispatch(deleteFromQueue(item.file.name))
+                    }
                   />
                 );
               })}

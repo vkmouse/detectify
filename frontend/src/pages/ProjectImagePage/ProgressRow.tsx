@@ -1,11 +1,13 @@
 import styled from 'styled-components';
 import Card from '../../components/UIElements/Card';
+import XCircle from '../../assets/x-circle.svg';
 
 const ProgressRowInnerWrapper = styled.div`
   display: flex;
 `;
 
 const ProgressRowWrapper = styled(Card)`
+  position: relative;
   padding: 1.25rem;
   margin: 0 0 10px 0;
 `;
@@ -40,6 +42,16 @@ const ProgressIndicator = styled.div`
   border-radius: 5px;
 `;
 
+const DeleteButton = styled(XCircle)`
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 10px;
+  background-color: inherit;
+  border: 0px;
+  cursor: pointer;
+`;
+
 const ProgressBar = (props: { percentage: number }) => {
   const { percentage } = props;
   return (
@@ -49,12 +61,17 @@ const ProgressBar = (props: { percentage: number }) => {
   );
 };
 
-const ProgressRow = (props: { filename: string; percentage: number }) => {
-  const { filename, percentage } = props;
+const ProgressRow = (props: {
+  filename: string;
+  percentage: number;
+  onDeleteClick?: () => void;
+}) => {
+  const { filename, percentage, onDeleteClick } = props;
   const isCompleted = percentage === 100;
 
   return (
     <ProgressRowWrapper>
+      <DeleteButton onClick={onDeleteClick} />
       <ProgressRowInnerWrapper>
         <ProgressRowIconWrapper>
           <ProgressIcon />
