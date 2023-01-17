@@ -63,10 +63,10 @@ const CheckboxInput = styled.input`
   width: 0;
   height: 0;
   &:checked + ${Slider} {
-    background-color: #2196f3;
+    background-color: ${(props) => props.theme.colors.primary};
   }
   &:focus + ${Slider} {
-    box-shadow: 0 0 1px #2196f3;
+    box-shadow: 0 0 1px ${(props) => props.theme.colors.primary};
   }
   &:checked + ${Slider}:before {
     -webkit-transform: translateX(26px);
