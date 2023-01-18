@@ -3,8 +3,8 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ProjectContainer from './components/ProjectContainer';
 import Sidebar from './components/Sidebar';
+import { SignUpPage, SignInPage } from './pages/AuthPage';
 import ProjectImagePage from './pages/ProjectImagePage';
-import SignUpPage from './pages/AuthPage/SignUpPage';
 import Theme from './themes/Theme';
 
 const queryClient = new QueryClient();
@@ -32,6 +32,7 @@ const AppRoutes = () => {
         <Route path="dataset" element={<ProjectElement element={<></>} />} />
         <Route path="model" element={<ProjectElement element={<></>} />} />
         <Route path="signup" element={<SignUpPage />} />
+        <Route path="signin" element={<SignInPage />} />
       </Route>
     </Routes>
   );

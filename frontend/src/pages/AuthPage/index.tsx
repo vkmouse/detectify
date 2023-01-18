@@ -1,5 +1,20 @@
+import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
 import { AuthContainer, AuthInnerContainer, Title, CardBody } from './styles';
+
+const SignInPage = () => {
+  return (
+    <AuthContainer>
+      <AuthInnerContainer>
+        <Title>Sign in</Title>
+        <h3>to continue Detectify account</h3>
+        <CardBody>
+          <SignInForm />
+        </CardBody>
+      </AuthInnerContainer>
+    </AuthContainer>
+  );
+};
 
 const SignUpPage = () => {
   return (
@@ -15,4 +30,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export { SignInPage, SignUpPage };
