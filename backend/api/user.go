@@ -106,6 +106,11 @@ func Login(ctx *gin.Context) {
 	})
 }
 
+func Logout(ctx *gin.Context) {
+	ctx.Header("Set-Cookie", fmt.Sprintf("refresh_token=; MaxAge: 0;"))
+	response.Response(ctx, errmsg.SUCCESS)
+}
+
 func Refresh(ctx *gin.Context) {
 	token, err := ctx.Cookie("refresh_token")
 	if err != nil || token == "" {

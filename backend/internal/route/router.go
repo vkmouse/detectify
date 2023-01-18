@@ -19,6 +19,7 @@ func InitRouter() *gin.Engine {
 	engine.POST("message", api.AddMessage)
 	engine.POST("user", api.Register)
 	engine.PUT("user/auth", api.Login)
+	engine.DELETE("user/auth", api.Logout)
 	engine.POST("user/auth/refresh", api.Refresh)
 
 	return engine
