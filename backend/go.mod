@@ -7,6 +7,7 @@ require github.com/aws/aws-sdk-go-v2/service/s3 v1.30.0
 require (
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.18.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.7.21 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect

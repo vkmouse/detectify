@@ -15,8 +15,11 @@ func InitRouter() *gin.Engine {
 	engine.Use(middleware.CORSMiddleware())
 
 	engine.POST("image/upload", api.GeneratingPresignedURL)
-	engine.GET("message", api.QueryAllMessages)
-	engine.POST("message", api.AddMessage)
+	engine.POST("user", api.Register)
+	engine.GET("user/auth", middleware.JwtMiddleware(), api.GetUserInfo)
+	engine.PUT("user/auth", api.Login)
+	engine.DELETE("user/auth", api.Logout)
+	engine.POST("user/auth/refresh", api.Refresh)
 
 	return engine
 }
