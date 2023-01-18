@@ -21,7 +21,7 @@ const ThemeToggleContext = createContext<State>(initialState);
 
 const GlobalStyle = createGlobalStyle`
   * {
-    font-family: Segoe UI;
+    font-family: "Poppins";
     font-weight: 400;
   }
 
@@ -46,6 +46,10 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
     background: ${(props) => props.theme.colors.bodyBackground};
     color: ${(props) => props.theme.colors.bodyColor};
+  }
+
+  button {
+    font-size: 105%;
   }
 
   a {
