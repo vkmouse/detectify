@@ -4,9 +4,12 @@ import "net/http"
 
 const (
 	SUCCESS             = 200
-	ERROR_INVALID_INPUT = 501
+	ERROR_INVALID_INPUT = 400
+	ERROR               = 500
 
-	ERROR_ACCOUNT_EXIST = 1001
+	ERROR_EMAIL_EXIST     = 1001
+	ERROR_EMAIL_NOT_EXIST = 1002
+	ERROR_PASSWORD_ERROR  = 1003
 )
 
 type CodeMsg struct {
@@ -25,9 +28,24 @@ var codeMsg = map[int]CodeMsg{
 		Message: "Error: Invalid input",
 	},
 
-	ERROR_ACCOUNT_EXIST: {
+	ERROR: {
+		Code:    http.StatusInternalServerError,
+		Message: "Error: Internal server error.",
+	},
+
+	ERROR_EMAIL_EXIST: {
 		Code:    http.StatusBadRequest,
 		Message: "Error: Email already registered.",
+	},
+
+	ERROR_EMAIL_NOT_EXIST: {
+		Code:    http.StatusBadRequest,
+		Message: "Error: Email not found.",
+	},
+
+	ERROR_PASSWORD_ERROR: {
+		Code:    http.StatusBadRequest,
+		Message: "Error: Incorrect password.",
 	},
 }
 

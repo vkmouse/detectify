@@ -2,16 +2,20 @@ package repository
 
 import (
 	"detectify/internal/model"
-	"fmt"
 )
+
+func AddUser(user *model.User) error {
+	return db.Create(&user).Error
+}
 
 func CheckUserEmail(email string) bool {
 	var user model.User
-	result := db.Select("id").Where("email = ?", email).First(&user)
-	fmt.Println(result.Error)
-	return result.Error == nil
+	db.Select("id").Where("email = ?", email).First(&user)
+	return user.ID > 0
 }
 
-func AddUser(user *model.User) {
-	db.Create(&user)
+func QueryUserByEmail(email string) (model.User, error) {
+	var user model.User
+	err := db.Limit(1).Where("email = ?", email).Find(&user).Error
+	return user, err
 }

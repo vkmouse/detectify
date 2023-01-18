@@ -16,12 +16,11 @@ func hashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
-func checkPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
+func checkPasswordHash(password, hash string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 }
 
-func RegisterUser(ctx *gin.Context) {
+func Register(ctx *gin.Context) {
 	var user model.User
 	ctx.BindJSON(&user)
 
@@ -34,17 +33,47 @@ func RegisterUser(ctx *gin.Context) {
 
 	isExist := repository.CheckUserEmail(user.Email)
 	if isExist {
-		response.Response(ctx, errmsg.ERROR_ACCOUNT_EXIST)
+		response.Response(ctx, errmsg.ERROR_EMAIL_EXIST)
 		return
 	}
 
 	hash, err := hashPassword(user.Password)
 	if err != nil || hash == "" {
-		response.Response(ctx, errmsg.ERROR_INVALID_INPUT)
+		response.Response(ctx, errmsg.ERROR)
 		return
 	}
 
 	user.Password = hash
-	repository.AddUser(&user)
+	err = repository.AddUser(&user)
+	if err != nil {
+		response.Response(ctx, errmsg.ERROR)
+		return
+	}
+
+	response.Response(ctx, errmsg.SUCCESS)
+}
+
+func Login(ctx *gin.Context) {
+	var user model.User
+	ctx.BindJSON(&user)
+
+	if !validator.CheckEmail(user.Email) ||
+		!validator.CheckPassword(user.Password) {
+		response.Response(ctx, errmsg.ERROR_INVALID_INPUT)
+		return
+	}
+
+	userFromDb, err := repository.QueryUserByEmail(user.Email)
+	if err != nil {
+		response.Response(ctx, errmsg.ERROR_EMAIL_NOT_EXIST)
+		return
+	}
+
+	err = checkPasswordHash(user.Password, userFromDb.Password)
+	if err != nil {
+		response.Response(ctx, errmsg.ERROR_PASSWORD_ERROR)
+		return
+	}
+
 	response.Response(ctx, errmsg.SUCCESS)
 }
