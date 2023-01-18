@@ -22,7 +22,7 @@ func GetToken(email string, expireDuration time.Duration) (string, error) {
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(config.JwtSecretKey))
+	return token.SignedString(config.JwtSecretKey)
 }
 
 func ParseToken(tokenString string) (*Claims, error) {
@@ -36,4 +36,12 @@ func ParseToken(tokenString string) (*Claims, error) {
 		return claims, nil
 	}
 	return nil, errors.New("invalid token")
+}
+
+func ValidateExpireTime(claims *Claims) bool {
+	now := time.Now().Unix()
+	if claims.ExpiresAt < now {
+		return false
+	}
+	return true
 }

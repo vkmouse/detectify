@@ -1,16 +1,18 @@
 package errmsg
 
-import "net/http"
-
 const (
 	SUCCESS             = 200
 	ERROR_INVALID_INPUT = 400
 	ERROR               = 500
 
-	TOKEN_ERROR        = 600
-	TOKEN_NOT_FOUND    = 601
-	TOKEN_FORMAT_ERROR = 602
-	TOKEN_INVALID      = 603
+	ACCESS_TOKEN_NOT_FOUND    = 600
+	ACCESS_TOKEN_EXPIRED      = 601
+	ACCESS_TOKEN_INVALID      = 602
+	ACCESS_TOKEN_FORMAT_ERROR = 603
+
+	REFRESH_TOKEN_NOT_FOUND = 700
+	REFRESH_TOKEN_EXPIRED   = 701
+	REFRESH_TOKEN_INVALID   = 702
 
 	ERROR_EMAIL_EXIST     = 1001
 	ERROR_EMAIL_NOT_EXIST = 1002
@@ -23,55 +25,22 @@ type CodeMsg struct {
 }
 
 var codeMsg = map[int]CodeMsg{
-	SUCCESS: {
-		Code:    http.StatusOK,
-		Message: "Success",
-	},
+	SUCCESS:             {Code: 200, Message: "Success"},
+	ERROR_INVALID_INPUT: {Code: 400, Message: "Error: Invalid input"},
+	ERROR:               {Code: 500, Message: "Error: Internal server error."},
 
-	ERROR_INVALID_INPUT: {
-		Code:    http.StatusBadRequest,
-		Message: "Error: Invalid input",
-	},
+	ACCESS_TOKEN_NOT_FOUND:    {Code: 401, Message: "Error: Access token not found."},
+	ACCESS_TOKEN_EXPIRED:      {Code: 401, Message: "Error: Access token expired."},
+	ACCESS_TOKEN_INVALID:      {Code: 401, Message: "Error: Access token invalid."},
+	ACCESS_TOKEN_FORMAT_ERROR: {Code: 400, Message: "Error: Access token format error."},
 
-	ERROR: {
-		Code:    http.StatusInternalServerError,
-		Message: "Error: Internal server error.",
-	},
+	REFRESH_TOKEN_NOT_FOUND: {Code: 401, Message: "Error: Refresh token not found."},
+	REFRESH_TOKEN_EXPIRED:   {Code: 401, Message: "Error: Refresh token expired."},
+	REFRESH_TOKEN_INVALID:   {Code: 401, Message: "Error: Refresh token invalid."},
 
-	TOKEN_ERROR: {
-		Code:    http.StatusUnauthorized,
-		Message: "Error: Token error.",
-	},
-
-	TOKEN_NOT_FOUND: {
-		Code:    http.StatusUnauthorized,
-		Message: "Error: Token not found.",
-	},
-
-	TOKEN_FORMAT_ERROR: {
-		Code:    http.StatusBadRequest,
-		Message: "Error: Token format error.",
-	},
-
-	TOKEN_INVALID: {
-		Code:    http.StatusUnauthorized,
-		Message: "Error: Invalid token.",
-	},
-
-	ERROR_EMAIL_EXIST: {
-		Code:    http.StatusBadRequest,
-		Message: "Error: Email already registered.",
-	},
-
-	ERROR_EMAIL_NOT_EXIST: {
-		Code:    http.StatusBadRequest,
-		Message: "Error: Email not found.",
-	},
-
-	ERROR_PASSWORD_ERROR: {
-		Code:    http.StatusBadRequest,
-		Message: "Error: Incorrect password.",
-	},
+	ERROR_EMAIL_EXIST:     {Code: 400, Message: "Error: Email already registered."},
+	ERROR_EMAIL_NOT_EXIST: {Code: 400, Message: "Error: Email not found."},
+	ERROR_PASSWORD_ERROR:  {Code: 400, Message: "Error: Incorrect password."},
 }
 
 func GetErrMsg(code int) CodeMsg {

@@ -26,7 +26,7 @@ var (
 	R2AccessKeySecret string
 
 	JwtIssuer               string
-	JwtSecretKey            string
+	JwtSecretKey            []byte
 	JwtAccessTokenLifetime  int
 	JwtRefreshTokenLifetime int
 )
@@ -50,7 +50,7 @@ func init() {
 	R2AccessKeySecret = os.Getenv("R2_ACCESS_KEY_SECRET")
 
 	JwtIssuer = os.Getenv("JWT_ISSUER")
-	JwtSecretKey = os.Getenv("JWT_SECRET_KEY")
+	JwtSecretKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 	JwtAccessTokenLifetime, _ = strconv.Atoi(os.Getenv("JWT_ACCESS_TOKEN_LIFETIME"))
 	JwtRefreshTokenLifetime, _ = strconv.Atoi(os.Getenv("JWT_REFRESH_TOKEN_LIFETIME"))
 }

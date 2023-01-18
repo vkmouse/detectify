@@ -68,8 +68,12 @@ func Login(ctx *gin.Context) {
 	}
 
 	userFromDb, err := repository.QueryUserByEmail(user.Email)
-	if err != nil {
+	if userFromDb.ID == 0 {
 		response.Response(ctx, errmsg.ERROR_EMAIL_NOT_EXIST)
+		return
+	}
+	if err != nil {
+		response.Response(ctx, errmsg.ERROR)
 		return
 	}
 
@@ -85,7 +89,9 @@ func Login(ctx *gin.Context) {
 	)
 	if err != nil {
 		response.Response(ctx, errmsg.ERROR)
+		return
 	}
+	ctx.Header("Set-Cookie", fmt.Sprintf("refresh_token=%s; MaxAge: %d;", refreshToken, config.JwtRefreshTokenLifetime))
 
 	accessToken, err := jwt.GetToken(
 		user.Email,
@@ -93,9 +99,42 @@ func Login(ctx *gin.Context) {
 	)
 	if err != nil {
 		response.Response(ctx, errmsg.ERROR)
+		return
+	}
+	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
+		"access_token": accessToken,
+	})
+}
+
+func Refresh(ctx *gin.Context) {
+	token, err := ctx.Cookie("refresh_token")
+	if err != nil || token == "" {
+		response.Response(ctx, errmsg.REFRESH_TOKEN_NOT_FOUND)
+		ctx.Abort()
+		return
 	}
 
-	ctx.Header("Set-Cookie", fmt.Sprintf("refresh_token=%s; MaxAge: %d;", refreshToken, config.JwtRefreshTokenLifetime))
+	claims, err := jwt.ParseToken(token)
+	if err != nil {
+		response.Response(ctx, errmsg.REFRESH_TOKEN_INVALID)
+		ctx.Abort()
+		return
+	}
+
+	if !jwt.ValidateExpireTime(claims) {
+		response.Response(ctx, errmsg.REFRESH_TOKEN_EXPIRED)
+		ctx.Abort()
+		return
+	}
+
+	accessToken, err := jwt.GetToken(
+		claims.Email,
+		time.Duration(config.JwtAccessTokenLifetime)*time.Second,
+	)
+	if err != nil {
+		response.Response(ctx, errmsg.ERROR)
+		return
+	}
 	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
 		"access_token": accessToken,
 	})
