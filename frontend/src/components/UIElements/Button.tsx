@@ -24,4 +24,15 @@ const PrimaryButton = styled(Button)`
   }
 `;
 
-export default PrimaryButton;
+const OutlinePrimaryButton = styled(Button)`
+  background: ${(props) => props.theme.colors.bodyBackground};
+  border: 1px solid ${(props) => props.theme.colors.primary};
+  color: ${(props) => props.theme.colors.primary};
+
+  &:hover {
+    background: ${(props) => props.theme.colors.primary};
+    color: white;
+  }
+`;
+
+export { PrimaryButton, OutlinePrimaryButton };

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import PrimaryButton from '../../components/UIElements/Button';
+import { PrimaryButton } from '../../components/UIElements/Button';
 
 export const UploadColumn = styled.div`
   display: flex;
@@ -42,6 +42,6 @@ export const ProgressWrapper = styled.div`
 
 export const Button = styled(PrimaryButton)`
   margin: 3px 10px;
-  width: 120px;
+  width: 150px;
   cursor: pointer;
 `;
