@@ -1,11 +1,15 @@
 package api
 
 import (
+	"detectify/config"
 	"detectify/internal/errmsg"
 	"detectify/internal/model"
 	"detectify/internal/repository"
 	"detectify/internal/response"
 	"detectify/internal/validator"
+	"detectify/pkg/jwt"
+	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -75,5 +79,24 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
-	response.Response(ctx, errmsg.SUCCESS)
+	refreshToken, err := jwt.GetToken(
+		user.Email,
+		time.Duration(config.JwtRefreshTokenLifetime)*time.Second,
+	)
+	if err != nil {
+		response.Response(ctx, errmsg.ERROR)
+	}
+
+	accessToken, err := jwt.GetToken(
+		user.Email,
+		time.Duration(config.JwtAccessTokenLifetime)*time.Second,
+	)
+	if err != nil {
+		response.Response(ctx, errmsg.ERROR)
+	}
+
+	ctx.Header("Set-Cookie", fmt.Sprintf("refresh_token=%s; MaxAge: %d;", refreshToken, config.JwtRefreshTokenLifetime))
+	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
+		"access_token": accessToken,
+	})
 }

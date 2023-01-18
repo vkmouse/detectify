@@ -7,6 +7,11 @@ const (
 	ERROR_INVALID_INPUT = 400
 	ERROR               = 500
 
+	TOKEN_ERROR        = 600
+	TOKEN_NOT_FOUND    = 601
+	TOKEN_FORMAT_ERROR = 602
+	TOKEN_INVALID      = 603
+
 	ERROR_EMAIL_EXIST     = 1001
 	ERROR_EMAIL_NOT_EXIST = 1002
 	ERROR_PASSWORD_ERROR  = 1003
@@ -31,6 +36,26 @@ var codeMsg = map[int]CodeMsg{
 	ERROR: {
 		Code:    http.StatusInternalServerError,
 		Message: "Error: Internal server error.",
+	},
+
+	TOKEN_ERROR: {
+		Code:    http.StatusUnauthorized,
+		Message: "Error: Token error.",
+	},
+
+	TOKEN_NOT_FOUND: {
+		Code:    http.StatusUnauthorized,
+		Message: "Error: Token not found.",
+	},
+
+	TOKEN_FORMAT_ERROR: {
+		Code:    http.StatusBadRequest,
+		Message: "Error: Token format error.",
+	},
+
+	TOKEN_INVALID: {
+		Code:    http.StatusUnauthorized,
+		Message: "Error: Invalid token.",
 	},
 
 	ERROR_EMAIL_EXIST: {
