@@ -17,6 +17,8 @@ const (
 	ERROR_EMAIL_EXIST     = 1001
 	ERROR_EMAIL_NOT_EXIST = 1002
 	ERROR_PASSWORD_ERROR  = 1003
+
+	ERROR_USER_NOT_EXIST = 2001
 )
 
 type CodeMsg struct {
@@ -41,6 +43,8 @@ var codeMsg = map[int]CodeMsg{
 	ERROR_EMAIL_EXIST:     {Code: 400, Message: "Error: Email already registered."},
 	ERROR_EMAIL_NOT_EXIST: {Code: 400, Message: "Error: Email not found."},
 	ERROR_PASSWORD_ERROR:  {Code: 400, Message: "Error: Incorrect password."},
+
+	ERROR_USER_NOT_EXIST: {Code: 400, Message: "Error: User not found."},
 }
 
 func GetErrMsg(code int) CodeMsg {

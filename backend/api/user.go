@@ -144,3 +144,24 @@ func Refresh(ctx *gin.Context) {
 		"access_token": accessToken,
 	})
 }
+
+func GetUserInfo(ctx *gin.Context) {
+	email := ctx.GetString("email")
+
+	user, err := repository.QueryUserByEmail(email)
+	if user.ID == 0 {
+		response.Response(ctx, errmsg.ERROR_USER_NOT_EXIST)
+		return
+	}
+	if err != nil {
+		response.Response(ctx, errmsg.ERROR)
+		return
+	}
+
+	data := gin.H{
+		"avatarURL": user.AvatarURL,
+		"name":      user.Name,
+		"email":     user.Email,
+	}
+	response.ResponseWithData(ctx, errmsg.SUCCESS, data)
+}

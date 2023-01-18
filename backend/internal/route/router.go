@@ -16,6 +16,7 @@ func InitRouter() *gin.Engine {
 
 	engine.POST("image/upload", api.GeneratingPresignedURL)
 	engine.POST("user", api.Register)
+	engine.GET("user/auth", middleware.JwtMiddleware(), api.GetUserInfo)
 	engine.PUT("user/auth", api.Login)
 	engine.DELETE("user/auth", api.Logout)
 	engine.POST("user/auth/refresh", api.Refresh)
