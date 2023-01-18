@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strconv"
 
 	_ "github.com/joho/godotenv/autoload"
 )
@@ -23,6 +24,11 @@ var (
 	R2AccountId       string
 	R2AccessKeyId     string
 	R2AccessKeySecret string
+
+	JwtIssuer               string
+	JwtSecretKey            string
+	JwtAccessTokenLifetime  int
+	JwtRefreshTokenLifetime int
 )
 
 func init() {
@@ -42,4 +48,9 @@ func init() {
 	R2AccountId = os.Getenv("R2_ACCOUNT_ID")
 	R2AccessKeyId = os.Getenv("R2_ACCESS_KEY_ID")
 	R2AccessKeySecret = os.Getenv("R2_ACCESS_KEY_SECRET")
+
+	JwtIssuer = os.Getenv("JWT_ISSUER")
+	JwtSecretKey = os.Getenv("JWT_SECRET_KEY")
+	JwtAccessTokenLifetime, _ = strconv.Atoi(os.Getenv("JWT_ACCESS_TOKEN_LIFETIME"))
+	JwtRefreshTokenLifetime, _ = strconv.Atoi(os.Getenv("JWT_REFRESH_TOKEN_LIFETIME"))
 }
