@@ -1,5 +1,8 @@
 import styled from 'styled-components';
-import PrimaryButton from '../../components/UIElements/Button';
+import {
+  OutlinePrimaryButton,
+  PrimaryButton,
+} from '../../components/UIElements/Button';
 import { Card } from '../../components/UIElements/Card';
 
 export const AuthContainer = styled.div`
@@ -35,8 +38,8 @@ export const Form = styled.form`
 `;
 
 export const InputContainer = styled.div`
-  margin: 5px 0 0 0;
-  padding: 0 32px 0 0;
+  margin-top: 5px;
+  padding-right: 32px;
 `;
 
 export const Input = styled.input`
@@ -62,9 +65,21 @@ export const InputField = styled.div`
 
 export const Button = styled(PrimaryButton)`
   width: 120px;
+  margin: 0;
+`;
+
+export const OutlineButton = styled(OutlinePrimaryButton)`
+  width: 120px;
+  margin: 0;
 `;
 
 export const ErrorMessage = styled.span`
   font-size: small;
   color: ${(props) => props.theme.colors.danger};
+`;
+
+export const ButtonGroup = styled.div`
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
 `;

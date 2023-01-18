@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ProjectContainer from './components/ProjectContainer';
 import Sidebar from './components/Sidebar';
 import { SignUpPage, SignInPage } from './pages/AuthPage';
+import HomePage from './pages/HomePage';
 import ProjectImagePage from './pages/ProjectImagePage';
 import Theme from './themes/Theme';
 
@@ -23,7 +24,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/">
-        <Route index element={<ProjectElement element={<></>} />} />
+        <Route index element={<ProjectElement element={<HomePage />} />} />
         <Route
           path="images"
           element={<ProjectElement element={<ProjectImagePage />} />}

@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import {
   nameOptions,
   emailOptions,
@@ -11,6 +12,8 @@ import {
   ErrorMessage,
   Button,
   Form,
+  ButtonGroup,
+  OutlineButton,
 } from './styles';
 
 const SignUpForm = () => {
@@ -25,6 +28,8 @@ const SignUpForm = () => {
       password: '',
     },
   });
+
+  const navigate = useNavigate();
 
   return (
     <Form onSubmit={handleSubmit((data) => console.log(data))}>
@@ -66,7 +71,12 @@ const SignUpForm = () => {
           {errors.password ? errors.password.message : <>&nbsp;</>}
         </ErrorMessage>
       </InputField>
-      <Button type="submit">Sign up</Button>
+      <ButtonGroup>
+        <OutlineButton onClick={() => navigate('/signin')}>
+          Sign in
+        </OutlineButton>
+        <Button type="submit">Sign up</Button>
+      </ButtonGroup>
     </Form>
   );
 };
