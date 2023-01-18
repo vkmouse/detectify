@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ProjectContainer from './components/ProjectContainer';
 import Sidebar from './components/Sidebar';
 import ProjectImagePage from './pages/ProjectImagePage';
-import SignUpPage from './pages/SignUpPage';
+import SignUpPage from './pages/AuthPage/SignUpPage';
 import Theme from './themes/Theme';
 
 const queryClient = new QueryClient();

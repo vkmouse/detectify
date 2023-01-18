@@ -42,6 +42,6 @@ export const ProgressWrapper = styled.div`
 
 export const Button = styled(PrimaryButton)`
   margin: 3px 10px;
-  width: 120px;
+  width: 150px;
   cursor: pointer;
 `;
