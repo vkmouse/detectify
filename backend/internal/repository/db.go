@@ -30,11 +30,9 @@ func InitDbContext() {
 			config.MySQLName,
 		)
 		db, err = gorm.Open(mysql.Open(dns), &gorm.Config{})
-		db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&model.Message{})
 		db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&model.User{})
 	} else if config.DbMode == "SQLite" {
 		db, err = gorm.Open(sqlite.Open(config.SQLiteName), &gorm.Config{})
-		db.Debug().AutoMigrate(&model.Message{})
 		db.Debug().AutoMigrate(&model.User{})
 	}
 
