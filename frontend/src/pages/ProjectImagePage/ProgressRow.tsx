@@ -1,12 +1,12 @@
 import styled from 'styled-components';
-import Card from '../../components/UIElements/Card';
+import { CardPrimary } from '../../components/UIElements/Card';
 import XCircle from '../../assets/x-circle.svg';
 
 const ProgressRowInnerWrapper = styled.div`
   display: flex;
 `;
 
-const ProgressRowWrapper = styled(Card)`
+const ProgressRowWrapper = styled(CardPrimary)`
   position: relative;
   padding: 1.25rem;
   margin: 0 0 10px 0;

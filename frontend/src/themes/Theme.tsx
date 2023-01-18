@@ -4,6 +4,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from 'styled-components';
+import darkTheme from './dark';
 import lightTheme from './light';
 
 type State = {
@@ -20,7 +21,7 @@ const ThemeToggleContext = createContext<State>(initialState);
 
 const GlobalStyle = createGlobalStyle`
   * {
-    font-family: Segoe UI;
+    font-family: "Poppins";
     font-weight: 400;
   }
 
@@ -47,6 +48,10 @@ const GlobalStyle = createGlobalStyle`
     color: ${(props) => props.theme.colors.bodyColor};
   }
 
+  button {
+    font-size: 105%;
+  }
+
   a {
     color: inherit;
     text-decoration: none;
@@ -55,10 +60,19 @@ const GlobalStyle = createGlobalStyle`
 
 const Theme = (props: { children: JSX.Element | JSX.Element[] }) => {
   const { children } = props;
-  const [theme, setTheme] = useState(lightTheme);
+  const initialTheme =
+    localStorage.theme === lightTheme.name ? lightTheme : darkTheme;
+  const [theme, setTheme] = useState(initialTheme);
 
   return (
-    <ThemeToggleContext.Provider value={{ setTheme }}>
+    <ThemeToggleContext.Provider
+      value={{
+        setTheme: (theme: DefaultTheme) => {
+          setTheme(theme);
+          localStorage.theme = theme.name;
+        },
+      }}
+    >
       <ThemeProvider theme={theme}>
         <GlobalStyle />
         {children}
