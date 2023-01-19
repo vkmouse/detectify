@@ -33,11 +33,7 @@ const SignInForm = () => {
   const loginQuery = useQuery({
     queryKey: ['login'],
     queryFn: () => api.login(getValues()),
-    onSuccess: (response) => {
-      const apiResponse: APIResponse = response.data as APIResponse;
-      const { accessToken } = apiResponse.data as { accessToken: string };
-      console.log(accessToken);
-    },
+    onSuccess: () => navigate('/'),
     onError: ({ response }) => {
       const apiResponse: APIResponse = response.data as APIResponse;
       switch (apiResponse.status) {

@@ -35,3 +35,9 @@ export type LoginRequest = {
   email: string;
   password: string;
 };
+
+export type UserInfo = {
+  name: string;
+  email: string;
+  avatarURL: string;
+};

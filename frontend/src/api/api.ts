@@ -1,7 +1,5 @@
-import axios from 'axios';
-import { LoginRequest, RegisterRequest } from '../types/api';
-
-const API_URL = process.env.API_URL;
+import { LoginRequest, RegisterRequest, UserInfo } from '../types/api';
+import { authAxios, normalAxios, removeToken, updateToken } from './axios';
 
 type CreateUploadResponse = {
   id: string;
@@ -15,17 +13,34 @@ export type Message = {
 
 const api = {
   createUpload: async (): Promise<CreateUploadResponse> => {
-    const response = await axios.post(`${API_URL}/image/upload`);
+    const response = await normalAxios.post(`/image/upload`);
     const body: { data: CreateUploadResponse } = response.data;
     return body.data;
   },
 
   // auth api
   register: async (props: RegisterRequest) => {
-    await axios.post(`${API_URL}/user`, props);
+    await normalAxios.post(`/user`, props);
   },
   login: async (props: LoginRequest) => {
-    return await axios.put(`${API_URL}/user/auth`, props);
+    const response = await normalAxios.put(`/user/auth`, props, {
+      withCredentials: true,
+    });
+    const { accessToken } = response.data.data as { accessToken: string };
+    updateToken(accessToken);
+    return response;
+  },
+  logout: async () => {
+    await normalAxios.delete(`/user/auth`);
+    removeToken();
+  },
+  getUserInfo: async (): Promise<UserInfo | null> => {
+    try {
+      const response = await authAxios.get(`/user/auth`);
+      return await response.data;
+    } catch {
+      return null;
+    }
   },
 };
 
