@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { RegisterRequest } from '../types/api';
 
 const API_URL = process.env.API_URL;
 
@@ -17,6 +18,11 @@ const api = {
     const response = await axios.post(`${API_URL}/image/upload`);
     const body: { data: CreateUploadResponse } = response.data;
     return body.data;
+  },
+
+  // auth api
+  register: async (props: RegisterRequest) => {
+    await axios.post(`${API_URL}/user`, props);
   },
 };
 
