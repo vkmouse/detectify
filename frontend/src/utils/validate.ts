@@ -33,14 +33,14 @@ const passwordOptions: RegisterOptions = {
     message: 'Enter a password',
   },
   maxLength: {
-    value: 100,
-    message: 'Please enter 4 to 100 characters of English letters and numbers',
+    value: 50,
+    message: 'Please enter 4 to 50 characters of English letters and numbers',
   },
   minLength: {
     value: 4,
-    message: 'Please enter 4 to 100 characters of English letters and numbers',
+    message: 'Please enter 4 to 50 characters of English letters and numbers',
   },
-  pattern: /[.*a-zA-Z\d]{4,100}/g,
+  pattern: /[.*a-zA-Z\d]{4,50}/g,
 };
 
 export { emailOptions, nameOptions, passwordOptions };

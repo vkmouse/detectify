@@ -1,14 +1,13 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import api from './api/api';
 import ProjectContainer from './components/ProjectContainer';
 import Sidebar from './components/Sidebar';
 import { SignUpPage, SignInPage } from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import ProjectImagePage from './pages/ProjectImagePage';
-import Theme from './themes/Theme';
-
-const queryClient = new QueryClient();
+import { useAppDispatch } from './store/store';
+import { setUser, startLoading } from './store/userSlice';
 
 const ProjectElement = (props: { element: JSX.Element }) => {
   const { element } = props;
@@ -20,7 +19,21 @@ const ProjectElement = (props: { element: JSX.Element }) => {
   );
 };
 
-const AppRoutes = () => {
+const App = () => {
+  const dispatch = useAppDispatch();
+  const updateUserInfo = async () => {
+    const accessToken = window.localStorage.getItem('accessToken');
+    if (accessToken) {
+      dispatch(startLoading());
+      const data = await api.getUserInfo();
+      dispatch(setUser(data));
+    }
+  };
+
+  useEffect(() => {
+    updateUserInfo();
+  });
+
   return (
     <Routes>
       <Route path="/">
@@ -36,18 +49,6 @@ const AppRoutes = () => {
         <Route path="signin" element={<SignInPage />} />
       </Route>
     </Routes>
-  );
-};
-
-const App = () => {
-  return (
-    <Theme>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </QueryClientProvider>
-    </Theme>
   );
 };
 
