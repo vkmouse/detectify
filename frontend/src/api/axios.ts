@@ -4,6 +4,7 @@ import { APIResponse } from '../types/api';
 const normalAxios = axios.create({
   baseURL: process.env.API_URL,
 });
+normalAxios.defaults.headers.common['retry'] = 1;
 
 const authAxios = axios.create({
   baseURL: process.env.API_URL,
@@ -12,6 +13,7 @@ const authAxios = axios.create({
   },
   withCredentials: true,
 });
+authAxios.defaults.headers.common['retry'] = 1;
 
 const updateToken = (token: string) => {
   window.localStorage.setItem('accessToken', token);
