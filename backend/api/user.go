@@ -91,7 +91,7 @@ func Login(ctx *gin.Context) {
 		response.Response(ctx, errmsg.ERROR)
 		return
 	}
-	ctx.Header("Set-Cookie", fmt.Sprintf("refresh_token=%s; MaxAge: %d;", refreshToken, config.JwtRefreshTokenLifetime))
+	ctx.Header("Set-Cookie", fmt.Sprintf("refreshToken=%s; MaxAge: %d; Secure; HttpOnly;", refreshToken, config.JwtRefreshTokenLifetime))
 
 	accessToken, err := jwt.GetToken(
 		user.Email,
@@ -107,12 +107,12 @@ func Login(ctx *gin.Context) {
 }
 
 func Logout(ctx *gin.Context) {
-	ctx.Header("Set-Cookie", fmt.Sprintf("refresh_token=; MaxAge: 0;"))
+	ctx.Header("Set-Cookie", fmt.Sprintf("refreshToken=; MaxAge: 0; Secure; HttpOnly;"))
 	response.Response(ctx, errmsg.SUCCESS)
 }
 
 func Refresh(ctx *gin.Context) {
-	token, err := ctx.Cookie("refresh_token")
+	token, err := ctx.Cookie("refreshToken")
 	if err != nil || token == "" {
 		response.Response(ctx, errmsg.REFRESH_TOKEN_NOT_FOUND)
 		ctx.Abort()
