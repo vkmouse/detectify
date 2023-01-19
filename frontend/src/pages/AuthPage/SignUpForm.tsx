@@ -106,7 +106,7 @@ const SignUpForm = () => {
       </InputField>
       <ButtonGroup>
         <OutlineButton
-          disabled={buttonDisabled}
+          disabled={registerMutation.isLoading}
           onClick={() => navigate('/signin')}
         >
           Sign in

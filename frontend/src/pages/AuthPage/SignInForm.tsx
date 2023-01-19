@@ -1,5 +1,8 @@
+import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import api from '../../api/api';
+import { APIResponse, APIResponseStatus } from '../../types/api';
 import { emailOptions, passwordOptions } from '../../utils/validate';
 import {
   InputField,
@@ -13,22 +16,56 @@ import {
 } from './styles';
 
 const SignInForm = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
+    getValues,
+    setError,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      name: '',
-      email: '',
-      password: '',
+      email: 'a@a.a',
+      password: 'aaaa',
     },
   });
 
-  const navigate = useNavigate();
+  const loginQuery = useQuery({
+    queryKey: ['login'],
+    queryFn: () => api.login(getValues()),
+    onSuccess: (response) => {
+      const apiResponse: APIResponse = response.data as APIResponse;
+      const { accessToken } = apiResponse.data as { accessToken: string };
+      console.log(accessToken);
+    },
+    onError: ({ response }) => {
+      const apiResponse: APIResponse = response.data as APIResponse;
+      switch (apiResponse.status) {
+        case APIResponseStatus.ERROR_EMAIL_NOT_EXIST: {
+          setError('email', {
+            message: 'Email not found.',
+          });
+          break;
+        }
+        case APIResponseStatus.ERROR_PASSWORD_ERROR: {
+          setError('password', {
+            message: 'Incorrect password',
+          });
+          break;
+        }
+      }
+    },
+    enabled: false,
+    retry: false,
+  });
+
+  const buttonDisabled =
+    loginQuery.isFetching ||
+    errors.email !== undefined ||
+    errors.password !== undefined;
 
   return (
-    <Form onSubmit={handleSubmit((data) => console.log(data))}>
+    <Form onSubmit={handleSubmit(() => loginQuery.refetch())}>
       <InputField>
         <span>Email</span>
         <InputContainer>
@@ -56,10 +93,15 @@ const SignInForm = () => {
         </ErrorMessage>
       </InputField>
       <ButtonGroup>
-        <OutlineButton onClick={() => navigate('/signup')}>
+        <OutlineButton
+          disabled={loginQuery.isFetching}
+          onClick={() => navigate('/signup')}
+        >
           Sign up
         </OutlineButton>
-        <Button type="submit">Sign in</Button>
+        <Button disabled={buttonDisabled} type="submit">
+          Sign in
+        </Button>
       </ButtonGroup>
     </Form>
   );

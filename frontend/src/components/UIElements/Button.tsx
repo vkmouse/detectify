@@ -32,6 +32,10 @@ const OutlinePrimaryButton = styled(Button)`
   &:hover {
     background: ${(props) => props.theme.colors.primary};
     color: white;
+    &:disabled {
+      background: ${(props) => props.theme.colors.bodyBackground};
+      color: ${(props) => props.theme.colors.primary};
+    }
   }
 `;
 

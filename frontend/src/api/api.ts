@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { RegisterRequest } from '../types/api';
+import { LoginRequest, RegisterRequest } from '../types/api';
 
 const API_URL = process.env.API_URL;
 
@@ -23,6 +23,9 @@ const api = {
   // auth api
   register: async (props: RegisterRequest) => {
     await axios.post(`${API_URL}/user`, props);
+  },
+  login: async (props: LoginRequest) => {
+    return await axios.put(`${API_URL}/user/auth`, props);
   },
 };
 
