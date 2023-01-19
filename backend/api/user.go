@@ -102,7 +102,7 @@ func Login(ctx *gin.Context) {
 		return
 	}
 	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
-		"access_token": accessToken,
+		"accessToken": accessToken,
 	})
 }
 
@@ -141,7 +141,7 @@ func Refresh(ctx *gin.Context) {
 		return
 	}
 	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
-		"access_token": accessToken,
+		"accessToken": accessToken,
 	})
 }
 
