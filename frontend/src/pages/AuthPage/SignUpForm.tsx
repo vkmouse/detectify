@@ -1,5 +1,13 @@
+import { useMutation } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import api from '../../api/api';
+import {
+  APIResponse,
+  APIResponseStatus,
+  RegisterRequest,
+} from '../../types/api';
 import {
   nameOptions,
   emailOptions,
@@ -17,22 +25,47 @@ import {
 } from './styles';
 
 const SignUpForm = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      name: '',
-      email: '',
-      password: '',
+      name: 'a',
+      email: 'a@a.a',
+      password: 'aaaa',
     },
   });
 
-  const navigate = useNavigate();
+  const registerMutation = useMutation<void, AxiosError, RegisterRequest>({
+    mutationFn: (props) => api.register(props),
+    onSuccess: () => navigate('/signin'),
+    onError: ({ response }) => {
+      if (response) {
+        const apiResponse: APIResponse = response.data as APIResponse;
+        if (apiResponse.status === APIResponseStatus.ERROR_EMAIL_EXIST) {
+          setError('email', {
+            message: 'Email already registered',
+          });
+        }
+      }
+    },
+  });
+
+  const buttonDisabled =
+    registerMutation.isLoading ||
+    errors.email !== undefined ||
+    errors.name !== undefined ||
+    errors.password !== undefined;
 
   return (
-    <Form onSubmit={handleSubmit((data) => console.log(data))}>
+    <Form
+      onSubmit={handleSubmit((data) => {
+        registerMutation.mutate(data);
+      })}
+    >
       <InputField>
         <span>Name</span>
         <InputContainer>
@@ -72,10 +105,15 @@ const SignUpForm = () => {
         </ErrorMessage>
       </InputField>
       <ButtonGroup>
-        <OutlineButton onClick={() => navigate('/signin')}>
+        <OutlineButton
+          disabled={registerMutation.isLoading}
+          onClick={() => navigate('/signin')}
+        >
           Sign in
         </OutlineButton>
-        <Button type="submit">Sign up</Button>
+        <Button disabled={buttonDisabled} type="submit">
+          Sign up
+        </Button>
       </ButtonGroup>
     </Form>
   );
