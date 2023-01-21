@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import useLoginRedirect from '../hooks/useLoginRedirect';
 import useLogout from '../hooks/useLogout';
 import useUserInfo from '../hooks/useUserInfo';
 
@@ -20,16 +21,16 @@ const NavbarItems = styled.div``;
 const NavbarToggler = styled.button``;
 
 const Navbar = () => {
-  const logout = useLogout();
   const { isFetching, userInfo } = useUserInfo();
+  const loginRedirect = useLoginRedirect();
+  const logout = useLogout(() => loginRedirect(false));
 
   return (
     <NavbarContainer>
       <NavbarInnerContainer>
         <NavbarItems>Projects</NavbarItems>
         <NavbarToggler onClick={logout}>
-          {isFetching && 'isFetching'}
-          {!isFetching && userInfo && userInfo.name}
+          {isFetching ? 'isFetching' : userInfo && userInfo.name}
         </NavbarToggler>
       </NavbarInnerContainer>
     </NavbarContainer>

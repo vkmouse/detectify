@@ -3,6 +3,8 @@ import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/api';
+import useLoginRedirect from '../../hooks/useLoginRedirect';
+import useUserInfo from '../../hooks/useUserInfo';
 import {
   APIResponse,
   APIResponseStatus,
@@ -26,6 +28,9 @@ import {
 
 const SignUpForm = () => {
   const navigate = useNavigate();
+  useUserInfo();
+  useLoginRedirect();
+
   const {
     register,
     handleSubmit,
