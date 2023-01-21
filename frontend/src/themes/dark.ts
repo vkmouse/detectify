@@ -21,6 +21,9 @@ const darkTheme: DefaultTheme = {
     scollbarThumb: '#676767',
     scollbarHover: '#555',
     danger: '#d9534f',
+    navBackground: '#202634',
+    dropdownHover: '#3e4555',
+    dropdownBorderColor: '#4e5362',
   },
   buttonDisabledOpacity: 0.65,
 };
