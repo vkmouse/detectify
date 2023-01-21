@@ -21,6 +21,9 @@ const lightTheme: DefaultTheme = {
     scollbarThumb: '#9498a1',
     scollbarHover: '#555',
     danger: '#d9534f',
+    navBackground: '#fff',
+    dropdownHover: '#f4f7f9',
+    dropdownBorderColor: '#c2c4c6',
   },
   buttonDisabledOpacity: 0.65,
 };

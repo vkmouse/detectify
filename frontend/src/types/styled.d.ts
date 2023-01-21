@@ -22,6 +22,9 @@ declare module 'styled-components' {
       scollbarThumb: string;
       scollbarHover: string;
       danger: string;
+      navBackground: string;
+      dropdownHover: string;
+      dropdownBorderColor: string;
     };
     buttonDisabledOpacity: number;
   }
