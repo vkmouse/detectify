@@ -1,18 +1,17 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import api from './api/api';
+import Navbar from './components/Navbar';
 import ProjectContainer from './components/ProjectContainer';
 import Sidebar from './components/Sidebar';
 import { SignUpPage, SignInPage } from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import ProjectImagePage from './pages/ProjectImagePage';
-import { useAppDispatch } from './store/store';
-import { setUser, startLoading } from './store/userSlice';
 
 const ProjectElement = (props: { element: JSX.Element }) => {
   const { element } = props;
   return (
     <>
+      <Navbar />
       <Sidebar />
       <ProjectContainer>{element}</ProjectContainer>
     </>
@@ -20,20 +19,6 @@ const ProjectElement = (props: { element: JSX.Element }) => {
 };
 
 const App = () => {
-  const dispatch = useAppDispatch();
-  const updateUserInfo = async () => {
-    const accessToken = window.localStorage.getItem('accessToken');
-    if (accessToken) {
-      dispatch(startLoading());
-      const data = await api.getUserInfo();
-      dispatch(setUser(data));
-    }
-  };
-
-  useEffect(() => {
-    updateUserInfo();
-  });
-
   return (
     <Routes>
       <Route path="/">

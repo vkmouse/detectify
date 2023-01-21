@@ -2,47 +2,39 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { UserInfo } from '../types/api';
 
 type UserState = {
-  isLoading: boolean;
+  isInit: boolean;
+  isFetching: boolean;
   userInfo: UserInfo | null;
 };
 
 const initialState: UserState = {
-  isLoading: false,
-  userInfo: {
-    name: '',
-    email: '',
-    avatarURL: '',
-  },
+  isInit: false,
+  isFetching: false,
+  userInfo: null,
 };
 
 export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    startLoading: (state) => {
-      state.isLoading = true;
+    startFetching: (state) => {
+      state.isFetching = true;
     },
-    setUser: (state, action: PayloadAction<UserInfo | null>) => {
-      state.isLoading = false;
-      if (action.payload) {
-        state.userInfo = {
-          ...action.payload,
-          avatarURL: action.payload.avatarURL + `?v=${new Date().getTime()}`,
-        };
-      } else {
-        state.userInfo = null;
-      }
+    setUser: (state, action: PayloadAction<UserInfo>) => {
+      state.isInit = true;
+      state.isFetching = false;
+      state.userInfo = {
+        ...action.payload,
+        avatarURL: action.payload.avatarURL + `?v=${new Date().getTime()}`,
+      };
     },
     reset: (state) => {
-      state.isLoading = false;
-      state.userInfo = {
-        name: '',
-        email: '',
-        avatarURL: '',
-      };
+      state.isInit = true;
+      state.isFetching = false;
+      state.userInfo = null;
     },
   },
 });
 
-export const { startLoading, setUser, reset } = userSlice.actions;
+export const { startFetching, setUser, reset } = userSlice.actions;
 export default userSlice.reducer;

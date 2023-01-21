@@ -31,13 +31,16 @@ const api = {
     return response;
   },
   logout: async () => {
-    await normalAxios.delete(`/user/auth`);
+    await normalAxios.delete(`/user/auth`, {
+      withCredentials: true,
+    });
     removeToken();
   },
   getUserInfo: async (): Promise<UserInfo | null> => {
     try {
       const response = await authAxios.get(`/user/auth`);
-      return await response.data;
+      const { data } = await response.data;
+      return data;
     } catch {
       return null;
     }
