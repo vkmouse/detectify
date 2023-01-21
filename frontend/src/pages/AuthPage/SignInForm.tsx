@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import api from '../../api/api';
-import { APIResponse, APIResponseStatus } from '../../types/api';
+import useLogin from '../../hooks/useLogin';
+import useLoginRedirect from '../../hooks/useLoginRedirect';
+import useUserInfo from '../../hooks/useUserInfo';
 import { emailOptions, passwordOptions } from '../../utils/validate';
 import {
   InputField,
@@ -17,6 +17,9 @@ import {
 
 const SignInForm = () => {
   const navigate = useNavigate();
+  const { isFetching } = useUserInfo();
+  const loginRedirect = useLoginRedirect();
+
   const {
     register,
     handleSubmit,
@@ -30,38 +33,23 @@ const SignInForm = () => {
     },
   });
 
-  const loginQuery = useQuery({
-    queryKey: ['login'],
-    queryFn: () => api.login(getValues()),
-    onSuccess: () => navigate('/'),
-    onError: ({ response }) => {
-      const apiResponse: APIResponse = response.data as APIResponse;
-      switch (apiResponse.status) {
-        case APIResponseStatus.ERROR_EMAIL_NOT_EXIST: {
-          setError('email', {
-            message: 'Email not found.',
-          });
-          break;
-        }
-        case APIResponseStatus.ERROR_PASSWORD_ERROR: {
-          setError('password', {
-            message: 'Incorrect password',
-          });
-          break;
-        }
-      }
-    },
-    enabled: false,
-    retry: false,
+  const login = useLogin({
+    onSuccess: () => loginRedirect(true),
+    onEmailNotExist: () =>
+      setError('email', {
+        message: 'Email not found.',
+      }),
+    onPasswordError: () =>
+      setError('password', {
+        message: 'Incorrect password',
+      }),
   });
 
   const buttonDisabled =
-    loginQuery.isFetching ||
-    errors.email !== undefined ||
-    errors.password !== undefined;
+    isFetching || errors.email !== undefined || errors.password !== undefined;
 
   return (
-    <Form onSubmit={handleSubmit(() => loginQuery.refetch())}>
+    <Form onSubmit={handleSubmit(() => login(getValues()))}>
       <InputField>
         <span>Email</span>
         <InputContainer>
@@ -90,7 +78,7 @@ const SignInForm = () => {
       </InputField>
       <ButtonGroup>
         <OutlineButton
-          disabled={loginQuery.isFetching}
+          disabled={isFetching}
           onClick={() => navigate('/signup')}
         >
           Sign up

@@ -1,4 +1,9 @@
-import { LoginRequest, RegisterRequest, UserInfo } from '../types/api';
+import {
+  APIResponse,
+  LoginRequest,
+  RegisterRequest,
+  UserInfo,
+} from '../types/api';
 import { authAxios, normalAxios, removeToken, updateToken } from './axios';
 
 type CreateUploadResponse = {
@@ -22,22 +27,25 @@ const api = {
   register: async (props: RegisterRequest) => {
     await normalAxios.post(`/user`, props);
   },
-  login: async (props: LoginRequest) => {
+  login: async (props: LoginRequest): Promise<APIResponse> => {
     const response = await normalAxios.put(`/user/auth`, props, {
       withCredentials: true,
     });
     const { accessToken } = response.data.data as { accessToken: string };
     updateToken(accessToken);
-    return response;
+    return response.data as APIResponse;
   },
   logout: async () => {
-    await normalAxios.delete(`/user/auth`);
+    await normalAxios.delete(`/user/auth`, {
+      withCredentials: true,
+    });
     removeToken();
   },
   getUserInfo: async (): Promise<UserInfo | null> => {
     try {
       const response = await authAxios.get(`/user/auth`);
-      return await response.data;
+      const { data } = await response.data;
+      return data;
     } catch {
       return null;
     }
