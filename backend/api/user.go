@@ -103,7 +103,9 @@ func Login(ctx *gin.Context) {
 		return
 	}
 	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
-		"accessToken": accessToken,
+		"data": gin.H{
+			"accessToken": accessToken,
+		},
 	})
 }
 
@@ -142,7 +144,9 @@ func Refresh(ctx *gin.Context) {
 		return
 	}
 	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
-		"accessToken": accessToken,
+		"data": gin.H{
+			"accessToken": accessToken,
+		},
 	})
 }
 
@@ -159,9 +163,11 @@ func GetUserInfo(ctx *gin.Context) {
 	}
 
 	data := gin.H{
-		"avatar": user.Avatar,
-		"name":   user.Name,
-		"email":  user.Email,
+		"data": gin.H{
+			"avatar": user.Avatar,
+			"name":   user.Name,
+			"email":  user.Email,
+		},
 	}
 	response.ResponseWithData(ctx, errmsg.SUCCESS, data)
 }

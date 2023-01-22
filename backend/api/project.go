@@ -10,29 +10,29 @@ import (
 )
 
 func AddProject(ctx *gin.Context) {
-	email := ctx.GetString("email")
-
-	user, err := repository.QueryUserByEmail(email)
-	if user.ID == "" {
-		response.Response(ctx, errmsg.ERROR_USER_NOT_EXIST)
-		return
-	}
-	if err != nil {
-		response.Response(ctx, errmsg.ERROR)
-		return
-	}
-
 	var project model.Project
-	err = ctx.BindJSON(&project)
+	err := ctx.BindJSON(&project)
 	if err != nil {
 		response.Response(ctx, errmsg.ERROR_INVALID_INPUT)
 	}
 
-	project.UserID = user.ID
+	project.UserID = ctx.GetString("userID")
 	err = repository.AddProject(&project)
 	if err != nil {
 		response.Response(ctx, errmsg.ERROR)
+		return
 	}
 
 	response.Response(ctx, errmsg.SUCCESS)
+}
+
+func GetProjects(ctx *gin.Context) {
+	userID := ctx.GetString("userID")
+	projects, err := repository.QueryProjectsWithCountsByUser(userID)
+	if err != nil {
+		response.Response(ctx, errmsg.ERROR)
+		return
+	}
+
+	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{"data": projects})
 }
