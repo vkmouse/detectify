@@ -36,8 +36,8 @@ export const CreateProjectContainer = styled.div`
   font-size: 125%;
   user-select: none;
   border-radius: ${borderRadius}px;
-  ${Card}:hover & {
-    background-color: ${(props) => props.theme.colors.cardBackgroundPrimary};
+  &:hover {
+    background: ${(props) => props.theme.colors.cardBackgroundPrimary};
   }
 `;
 
