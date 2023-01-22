@@ -2,8 +2,12 @@ import styled from 'styled-components';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 
-const Container = styled.div`
-  padding: 85px 260px;
+const NavbarContainer = styled.div`
+  padding-top: 85px;
+`;
+
+const NavbarSidebarContainer = styled(NavbarContainer)`
+  padding-left: 260px;
 `;
 
 const NavbarLayout = (props: {
@@ -13,7 +17,7 @@ const NavbarLayout = (props: {
   return (
     <>
       <Navbar />
-      <Container>{children}</Container>
+      <NavbarContainer>{children}</NavbarContainer>
     </>
   );
 };
@@ -26,7 +30,7 @@ const NavbarSidebarLayout = (props: {
     <>
       <Navbar />
       <Sidebar />
-      <Container>{children}</Container>
+      <NavbarSidebarContainer>{children}</NavbarSidebarContainer>
     </>
   );
 };
