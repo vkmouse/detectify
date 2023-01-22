@@ -22,3 +22,9 @@ func QueryUserByEmail(email string) (model.User, error) {
 	err := db.Limit(1).Where("email = ?", email).Find(&user).Error
 	return user, err
 }
+
+func QueryUserByID(id string) (model.User, error) {
+	var user model.User
+	err := db.Limit(1).Where("id = ?", id).Find(&user).Error
+	return user, err
+}

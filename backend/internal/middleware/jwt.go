@@ -32,13 +32,13 @@ func JwtMiddleware() func(ctx *gin.Context) {
 			return
 		}
 
-		if !jwt.ValidateExpireTime(claims) {
+		if claims.Valid() != nil {
 			response.Response(ctx, errmsg.ACCESS_TOKEN_EXPIRED)
 			ctx.Abort()
 			return
 		}
 
-		ctx.Set("email", claims.Email)
+		ctx.Set("userID", claims.Subject)
 		ctx.Next()
 	}
 }
