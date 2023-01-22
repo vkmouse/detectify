@@ -20,6 +20,7 @@ func InitRouter() *gin.Engine {
 	engine.PUT("user/auth", api.Login)
 	engine.DELETE("user/auth", api.Logout)
 	engine.POST("user/auth/refresh", api.Refresh)
+	engine.POST("project", middleware.JwtMiddleware(), api.AddProject)
 
 	return engine
 }
