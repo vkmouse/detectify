@@ -1,37 +1,44 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import ProjectContainer from './components/ProjectContainer';
-import Sidebar from './components/Sidebar';
+import { NavbarLayout, NavbarSidebarLayout } from './components/Layout';
 import { SignUpPage, SignInPage } from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import ProjectImagePage from './pages/ProjectImagePage';
-
-const ProjectElement = (props: { element: JSX.Element }) => {
-  const { element } = props;
-  return (
-    <>
-      <Navbar />
-      <Sidebar />
-      <ProjectContainer>{element}</ProjectContainer>
-    </>
-  );
-};
+import Projects from './pages/Projects';
 
 const App = () => {
   return (
     <Routes>
       <Route path="/">
-        <Route index element={<ProjectElement element={<HomePage />} />} />
+        <Route
+          index
+          element={
+            <NavbarSidebarLayout>
+              <HomePage />
+            </NavbarSidebarLayout>
+          }
+        />
         <Route
           path="images"
-          element={<ProjectElement element={<ProjectImagePage />} />}
+          element={
+            <NavbarSidebarLayout>
+              <ProjectImagePage />
+            </NavbarSidebarLayout>
+          }
         />
-        <Route path="annotate" element={<ProjectElement element={<></>} />} />
-        <Route path="dataset" element={<ProjectElement element={<></>} />} />
-        <Route path="model" element={<ProjectElement element={<></>} />} />
+        <Route path="annotate" element={<NavbarSidebarLayout />} />
+        <Route path="dataset" element={<NavbarSidebarLayout />} />
+        <Route path="model" element={<NavbarSidebarLayout />} />
         <Route path="signup" element={<SignUpPage />} />
         <Route path="signin" element={<SignInPage />} />
+        <Route
+          path="projects"
+          element={
+            <NavbarLayout>
+              <Projects />
+            </NavbarLayout>
+          }
+        />
       </Route>
     </Routes>
   );

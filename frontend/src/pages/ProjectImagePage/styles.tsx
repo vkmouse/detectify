@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { PrimaryButton } from '../../components/UIElements/Button';
+import { PrimaryButton } from '../../components/Button';
 
 export const UploadColumn = styled.div`
   display: flex;
