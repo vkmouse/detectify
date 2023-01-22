@@ -68,7 +68,7 @@ func Login(ctx *gin.Context) {
 	}
 
 	userFromDb, err := repository.QueryUserByEmail(user.Email)
-	if userFromDb.ID == 0 {
+	if userFromDb.ID == "" {
 		response.Response(ctx, errmsg.ERROR_EMAIL_NOT_EXIST)
 		return
 	}
@@ -149,7 +149,7 @@ func GetUserInfo(ctx *gin.Context) {
 	email := ctx.GetString("email")
 
 	user, err := repository.QueryUserByEmail(email)
-	if user.ID == 0 {
+	if user.ID == "" {
 		response.Response(ctx, errmsg.ERROR_USER_NOT_EXIST)
 		return
 	}
@@ -159,7 +159,7 @@ func GetUserInfo(ctx *gin.Context) {
 	}
 
 	data := gin.H{
-		"avatarURL": user.AvatarURL,
+		"avatarURL": user.Avatar,
 		"name":      user.Name,
 		"email":     user.Email,
 	}

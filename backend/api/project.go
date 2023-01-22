@@ -13,7 +13,7 @@ func AddProject(ctx *gin.Context) {
 	email := ctx.GetString("email")
 
 	user, err := repository.QueryUserByEmail(email)
-	if user.ID == 0 {
+	if user.ID == "" {
 		response.Response(ctx, errmsg.ERROR_USER_NOT_EXIST)
 		return
 	}

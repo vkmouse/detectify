@@ -2,16 +2,19 @@ package repository
 
 import (
 	"detectify/internal/model"
+
+	"github.com/google/uuid"
 )
 
 func AddUser(user *model.User) error {
+	user.ID = uuid.New().String()
 	return db.Create(&user).Error
 }
 
 func CheckUserEmail(email string) bool {
 	var user model.User
 	db.Select("id").Where("email = ?", email).First(&user)
-	return user.ID > 0
+	return user.ID != ""
 }
 
 func QueryUserByEmail(email string) (model.User, error) {
