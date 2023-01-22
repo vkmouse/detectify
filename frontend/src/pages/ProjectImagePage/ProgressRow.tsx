@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { CardPrimary } from '../../components/UIElements/Card';
+import { CardPrimary } from '../../components/Card';
 import XCircle from '../../assets/x-circle.svg';
 
 const ProgressRowInnerWrapper = styled.div`

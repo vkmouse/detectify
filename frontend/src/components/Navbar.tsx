@@ -4,27 +4,30 @@ import useLogout from '../hooks/useLogout';
 import useUserInfo from '../hooks/useUserInfo';
 import ChevronDown from '../assets/chevron-down.svg';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const NavbarContainer = styled.nav`
   position: fixed;
-  width: calc(100vw - 260px);
-  margin-left: 260px;
-  background-color: ${(props) => props.theme.colors.navBackground};
+  width: 100vw;
+  background: #293042;
+  color: white;
   box-shadow: 0 0 2rem 0 rgb(41 48 66 / 10%);
+  z-index: 999;
 `;
 
 const NavbarInnerContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 20px;
+  padding: 0 20px;
+  height: 70px;
 `;
 
 const NavbarItems = styled.div`
   display: flex;
 `;
 
-const NavbarItem = styled.div`
+const NavbarItem = styled(Link)`
   user-select: none;
   padding: 5px 15px;
   cursor: pointer;
@@ -47,7 +50,8 @@ const DropdownMenu = styled.div`
   flex-direction: column;
   position: absolute;
   right: 0;
-  top: 100%;
+  top: 70px;
+  color: ${(props) => props.theme.colors.bodyColor};
   background-color: ${(props) => props.theme.colors.navBackground};
   border: 1px solid ${(props) => props.theme.colors.dropdownBorderColor};
   white-space: nowrap;
@@ -72,8 +76,8 @@ const Navbar = () => {
     <NavbarContainer>
       <NavbarInnerContainer>
         <NavbarItems>
-          <NavbarItem>Home</NavbarItem>
-          <NavbarItem>Projects</NavbarItem>
+          <NavbarItem to="/">Home</NavbarItem>
+          <NavbarItem to="/projects">Projects</NavbarItem>
         </NavbarItems>
         <NavbarToggler
           onClick={() => {
@@ -82,13 +86,13 @@ const Navbar = () => {
         >
           <span>{isFetching ? 'isFetching' : userInfo && userInfo.name}</span>
           <ChevronDown />
-          {showDropdown && (
-            <DropdownMenu>
-              <DropdownItem>Profile</DropdownItem>
-              <DropdownItem onClick={logout}>Sign out</DropdownItem>
-            </DropdownMenu>
-          )}
-        </NavbarToggler>
+        </NavbarToggler>{' '}
+        {showDropdown && (
+          <DropdownMenu>
+            <DropdownItem>Profile</DropdownItem>
+            <DropdownItem onClick={logout}>Sign out</DropdownItem>
+          </DropdownMenu>
+        )}
       </NavbarInnerContainer>
     </NavbarContainer>
   );
