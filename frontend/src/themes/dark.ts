@@ -13,7 +13,7 @@ const darkTheme: DefaultTheme = {
     gray700: '#bfc1c6',
     bodyBackground: '#202634',
     bodyColor: '#d4d6d9',
-    cardBackground: '#343a4b',
+    cardBackground: '#293042',
     cardBackgroundPrimary: '#343a4b',
     progressBackground: '#545968',
     progressBackgroundPrimary: '#3f80ea',
@@ -21,6 +21,9 @@ const darkTheme: DefaultTheme = {
     scollbarThumb: '#676767',
     scollbarHover: '#555',
     danger: '#d9534f',
+    navBackground: '#202634',
+    dropdownHover: '#3e4555',
+    dropdownBorderColor: '#4e5362',
   },
   buttonDisabledOpacity: 0.65,
 };

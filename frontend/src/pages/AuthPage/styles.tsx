@@ -1,9 +1,6 @@
 import styled from 'styled-components';
-import {
-  OutlinePrimaryButton,
-  PrimaryButton,
-} from '../../components/UIElements/Button';
-import { Card } from '../../components/UIElements/Card';
+import { OutlinePrimaryButton, PrimaryButton } from '../../components/Button';
+import { Card } from '../../components/Card';
 
 export const AuthContainer = styled.div`
   display: flex;

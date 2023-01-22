@@ -9,9 +9,10 @@ import ThemeToggler from './ToggleSwitch';
 const SidebarContainer = styled.div`
   position: fixed;
   width: 260px;
-  height: 100vh;
-  background: #293042;
-  color: white;
+  height: calc(100vh - 70px);
+  margin-top: 70px;
+  background-color: ${(props) => props.theme.colors.bodyBackground};
+  z-index: 999;
 `;
 
 const SidebarWrapper = styled.div`
@@ -22,9 +23,8 @@ const SidebarWrapper = styled.div`
 
 const SidebarBrandContainer = styled.a`
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 1.15rem 1.5rem;
+  padding: 20px 26px 10px 26px;
 `;
 
 const SidebarBrandText = styled.span`
@@ -35,6 +35,7 @@ const SidebarBrandText = styled.span`
 const HorizontalLine = styled.hr`
   width: 80%;
   border-color: ${(props) => props.theme.colors.gray500};
+  margin: 5px 25px;
 `;
 
 const activeColor = `
@@ -54,7 +55,7 @@ const inactiveColor = (theme: DefaultTheme) => `
 const SidebarLinkContainer = styled.div<{ isActive?: boolean }>`
   display: flex;
   justify-content: space-between;
-  padding: 0.625rem 1.625rem;
+  padding: 10px 26px;
   cursor: pointer;
   ${({ isActive, theme }) => (isActive ? activeColor : inactiveColor(theme))}
 `;
