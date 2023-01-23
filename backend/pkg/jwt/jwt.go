@@ -13,7 +13,7 @@ func GetToken(userID string, expireDuration time.Duration) (string, error) {
 	claims := jwt.StandardClaims{
 		ExpiresAt: time.Now().Add(expireDuration).Unix(),
 		Issuer:    config.JwtIssuer,
-		Id:        uuid.New().String(),
+		Id:        uuid.NewString(),
 		Subject:   userID,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

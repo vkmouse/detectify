@@ -9,7 +9,7 @@ import (
 )
 
 func GeneratingPresignedURL(ctx *gin.Context) {
-	id := uuid.New().String()
+	id := uuid.NewString()
 	url := r2.GeneratingPresignedURL(id)
 	ctx.JSON(
 		http.StatusOK,

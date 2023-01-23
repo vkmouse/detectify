@@ -7,7 +7,7 @@ import (
 )
 
 func AddUser(user *model.User) error {
-	user.ID = uuid.New().String()
+	user.ID = uuid.NewString()
 	return db.Create(&user).Error
 }
 
