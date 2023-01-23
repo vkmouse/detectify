@@ -38,10 +38,10 @@ func VerifyProjectAccess(userID string, projectID string) bool {
 }
 
 type ProjectResponse struct {
-	ID              string
-	Name            string
-	CategoriesCount int
-	ImagesCount     int
+	ID              string `json:"id"`
+	Name            string `json:"name"`
+	CategoriesCount int    `json:"categoriesCount"`
+	ImagesCount     int    `json:"imagesCount"`
 }
 
 func QueryProjectsWithCountsByUser(userID string) ([]ProjectResponse, error) {

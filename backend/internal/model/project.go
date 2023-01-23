@@ -16,12 +16,12 @@ type Project struct {
 
 type ProjectCategory struct {
 	Name      string `gorm:"primarykey;type:varchar(255) not null;" json:"name"`
-	ProjectID string `gorm:"primarykey;" json:"projectID"`
+	ProjectID string `gorm:"primarykey;" json:"projectId"`
 	Project   Project
 }
 
 type ProjectImage struct {
 	URL       string `gorm:"primarykey;type:varchar(255) not null;" json:"name"`
-	ProjectID string `gorm:"primarykey;" json:"projectID"`
+	ProjectID string `gorm:"primarykey;" json:"projectId"`
 	Project   Project
 }
