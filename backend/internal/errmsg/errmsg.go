@@ -3,6 +3,7 @@ package errmsg
 const (
 	SUCCESS             = 200
 	ERROR_INVALID_INPUT = 400
+	ERROR_FORBIDDEN     = 403
 	ERROR               = 500
 
 	ACCESS_TOKEN_NOT_FOUND    = 600
@@ -19,6 +20,8 @@ const (
 	ERROR_PASSWORD_ERROR  = 1003
 
 	ERROR_USER_NOT_EXIST = 2001
+
+	ERROR_CATEGORY_EXIST = 3001
 )
 
 type CodeMsg struct {
@@ -29,6 +32,7 @@ type CodeMsg struct {
 var codeMsg = map[int]CodeMsg{
 	SUCCESS:             {Code: 200, Message: "Success"},
 	ERROR_INVALID_INPUT: {Code: 400, Message: "Error: Invalid input"},
+	ERROR_FORBIDDEN:     {Code: 403, Message: "Error: Forbidden"},
 	ERROR:               {Code: 500, Message: "Error: Internal server error."},
 
 	ACCESS_TOKEN_NOT_FOUND:    {Code: 401, Message: "Error: Access token not found."},
@@ -45,6 +49,8 @@ var codeMsg = map[int]CodeMsg{
 	ERROR_PASSWORD_ERROR:  {Code: 400, Message: "Error: Incorrect password."},
 
 	ERROR_USER_NOT_EXIST: {Code: 400, Message: "Error: User not found."},
+
+	ERROR_CATEGORY_EXIST: {Code: 400, Message: "Error: Category already exists."},
 }
 
 func GetErrMsg(code int) CodeMsg {

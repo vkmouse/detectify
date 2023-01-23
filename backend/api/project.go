@@ -14,10 +14,38 @@ func AddProject(ctx *gin.Context) {
 	err := ctx.BindJSON(&project)
 	if err != nil {
 		response.Response(ctx, errmsg.ERROR_INVALID_INPUT)
+		return
 	}
 
 	project.UserID = ctx.GetString("userID")
 	err = repository.AddProject(&project)
+	if err != nil {
+		response.Response(ctx, errmsg.ERROR)
+		return
+	}
+
+	response.Response(ctx, errmsg.SUCCESS)
+}
+
+func AddCategory(ctx *gin.Context) {
+	userID := ctx.GetString("userID")
+	var category model.ProjectCategory
+	err := ctx.BindJSON(&category)
+	if err != nil {
+		response.Response(ctx, errmsg.ERROR_INVALID_INPUT)
+		return
+	}
+
+	if !repository.VerifyProjectAccess(userID, category.ProjectID) {
+		response.Response(ctx, errmsg.ERROR_FORBIDDEN)
+		return
+	}
+
+	success, err := repository.AddProjectCategory(&category)
+	if !success {
+		response.Response(ctx, errmsg.ERROR_CATEGORY_EXIST)
+		return
+	}
 	if err != nil {
 		response.Response(ctx, errmsg.ERROR)
 		return

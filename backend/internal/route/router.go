@@ -22,6 +22,7 @@ func InitRouter() *gin.Engine {
 	engine.POST("user/auth/refresh", api.Refresh)
 	engine.POST("project", middleware.JwtMiddleware(), api.AddProject)
 	engine.GET("projects", middleware.JwtMiddleware(), api.GetProjects)
+	engine.POST("category", middleware.JwtMiddleware(), api.AddCategory)
 
 	return engine
 }

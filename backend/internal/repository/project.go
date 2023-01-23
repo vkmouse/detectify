@@ -2,34 +2,51 @@ package repository
 
 import (
 	"detectify/internal/model"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm/clause"
 )
 
-func AddProject(user *model.Project) error {
-	return db.Create(&user).Error
+func AddProject(project *model.Project) error {
+	project.ID = uuid.NewString()
+	return db.Create(&project).Error
 }
 
-func AddProjectCategory(category *model.ProjectCategory) error {
-	return db.Create(&category).Error
+func AddProjectCategory(category *model.ProjectCategory) (bool, error) {
+	result := db.Clauses(
+		clause.OnConflict{DoNothing: true},
+	).Create(&category)
+
+	return result.RowsAffected > 0, result.Error
 }
 
 func AddProjectImage(image *model.ProjectImage) error {
 	return db.Create(&image).Error
 }
 
+func VerifyProjectAccess(userID string, projectID string) bool {
+	var project model.Project
+	err := db.
+		Select("user_id, id").
+		Where("user_id = ? AND id = ?", userID, projectID).
+		First(&project).Error
+	return err == nil && project.UserID == userID && project.ID == projectID
+}
+
 type ProjectResponse struct {
-	ID              int
+	ID              string
 	Name            string
 	CategoriesCount int
 	ImagesCount     int
 }
 
 func QueryProjectsWithCountsByUser(userID string) ([]ProjectResponse, error) {
-	var projects []ProjectResponse
+	projects := make([]ProjectResponse, 0)
 	err := db.Table("projects").
 		Select(`projects.id,
 				projects.name,
-				count(project_categories.id) as categories_count,
-				count(project_images.id) as images_count`).
+				count(project_categories.project_id) as categories_count,
+				count(project_images.project_id) as images_count`).
 		Joins(`left join project_categories on project_categories.project_id = projects.id
 			   left join project_images on project_images.project_id = projects.id`).
 		Group("projects.id").
