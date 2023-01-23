@@ -27,7 +27,7 @@ func AddProject(ctx *gin.Context) {
 	response.Response(ctx, errmsg.SUCCESS)
 }
 
-func AddCategory(ctx *gin.Context) {
+func AddProjectCategory(ctx *gin.Context) {
 	userID := ctx.GetString("userID")
 	var category model.ProjectCategory
 	err := ctx.BindJSON(&category)
