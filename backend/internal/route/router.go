@@ -14,7 +14,6 @@ func InitRouter() *gin.Engine {
 	engine.Use(log.GinLogger())
 	engine.Use(middleware.CORSMiddleware())
 
-	engine.POST("image/upload", api.GeneratingPresignedURL)
 	engine.POST("user", api.Register)
 	engine.GET("user/auth", middleware.JwtMiddleware(), api.GetUserInfo)
 	engine.PUT("user/auth", api.Login)
@@ -23,6 +22,8 @@ func InitRouter() *gin.Engine {
 	engine.POST("project", middleware.JwtMiddleware(), api.AddProject)
 	engine.GET("projects", middleware.JwtMiddleware(), api.GetProjects)
 	engine.POST("category", middleware.JwtMiddleware(), api.AddCategory)
+	engine.POST("image/upload", middleware.JwtMiddleware(), api.GeneratingPresignedURL)
+	engine.POST("image", middleware.JwtMiddleware(), api.AddProjectImage)
 
 	return engine
 }

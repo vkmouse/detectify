@@ -20,8 +20,12 @@ func AddProjectCategory(category *model.ProjectCategory) (bool, error) {
 	return result.RowsAffected > 0, result.Error
 }
 
-func AddProjectImage(image *model.ProjectImage) error {
-	return db.Create(&image).Error
+func AddProjectImage(image *model.ProjectImage) (bool, error) {
+	result := db.Clauses(
+		clause.OnConflict{DoNothing: true},
+	).Create(&image)
+
+	return result.RowsAffected > 0, result.Error
 }
 
 func VerifyProjectAccess(userID string, projectID string) bool {

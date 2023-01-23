@@ -22,6 +22,8 @@ const (
 	ERROR_USER_NOT_EXIST = 2001
 
 	ERROR_CATEGORY_EXIST = 3001
+
+	ERROR_IMAGE_EXIST = 4001
 )
 
 type CodeMsg struct {
@@ -51,6 +53,8 @@ var codeMsg = map[int]CodeMsg{
 	ERROR_USER_NOT_EXIST: {Code: 400, Message: "Error: User not found."},
 
 	ERROR_CATEGORY_EXIST: {Code: 400, Message: "Error: Category already exists."},
+
+	ERROR_IMAGE_EXIST: {Code: 400, Message: "Error: Image already exists."},
 }
 
 func GetErrMsg(code int) CodeMsg {
