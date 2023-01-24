@@ -3,6 +3,12 @@ import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/api';
+import {
+  ErrorMessage,
+  Input,
+  InputContainer,
+  InputField,
+} from '../../components/InputFiled';
 import useLoginRedirect from '../../hooks/useLoginRedirect';
 import useUserInfo from '../../hooks/useUserInfo';
 import {
@@ -15,16 +21,7 @@ import {
   emailOptions,
   passwordOptions,
 } from '../../utils/validate';
-import {
-  InputField,
-  InputContainer,
-  Input,
-  ErrorMessage,
-  Button,
-  Form,
-  ButtonGroup,
-  OutlineButton,
-} from './styles';
+import { Button, Form, ButtonGroup, OutlineButton } from './styles';
 
 const SignUpForm = () => {
   const navigate = useNavigate();

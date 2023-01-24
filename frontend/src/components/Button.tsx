@@ -24,6 +24,17 @@ const PrimaryButton = styled(Button)`
   }
 `;
 
+const DangerButton = styled(Button)`
+  background: ${(props) => props.theme.colors.danger};
+  color: white;
+  &:hover {
+    background: #b84743;
+    &:disabled {
+      background: ${(props) => props.theme.colors.danger};
+    }
+  }
+`;
+
 const OutlinePrimaryButton = styled(Button)`
   background: ${(props) => props.theme.colors.bodyBackground};
   border: 1px solid ${(props) => props.theme.colors.primary};
@@ -39,4 +50,24 @@ const OutlinePrimaryButton = styled(Button)`
   }
 `;
 
-export { PrimaryButton, OutlinePrimaryButton };
+const OutlineDangerButton = styled(Button)`
+  background: ${(props) => props.theme.colors.bodyBackground};
+  border: 1px solid ${(props) => props.theme.colors.danger};
+  color: ${(props) => props.theme.colors.danger};
+
+  &:hover {
+    background: ${(props) => props.theme.colors.danger};
+    color: white;
+    &:disabled {
+      background: ${(props) => props.theme.colors.bodyBackground};
+      color: ${(props) => props.theme.colors.danger};
+    }
+  }
+`;
+
+export {
+  PrimaryButton,
+  DangerButton,
+  OutlinePrimaryButton,
+  OutlineDangerButton,
+};

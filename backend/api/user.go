@@ -68,7 +68,7 @@ func Login(ctx *gin.Context) {
 	}
 
 	userFromDb, err := repository.QueryUserByEmail(user.Email)
-	if userFromDb.ID == 0 {
+	if userFromDb.ID == "" {
 		response.Response(ctx, errmsg.ERROR_EMAIL_NOT_EXIST)
 		return
 	}
@@ -83,8 +83,9 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
+	user = userFromDb
 	refreshToken, err := jwt.GetToken(
-		user.Email,
+		user.ID,
 		time.Duration(config.JwtRefreshTokenLifetime)*time.Second,
 	)
 	if err != nil {
@@ -94,7 +95,7 @@ func Login(ctx *gin.Context) {
 	ctx.Header("Set-Cookie", fmt.Sprintf("refreshToken=%s; MaxAge: %d; Secure; HttpOnly;", refreshToken, config.JwtRefreshTokenLifetime))
 
 	accessToken, err := jwt.GetToken(
-		user.Email,
+		user.ID,
 		time.Duration(config.JwtAccessTokenLifetime)*time.Second,
 	)
 	if err != nil {
@@ -102,7 +103,9 @@ func Login(ctx *gin.Context) {
 		return
 	}
 	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
-		"accessToken": accessToken,
+		"data": gin.H{
+			"accessToken": accessToken,
+		},
 	})
 }
 
@@ -126,14 +129,14 @@ func Refresh(ctx *gin.Context) {
 		return
 	}
 
-	if !jwt.ValidateExpireTime(claims) {
+	if claims.Valid() != nil {
 		response.Response(ctx, errmsg.REFRESH_TOKEN_EXPIRED)
 		ctx.Abort()
 		return
 	}
 
 	accessToken, err := jwt.GetToken(
-		claims.Email,
+		claims.Subject,
 		time.Duration(config.JwtAccessTokenLifetime)*time.Second,
 	)
 	if err != nil {
@@ -141,15 +144,16 @@ func Refresh(ctx *gin.Context) {
 		return
 	}
 	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
-		"accessToken": accessToken,
+		"data": gin.H{
+			"accessToken": accessToken,
+		},
 	})
 }
 
 func GetUserInfo(ctx *gin.Context) {
-	email := ctx.GetString("email")
-
-	user, err := repository.QueryUserByEmail(email)
-	if user.ID == 0 {
+	userID := ctx.GetString("userID")
+	user, err := repository.QueryUserByID(userID)
+	if user.ID == "" {
 		response.Response(ctx, errmsg.ERROR_USER_NOT_EXIST)
 		return
 	}
@@ -159,9 +163,11 @@ func GetUserInfo(ctx *gin.Context) {
 	}
 
 	data := gin.H{
-		"avatarURL": user.AvatarURL,
-		"name":      user.Name,
-		"email":     user.Email,
+		"data": gin.H{
+			"avatar": user.Avatar,
+			"name":   user.Name,
+			"email":  user.Email,
+		},
 	}
 	response.ResponseWithData(ctx, errmsg.SUCCESS, data)
 }

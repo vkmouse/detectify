@@ -23,7 +23,9 @@ func ResponseWithData(ctx *gin.Context, status int, data gin.H) {
 	context := gin.H{
 		"status":  status,
 		"message": codeMsg.Message,
-		"data":    data,
+	}
+	for key, value := range data {
+		context[key] = value
 	}
 	ctx.JSON(
 		codeMsg.Code,
