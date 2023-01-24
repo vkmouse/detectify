@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import Dialog, { DialogTitle } from '../../components/Dialog';
 import {
@@ -14,6 +15,7 @@ const CreateProjectDialog = (props: { open: boolean; onClose: () => void }) => {
   const {
     register,
     handleSubmit,
+    setFocus,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -21,6 +23,12 @@ const CreateProjectDialog = (props: { open: boolean; onClose: () => void }) => {
       projectDescription: '',
     },
   });
+
+  useEffect(() => {
+    if (open) {
+      setFocus('projectName');
+    }
+  }, [open]);
 
   return (
     <Dialog open={open} onClose={onClose}>
