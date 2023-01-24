@@ -26,7 +26,7 @@ const ProjectsPage = () => {
   };
 
   useQuery({
-    queryKey: ['getProjects'],
+    queryKey: ['projects'],
     queryFn: api.getProjects,
     onSuccess: (data) => {
       setProjects(data);

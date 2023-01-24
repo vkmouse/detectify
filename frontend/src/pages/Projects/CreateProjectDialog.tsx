@@ -1,5 +1,7 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import api from '../../api/api';
 import Dialog, { DialogTitle } from '../../components/Dialog';
 import {
   InputField,
@@ -12,6 +14,7 @@ import { ButtonGroup, OutlineButton, Button } from './styles';
 
 const CreateProjectDialog = (props: { open: boolean; onClose: () => void }) => {
   const { open, onClose } = props;
+  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
@@ -24,6 +27,14 @@ const CreateProjectDialog = (props: { open: boolean; onClose: () => void }) => {
     },
   });
 
+  const addProjectMutation = useMutation({
+    mutationFn: api.addProject,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['projects']);
+      onClose();
+    },
+  });
+
   useEffect(() => {
     if (open) {
       setFocus('projectName');
@@ -33,7 +44,13 @@ const CreateProjectDialog = (props: { open: boolean; onClose: () => void }) => {
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Create Project</DialogTitle>
-      <form onSubmit={handleSubmit((data) => console.log(data))}>
+      <form
+        onSubmit={handleSubmit((data) =>
+          addProjectMutation.mutate({
+            name: data.projectName,
+          })
+        )}
+      >
         <InputField>
           <span>Project Name</span>
           <InputContainer>

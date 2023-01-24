@@ -58,6 +58,9 @@ const api = {
     const { data } = await response.data;
     return data;
   },
+  addProject: async (props: { name: string }) => {
+    await authAxios.post('/project', props);
+  },
 };
 
 export default api;
