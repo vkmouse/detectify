@@ -11,9 +11,20 @@ import { useQuery } from '@tanstack/react-query';
 import api from '../../api/api';
 import { useState } from 'react';
 import { ProjectResponse } from '../../types/api';
+import CreateProjectDialog from './CreateProjectDialog';
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState<ProjectResponse[]>([]);
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   useQuery({
     queryKey: ['getProjects'],
     queryFn: api.getProjects,
@@ -23,26 +34,29 @@ const ProjectsPage = () => {
   });
 
   return (
-    <Grid>
-      <Card>
-        <CreateProjectContainer>
-          <CreateProjectWrapper>
-            <CreateProjectIcon />
-            <span>Create New Project</span>
-          </CreateProjectWrapper>
-        </CreateProjectContainer>
-      </Card>
-      {projects.map((project, i) => (
-        <ProjectCard
-          key={i}
-          cover={defaultCover}
-          dateModified={new Date()}
-          name={project.name}
-          numCategories={project.categoriesCount}
-          numImages={project.imagesCount}
-        />
-      ))}
-    </Grid>
+    <>
+      <CreateProjectDialog open={open} onClose={handleClose} />
+      <Grid>
+        <Card onClick={handleClickOpen}>
+          <CreateProjectContainer>
+            <CreateProjectWrapper>
+              <CreateProjectIcon />
+              <span>Create New Project</span>
+            </CreateProjectWrapper>
+          </CreateProjectContainer>
+        </Card>
+        {projects.map((project, i) => (
+          <ProjectCard
+            key={i}
+            cover={defaultCover}
+            dateModified={new Date()}
+            name={project.name}
+            numCategories={project.categoriesCount}
+            numImages={project.imagesCount}
+          />
+        ))}
+      </Grid>
+    </>
   );
 };
 

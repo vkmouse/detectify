@@ -43,4 +43,15 @@ const passwordOptions: RegisterOptions = {
   pattern: /[.*a-zA-Z\d]{4,50}/g,
 };
 
-export { emailOptions, nameOptions, passwordOptions };
+const projectNameOptions: RegisterOptions = {
+  required: {
+    value: true,
+    message: 'Project name is required',
+  },
+  maxLength: {
+    value: 20,
+    message: 'Please enter the name with no more than 20 characters',
+  },
+};
+
+export { emailOptions, nameOptions, passwordOptions, projectNameOptions };

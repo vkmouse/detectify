@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import PlusCircle from '../../assets/plus-circle.svg';
+import { PrimaryButton, OutlinePrimaryButton } from '../../components/Button';
 
 const borderRadius = 10;
 
@@ -104,4 +105,20 @@ export const Name = styled.span`
 
 export const DateModified = styled.span`
   color: ${(props) => props.theme.colors.gray};
+`;
+
+export const Button = styled(PrimaryButton)`
+  width: 120px;
+  margin: 0;
+`;
+
+export const OutlineButton = styled(OutlinePrimaryButton)`
+  width: 120px;
+  margin: 0;
+`;
+
+export const ButtonGroup = styled.div`
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
 `;
