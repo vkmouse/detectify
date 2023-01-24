@@ -39,5 +39,12 @@ export type LoginRequest = {
 export type UserInfo = {
   name: string;
   email: string;
-  avatarURL: string;
+  avatar: string;
+};
+
+export type ProjectResponse = {
+  id: string;
+  name: string;
+  categoriesCount: number;
+  imagesCount: number;
 };

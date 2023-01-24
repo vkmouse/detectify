@@ -29,10 +29,9 @@ export const Card = styled.div`
 `;
 
 export const CreateProjectContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
+  position: relative;
+  width: 100%;
+  padding-top: calc(66.67% + 31.25px);
   font-size: 125%;
   user-select: none;
   border-radius: ${borderRadius}px;
@@ -42,9 +41,13 @@ export const CreateProjectContainer = styled.div`
 `;
 
 export const CreateProjectWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
-  padding: 10px 0;
+  justify-content: center;
 `;
 
 export const CreateProjectIcon = styled(PlusCircle)`
