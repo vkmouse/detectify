@@ -25,7 +25,7 @@ export const userSlice = createSlice({
       state.isFetching = false;
       state.userInfo = {
         ...action.payload,
-        avatarURL: action.payload.avatarURL + `?v=${new Date().getTime()}`,
+        avatar: action.payload.avatar + `?v=${new Date().getTime()}`,
       };
     },
     reset: (state) => {

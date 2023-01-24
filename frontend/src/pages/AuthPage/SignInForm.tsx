@@ -1,19 +1,16 @@
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import useLogin from '../../hooks/useLogin';
-import useLoginRedirect from '../../hooks/useLoginRedirect';
-import useUserInfo from '../../hooks/useUserInfo';
-import { emailOptions, passwordOptions } from '../../utils/validate';
 import {
   InputField,
   InputContainer,
   Input,
   ErrorMessage,
-  Button,
-  Form,
-  ButtonGroup,
-  OutlineButton,
-} from './styles';
+} from '../../components/InputFiled';
+import useLogin from '../../hooks/useLogin';
+import useLoginRedirect from '../../hooks/useLoginRedirect';
+import useUserInfo from '../../hooks/useUserInfo';
+import { emailOptions, passwordOptions } from '../../utils/validate';
+import { Button, Form, ButtonGroup, OutlineButton } from './styles';
 
 const SignInForm = () => {
   const navigate = useNavigate();

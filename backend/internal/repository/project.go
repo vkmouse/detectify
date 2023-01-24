@@ -49,10 +49,11 @@ func QueryProjectsWithCountsByUser(userID string) ([]ProjectResponse, error) {
 	err := db.Table("projects").
 		Select(`projects.id,
 				projects.name,
-				count(project_categories.project_id) as categories_count,
-				count(project_images.project_id) as images_count`).
+				count(distinct project_categories.project_id) as categories_count,
+				count(distinct project_images.project_id) as images_count`).
 		Joins(`left join project_categories on project_categories.project_id = projects.id
 			   left join project_images on project_images.project_id = projects.id`).
+		Where("projects.user_id = ?", userID).
 		Group("projects.id").
 		Scan(&projects).
 		Error
