@@ -1,3 +1,4 @@
+import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
@@ -10,27 +11,25 @@ const NavbarSidebarContainer = styled(NavbarContainer)`
   padding-left: 260px;
 `;
 
-const NavbarLayout = (props: {
-  children: string | JSX.Element | JSX.Element[];
-}) => {
-  const { children } = props;
+const NavbarLayout = () => {
   return (
     <>
       <Navbar />
-      <NavbarContainer>{children}</NavbarContainer>
+      <NavbarContainer>
+        <Outlet />
+      </NavbarContainer>
     </>
   );
 };
 
-const NavbarSidebarLayout = (props: {
-  children?: string | JSX.Element | JSX.Element[];
-}) => {
-  const { children } = props;
+const NavbarSidebarLayout = () => {
   return (
     <>
       <Navbar />
       <Sidebar />
-      <NavbarSidebarContainer>{children}</NavbarSidebarContainer>
+      <NavbarSidebarContainer>
+        <Outlet />
+      </NavbarSidebarContainer>
     </>
   );
 };

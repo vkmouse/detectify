@@ -2,30 +2,21 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
-import App from './App';
+import { RouterProvider } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
+import { router } from './router';
 import store from './store/store';
-import Theme from './themes/Theme';
 
 const queryClient = new QueryClient();
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-root.render(
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <Provider store={store}>
-      <Theme>
+      <ThemeProvider>
         <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <link
-              href="https://fonts.googleapis.com/css?family=Poppins"
-              rel="stylesheet"
-            />
-            <App />
-          </BrowserRouter>
+          <RouterProvider router={router} />
         </QueryClientProvider>
-      </Theme>
+      </ThemeProvider>
     </Provider>
   </React.StrictMode>
 );
