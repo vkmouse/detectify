@@ -6,6 +6,7 @@ module.exports = {
   devServer: {
     allowedHosts: ['all'],
     historyApiFallback: true,
+    open: true,
   },
   plugins: [
     new webpack.DefinePlugin({
