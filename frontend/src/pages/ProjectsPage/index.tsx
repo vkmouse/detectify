@@ -12,6 +12,7 @@ import api from '../../api/api';
 import { useState } from 'react';
 import { ProjectResponse } from '../../types/api';
 import CreateProjectDialog from './CreateProjectDialog';
+import { Link } from 'react-router-dom';
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState<ProjectResponse[]>([]);
@@ -46,14 +47,15 @@ const ProjectsPage = () => {
           </CreateProjectContainer>
         </Card>
         {projects.map((project, i) => (
-          <ProjectCard
-            key={i}
-            cover={defaultCover}
-            dateModified={new Date()}
-            name={project.name}
-            numCategories={project.categoriesCount}
-            numImages={project.imagesCount}
-          />
+          <Link to={`/project/${project.id}`} key={i}>
+            <ProjectCard
+              cover={defaultCover}
+              dateModified={new Date()}
+              name={project.name}
+              numCategories={project.categoriesCount}
+              numImages={project.imagesCount}
+            />
+          </Link>
         ))}
       </Grid>
     </>

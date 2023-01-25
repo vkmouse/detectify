@@ -11,9 +11,9 @@ import {
   UploadLayout,
 } from './styles';
 import { useReducer } from 'react';
-import api from '../../api/api';
+import api from '../../../api/api';
 import { useQuery } from '@tanstack/react-query';
-import useFileUpload from '../../hooks/useFileUpload';
+import useFileUpload from '../../../hooks/useFileUpload';
 
 type State = {
   uploadQueue: {

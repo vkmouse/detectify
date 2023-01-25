@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { CardPrimary } from '../../components/Card';
-import XCircle from '../../assets/x-circle.svg';
+import { CardPrimary } from '../../../components/Card';
+import XCircle from '../../../assets/x-circle.svg';
 
 const ProgressRowInnerWrapper = styled.div`
   display: flex;
