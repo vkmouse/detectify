@@ -3,6 +3,7 @@ import { NavbarLayout, NavbarSidebarLayout } from './components/Layout';
 import { SignInPage, SignUpPage } from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import ProjectImagePage from './pages/Project/ImagePage';
+import OverviewPage from './pages/Project/OverviewPage';
 import Projects from './pages/ProjectsPage';
 
 export const router = createBrowserRouter([
@@ -27,10 +28,11 @@ export const router = createBrowserRouter([
         path: '/project/:projectId',
         element: <NavbarSidebarLayout />,
         children: [
+          { path: '', element: <OverviewPage /> },
           { path: 'images', element: <ProjectImagePage /> },
-          { path: 'annotate', element: <></> },
-          { path: 'dataset', element: <></> },
-          { path: 'model', element: <></> },
+          { path: 'annotate', element: <>annotate</> },
+          { path: 'dataset', element: <>dataset</> },
+          { path: 'model', element: <>model</> },
         ],
       },
     ],

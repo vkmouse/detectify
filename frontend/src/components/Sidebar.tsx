@@ -1,10 +1,15 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, LinkProps as RouterLinkProps } from 'react-router-dom';
 import styled, { DefaultTheme } from 'styled-components';
 import { useTheme } from '../context/ThemeContext';
 import darkTheme from '../themes/dark';
 import lightTheme from '../themes/light';
 import ThemeToggler from './ToggleSwitch';
+import DatabaseIcon from '../assets/database.svg';
+import FileIcon from '../assets/file.svg';
+import GridIcon from '../assets/grid.svg';
+import ImageIcon from '../assets/image.svg';
+import MaximizeIcon from '../assets/maximize.svg';
 
 const SidebarContainer = styled.div`
   position: fixed;
@@ -65,13 +70,6 @@ const SidebarLinkAside = styled.div`
   align-items: center;
 `;
 
-const SidebarLinkIcon = styled.img`
-  width: 18px;
-  height: 18px;
-  padding-right: 12px;
-  user-select: none;
-`;
-
 const SidebarLinkBadge = styled.div`
   right: 20px;
   top: 12px;
@@ -90,23 +88,17 @@ const SidebarBrand = () => {
   );
 };
 
-const SidebarLink = (props: {
+interface LinkProps extends RouterLinkProps {
   active?: boolean;
-  children?: string | JSX.Element;
   badge?: string | number;
-  icon?: string;
-  href: string;
-}) => {
-  const { active, children, badge, icon, href } = props;
+}
 
+const SidebarLink = ({ active, children, badge, ...rest }: LinkProps) => {
   return (
-    <Link to={href}>
+    <Link {...rest}>
       <SidebarLinkContainer isActive={active}>
-        <SidebarLinkAside>
-          <SidebarLinkIcon src={icon}></SidebarLinkIcon>
-          <span>{children}</span>
-        </SidebarLinkAside>
-        {badge ? <SidebarLinkBadge>{badge}</SidebarLinkBadge> : <></>}
+        <SidebarLinkAside>{children}</SidebarLinkAside>
+        {badge && <SidebarLinkBadge>{badge}</SidebarLinkBadge>}
       </SidebarLinkContainer>
     </Link>
   );
@@ -131,31 +123,70 @@ const ThemeToggleText = styled.div`
   padding: 10px;
 `;
 
+const IconContainer = styled.div`
+  display: flex;
+  padding-right: 5px;
+  user-select: none;
+`;
+
 const Sidebar = () => {
-  const location = useLocation();
   const { theme, setTheme } = useTheme();
+  const [page, setPage] = useState('');
 
   return (
     <SidebarContainer>
       <SidebarWrapper>
         <SidebarBrand />
         <HorizontalLine />
-        <SidebarLink active={location.pathname === '/'} href="/" badge={12}>
+        <SidebarLink
+          active={page === ''}
+          to=""
+          badge={12}
+          onClick={() => setPage('')}
+        >
+          <IconContainer>
+            <GridIcon />
+          </IconContainer>
           Overview
         </SidebarLink>
-        <SidebarLink active={location.pathname === '/images'} href="/images">
+        <SidebarLink
+          active={page === 'images'}
+          to="images"
+          onClick={() => setPage('images')}
+        >
+          <IconContainer>
+            <ImageIcon />
+          </IconContainer>
           Images
         </SidebarLink>
         <SidebarLink
-          active={location.pathname === '/annotate'}
-          href="/annotate"
+          active={page === 'annotate'}
+          to="annotate"
+          onClick={() => setPage('annotate')}
         >
+          <IconContainer>
+            <MaximizeIcon />
+          </IconContainer>
           Annotate
         </SidebarLink>
-        <SidebarLink active={location.pathname === '/dataset'} href="/dataset">
+        <SidebarLink
+          active={page === 'dataset'}
+          to="dataset"
+          onClick={() => setPage('dataset')}
+        >
+          <IconContainer>
+            <DatabaseIcon />
+          </IconContainer>
           Dataset
         </SidebarLink>
-        <SidebarLink active={location.pathname === '/model'} href="/model">
+        <SidebarLink
+          active={page === 'model'}
+          to="model"
+          onClick={() => setPage('model')}
+        >
+          <IconContainer>
+            <FileIcon />
+          </IconContainer>
           Model
         </SidebarLink>
         <SidebarFooter>
