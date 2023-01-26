@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 import { Link, LinkProps as RouterLinkProps } from 'react-router-dom';
 import styled, { DefaultTheme } from 'styled-components';
-import { useTheme } from '../context/ThemeContext';
-import darkTheme from '../themes/dark';
-import lightTheme from '../themes/light';
-import ThemeToggler from './ToggleSwitch';
 import DatabaseIcon from '../assets/database.svg';
 import FileIcon from '../assets/file.svg';
 import GridIcon from '../assets/grid.svg';
@@ -26,7 +22,7 @@ const SidebarWrapper = styled.div`
   height: 100%;
 `;
 
-const SidebarBrandContainer = styled.a`
+const SidebarBrandContainer = styled.div`
   display: flex;
   align-items: center;
   padding: 20px 26px 10px 26px;
@@ -82,7 +78,7 @@ const SidebarLinkBadge = styled.div`
 
 const SidebarBrand = () => {
   return (
-    <SidebarBrandContainer href="/">
+    <SidebarBrandContainer>
       <SidebarBrandText>Project Name</SidebarBrandText>
     </SidebarBrandContainer>
   );
@@ -111,18 +107,6 @@ const SidebarFooter = styled.div`
   flex-grow: 1;
 `;
 
-const ThemeToggleContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding-bottom: 10px;
-`;
-
-const ThemeToggleText = styled.div`
-  padding: 10px;
-`;
-
 const IconContainer = styled.div`
   display: flex;
   padding-right: 5px;
@@ -130,7 +114,6 @@ const IconContainer = styled.div`
 `;
 
 const Sidebar = () => {
-  const { theme, setTheme } = useTheme();
   const [page, setPage] = useState('');
 
   return (
@@ -189,22 +172,7 @@ const Sidebar = () => {
           </IconContainer>
           Model
         </SidebarLink>
-        <SidebarFooter>
-          <ThemeToggleContainer>
-            <ThemeToggleText>Light</ThemeToggleText>
-            <ThemeToggler
-              checked={theme.name === darkTheme.name}
-              onChange={(isDarkTheme) => {
-                if (isDarkTheme) {
-                  setTheme(darkTheme);
-                } else {
-                  setTheme(lightTheme);
-                }
-              }}
-            />
-            <ThemeToggleText>Dark</ThemeToggleText>
-          </ThemeToggleContainer>
-        </SidebarFooter>
+        <SidebarFooter></SidebarFooter>
       </SidebarWrapper>
     </SidebarContainer>
   );

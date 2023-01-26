@@ -5,6 +5,9 @@ import useUserInfo from '../hooks/useUserInfo';
 import ChevronDown from '../assets/chevron-down.svg';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import ThemeToggler from './ThemeToggler';
+import LogoIcon from '../assets/logo-icon.svg';
+import LogoText from '../assets/logo-text.svg';
 
 const NavbarContainer = styled.nav`
   position: fixed;
@@ -19,16 +22,17 @@ const NavbarInnerContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 10px;
   height: 70px;
+  user-select: none;
 `;
 
 const NavbarItems = styled.div`
   display: flex;
+  align-items: center;
 `;
 
 const NavbarItem = styled(Link)`
-  user-select: none;
   padding: 5px 15px;
   cursor: pointer;
   &:hover {
@@ -66,6 +70,17 @@ const DropdownItem = styled.span`
   }
 `;
 
+const NavbarCollapse = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const NavbarBrand = styled(Link)`
+  display: flex;
+  align-items: center;
+  padding-right: 10px;
+`;
+
 const Navbar = () => {
   const { isFetching, userInfo } = useUserInfo();
   const loginRedirect = useLoginRedirect();
@@ -76,23 +91,29 @@ const Navbar = () => {
     <NavbarContainer>
       <NavbarInnerContainer>
         <NavbarItems>
-          <NavbarItem to="/">Home</NavbarItem>
+          <NavbarBrand to="/">
+            <LogoIcon width="35" height="70" />
+            <LogoText width="90" height="70" />
+          </NavbarBrand>
           <NavbarItem to="/projects">Projects</NavbarItem>
         </NavbarItems>
-        <NavbarToggler
-          onClick={() => {
-            setShowDropdown((showDropdown) => !showDropdown);
-          }}
-        >
-          <span>{isFetching ? 'isFetching' : userInfo && userInfo.name}</span>
-          <ChevronDown />
-        </NavbarToggler>{' '}
-        {showDropdown && (
-          <DropdownMenu>
-            <DropdownItem>Profile</DropdownItem>
-            <DropdownItem onClick={logout}>Sign out</DropdownItem>
-          </DropdownMenu>
-        )}
+        <NavbarCollapse>
+          <ThemeToggler />
+          <NavbarToggler
+            onClick={() => {
+              setShowDropdown((showDropdown) => !showDropdown);
+            }}
+          >
+            <span>{isFetching ? 'isFetching' : userInfo && userInfo.name}</span>
+            <ChevronDown />
+          </NavbarToggler>
+          {showDropdown && (
+            <DropdownMenu>
+              <DropdownItem>Profile</DropdownItem>
+              <DropdownItem onClick={logout}>Sign out</DropdownItem>
+            </DropdownMenu>
+          )}
+        </NavbarCollapse>
       </NavbarInnerContainer>
     </NavbarContainer>
   );
