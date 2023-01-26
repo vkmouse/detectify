@@ -11,7 +11,7 @@ import { navbarHeight, sidebarWidth } from './Layout';
 const SidebarContainer = styled.div`
   position: fixed;
   width: ${() => `${sidebarWidth}px`};
-  height: calc(100vh - ${navbarHeight}px);
+  height: 100vh;
   margin-top: ${() => `${navbarHeight}px`};
   background-color: ${(props) => props.theme.colors.bodyBackground};
   z-index: 999;
@@ -26,7 +26,7 @@ const SidebarWrapper = styled.div`
 const SidebarBrandContainer = styled.div`
   display: flex;
   align-items: center;
-  padding: 20px 26px 10px 26px;
+  padding: 20px 0;
 `;
 
 const SidebarBrandText = styled.span`
@@ -35,9 +35,8 @@ const SidebarBrandText = styled.span`
 `;
 
 const HorizontalLine = styled.hr`
-  width: 80%;
   border-color: ${(props) => props.theme.colors.gray500};
-  margin: 5px 25px;
+  margin: 0;
 `;
 
 const activeColor = `
@@ -57,7 +56,7 @@ const inactiveColor = (theme: DefaultTheme) => `
 const SidebarLinkContainer = styled.div<{ isActive?: boolean }>`
   display: flex;
   justify-content: space-between;
-  padding: 10px 26px;
+  padding: 10px 0;
   cursor: pointer;
   ${({ isActive, theme }) => (isActive ? activeColor : inactiveColor(theme))}
 `;

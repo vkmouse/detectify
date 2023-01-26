@@ -4,37 +4,63 @@ import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 
 const navbarHeight = 70;
-const sidebarWidth = 260;
+const sidebarWidth = 200;
+const mainContentMaxWidth = 1200;
+const mainContentMarginX = 25;
+
+const Main = styled.main`
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+`;
+
+const Container = styled.div`
+  position: relative;
+  width: 100%;
+  max-width: ${mainContentMaxWidth}px;
+  margin: 0 ${() => `${mainContentMarginX}px`};
+`;
 
 const NavbarContainer = styled.div`
-  padding-top: ${navbarHeight}px;
+  padding-top: ${navbarHeight + 20}px;
 `;
 
 const NavbarSidebarContainer = styled(NavbarContainer)`
-  padding-left: ${sidebarWidth}px;
+  padding-left: ${sidebarWidth + 20}px;
 `;
 
 const NavbarLayout = () => {
   return (
-    <>
+    <Main>
       <Navbar />
-      <NavbarContainer>
-        <Outlet />
-      </NavbarContainer>
-    </>
+      <Container>
+        <NavbarContainer>
+          <Outlet />
+        </NavbarContainer>
+      </Container>
+    </Main>
   );
 };
 
 const NavbarSidebarLayout = () => {
   return (
-    <>
+    <Main>
       <Navbar />
-      <Sidebar />
-      <NavbarSidebarContainer>
-        <Outlet />
-      </NavbarSidebarContainer>
-    </>
+      <Container>
+        <Sidebar />
+        <NavbarSidebarContainer>
+          <Outlet />
+        </NavbarSidebarContainer>
+      </Container>
+    </Main>
   );
 };
 
-export { NavbarLayout, NavbarSidebarLayout, navbarHeight, sidebarWidth };
+export {
+  NavbarLayout,
+  NavbarSidebarLayout,
+  navbarHeight,
+  sidebarWidth,
+  mainContentMaxWidth,
+  mainContentMarginX,
+};
