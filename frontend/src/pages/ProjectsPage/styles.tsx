@@ -11,7 +11,6 @@ const borderRadius = 10;
 export const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  padding: 0 20px;
   grid-column-gap: 1%;
   grid-row-gap: 3%;
   @media (max-width: 1200px) {

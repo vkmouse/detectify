@@ -46,6 +46,7 @@ const NavbarExpand = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  padding-left: 20px;
 `;
 
 const NavbarItems = styled.div`

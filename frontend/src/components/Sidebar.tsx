@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, LinkProps as RouterLinkProps } from 'react-router-dom';
 import styled, { DefaultTheme } from 'styled-components';
+import api from '../api/api';
 import DatabaseIcon from '../assets/database.svg';
 import FileIcon from '../assets/file.svg';
 import GridIcon from '../assets/grid.svg';
@@ -76,10 +77,10 @@ const SidebarLinkBadge = styled.div`
   color: white;
 `;
 
-const SidebarBrand = () => {
+const SidebarBrand = ({ name }: { name: string }) => {
   return (
     <SidebarBrandContainer>
-      <SidebarBrandText>Project Name</SidebarBrandText>
+      <SidebarBrandText>{name}</SidebarBrandText>
     </SidebarBrandContainer>
   );
 };
@@ -108,11 +109,27 @@ const IconContainer = styled.div`
 
 const Sidebar = () => {
   const [page, setPage] = useState('');
+  const [name, setName] = useState('');
+
+  const parseIdFromURL = () => {
+    const { pathname } = window.location;
+    const subs = pathname.split('/');
+    return subs[subs.findIndex((p) => p === 'project') + 1];
+  };
+
+  useEffect(() => {
+    api.getProjects().then((data) => {
+      const detail = data.filter((p) => p.id === parseIdFromURL()).at(0);
+      if (detail) {
+        setName(detail.name);
+      }
+    });
+  }, []);
 
   return (
     <SidebarContainer>
       <SidebarWrapper>
-        <SidebarBrand />
+        <SidebarBrand name={name} />
         <HorizontalLine />
         <SidebarLink
           active={page === ''}
