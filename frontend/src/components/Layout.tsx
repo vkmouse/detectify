@@ -3,12 +3,15 @@ import styled from 'styled-components';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 
+const navbarHeight = 70;
+const sidebarWidth = 260;
+
 const NavbarContainer = styled.div`
-  padding-top: 85px;
+  padding-top: ${navbarHeight}px;
 `;
 
 const NavbarSidebarContainer = styled(NavbarContainer)`
-  padding-left: 260px;
+  padding-left: ${sidebarWidth}px;
 `;
 
 const NavbarLayout = () => {
@@ -34,4 +37,4 @@ const NavbarSidebarLayout = () => {
   );
 };
 
-export { NavbarLayout, NavbarSidebarLayout };
+export { NavbarLayout, NavbarSidebarLayout, navbarHeight, sidebarWidth };

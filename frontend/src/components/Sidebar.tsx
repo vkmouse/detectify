@@ -6,12 +6,13 @@ import FileIcon from '../assets/file.svg';
 import GridIcon from '../assets/grid.svg';
 import ImageIcon from '../assets/image.svg';
 import MaximizeIcon from '../assets/maximize.svg';
+import { navbarHeight, sidebarWidth } from './Layout';
 
 const SidebarContainer = styled.div`
   position: fixed;
-  width: 260px;
-  height: calc(100vh - 70px);
-  margin-top: 70px;
+  width: ${() => `${sidebarWidth}px`};
+  height: calc(100vh - ${navbarHeight}px);
+  margin-top: ${() => `${navbarHeight}px`};
   background-color: ${(props) => props.theme.colors.bodyBackground};
   z-index: 999;
 `;
@@ -100,13 +101,6 @@ const SidebarLink = ({ active, children, badge, ...rest }: LinkProps) => {
   );
 };
 
-const SidebarFooter = styled.div`
-  display: flex;
-  align-items: end;
-  height: 300px;
-  flex-grow: 1;
-`;
-
 const IconContainer = styled.div`
   display: flex;
   padding-right: 5px;
@@ -172,7 +166,6 @@ const Sidebar = () => {
           </IconContainer>
           Model
         </SidebarLink>
-        <SidebarFooter></SidebarFooter>
       </SidebarWrapper>
     </SidebarContainer>
   );

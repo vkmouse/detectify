@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import ThemeToggler from './ThemeToggler';
 import LogoIcon from '../assets/logo-icon.svg';
 import LogoText from '../assets/logo-text.svg';
+import { navbarHeight } from './Layout';
 
 const NavbarContainer = styled.nav`
   position: fixed;
@@ -23,7 +24,7 @@ const NavbarInnerContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 0 10px;
-  height: 70px;
+  height: ${() => `${navbarHeight}px`};
   user-select: none;
 `;
 
@@ -54,7 +55,7 @@ const DropdownMenu = styled.div`
   flex-direction: column;
   position: absolute;
   right: 0;
-  top: 70px;
+  top: ${() => `${navbarHeight}px`};
   color: ${(props) => props.theme.colors.bodyColor};
   background-color: ${(props) => props.theme.colors.navBackground};
   border: 1px solid ${(props) => props.theme.colors.dropdownBorderColor};
@@ -92,8 +93,8 @@ const Navbar = () => {
       <NavbarInnerContainer>
         <NavbarItems>
           <NavbarBrand to="/">
-            <LogoIcon width="35" height="70" />
-            <LogoText width="90" height="70" />
+            <LogoIcon width="35" height={navbarHeight} />
+            <LogoText width="90" height={navbarHeight} />
           </NavbarBrand>
           <NavbarItem to="/projects">Projects</NavbarItem>
         </NavbarItems>
