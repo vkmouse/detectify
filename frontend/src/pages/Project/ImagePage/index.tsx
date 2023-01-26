@@ -1,19 +1,10 @@
-import UploadButton from './UploadButton';
-import ProgressRow from './ProgressRow';
-import {
-  Button,
-  ButtonGroup,
-  FilePicker,
-  ProgressContainer,
-  ProgressWrapper,
-  UploadColumn,
-  UploadContainer,
-  UploadLayout,
-} from './styles';
+import { UploadContainer, UploadLayout } from './styles';
 import { useReducer } from 'react';
 import api from '../../../api/api';
 import { useQuery } from '@tanstack/react-query';
 import useFileUpload from '../../../hooks/useFileUpload';
+import UploadCard from './UploadCard';
+import ProgressCard from './ProgressCard';
 
 type State = {
   uploadQueue: {
@@ -122,59 +113,20 @@ const ProjectImagePage = () => {
     uploadFilesIsFetching;
 
   return (
-    <>
-      <span>Image</span>
-      <hr />
-      <UploadContainer>
-        <UploadLayout>
-          <UploadColumn>
-            <FilePicker />
-            <ButtonGroup>
-              <UploadButton
-                multiple
-                accept=".jpg,.jpeg,.png,.xml"
-                disabled={selectionButtonDisabled}
-                onChange={handleSelectFiles}
-              >
-                Select File
-              </UploadButton>
-              <UploadButton
-                directory
-                accept=".jpg,.jpeg,.png,.xml"
-                disabled={selectionButtonDisabled}
-                onChange={handleSelectFiles}
-              >
-                Select Folder
-              </UploadButton>
-            </ButtonGroup>
-          </UploadColumn>
-          <ProgressContainer>
-            <ProgressWrapper>
-              {state.uploadQueue.map((item, i) => {
-                return (
-                  <ProgressRow
-                    key={i}
-                    filename={item.file.name}
-                    percentage={item.progress}
-                    onDeleteClick={() =>
-                      dispatch(deleteFromQueue(item.file.name))
-                    }
-                  />
-                );
-              })}
-            </ProgressWrapper>
-            <ButtonGroup>
-              <Button
-                disabled={uploadButtonDisabled}
-                onClick={() => uploadFiles()}
-              >
-                Upload
-              </Button>
-            </ButtonGroup>
-          </ProgressContainer>
-        </UploadLayout>
-      </UploadContainer>
-    </>
+    <UploadContainer>
+      <UploadLayout>
+        <UploadCard
+          disabled={selectionButtonDisabled}
+          onChange={handleSelectFiles}
+        />
+        <ProgressCard
+          queue={state.uploadQueue}
+          disabled={uploadButtonDisabled}
+          onUpload={uploadFiles}
+          onDelete={(filename) => dispatch(deleteFromQueue(filename))}
+        />
+      </UploadLayout>
+    </UploadContainer>
   );
 };
 
