@@ -24,6 +24,7 @@ var (
 	R2AccountId       string
 	R2AccessKeyId     string
 	R2AccessKeySecret string
+	R2AccessURL       string
 
 	JwtIssuer               string
 	JwtSecretKey            []byte
@@ -48,6 +49,7 @@ func init() {
 	R2AccountId = os.Getenv("R2_ACCOUNT_ID")
 	R2AccessKeyId = os.Getenv("R2_ACCESS_KEY_ID")
 	R2AccessKeySecret = os.Getenv("R2_ACCESS_KEY_SECRET")
+	R2AccessURL = os.Getenv("R2_ACCESS_URL")
 
 	JwtIssuer = os.Getenv("JWT_ISSUER")
 	JwtSecretKey = []byte(os.Getenv("JWT_SECRET_KEY"))
