@@ -2,9 +2,18 @@ import { UploadContainer, UploadLayout } from './styles';
 import { useReducer } from 'react';
 import api from '../../../api/api';
 import { useQuery } from '@tanstack/react-query';
-import useFileUpload from '../../../hooks/useFileUpload';
 import UploadCard from './UploadCard';
 import ProgressCard from './ProgressCard';
+import useProjectInfo from '../../../hooks/useProjectInfo';
+import {
+  checkAnnotationExtenstion,
+  checkImageExtenstion,
+  convertFilenames,
+  getFilenameExtension,
+  getFilenameWithoutExtension,
+} from '../../../utils/file';
+import useBatchUpload from './useBatchUpload';
+import { UploadProperty } from '../../../types/api';
 
 type State = {
   uploadQueue: {
@@ -78,39 +87,70 @@ const reducer = (state: State, action: Action): State => {
   }
 };
 
+// TODO: Refactor component
 const ProjectImagePage = () => {
+  const { projectId } = useProjectInfo();
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { mutate: uploadFile } = useFileUpload();
-  const { refetch: uploadFiles, isFetching: uploadFilesIsFetching } = useQuery({
-    queryKey: ['uploadFiles'],
-    queryFn: async () => {
-      if (state.uploadQueue) {
-        for (const status of state.uploadQueue) {
-          const file = status.file;
-          const response = await api.createUpload();
-          uploadFile({
-            presignedURL: response.presignedURL,
-            file,
-            updateProgress: (progress: number) =>
-              dispatch(updateProgress(file.name, progress)),
+  const { isUploading, uploadFiles } = useBatchUpload();
+  const { refetch: createBatchUpload, isFetching: uploadFilesIsFetching } =
+    useQuery({
+      queryKey: ['uploadFiles'],
+      queryFn: async () => {
+        if (state.uploadQueue) {
+          const filenames = state.uploadQueue.map((p) => p.file.name);
+          const data: UploadProperty[] = [];
+          const resp = await api.createBatchUpload({
+            projectId,
+            uploadedFiles: convertFilenames(filenames),
           });
+          for (const { file } of state.uploadQueue) {
+            let presignedURL = '';
+            const filenameOnly = getFilenameWithoutExtension(file.name);
+            const extension = getFilenameExtension(file.name);
+            const item = resp.get(filenameOnly);
+            if (checkImageExtenstion(extension) && item) {
+              presignedURL = item.imageURL;
+            } else if (checkAnnotationExtenstion(extension) && item) {
+              presignedURL = item.annotationURL;
+            }
+            data.push({
+              presignedURL,
+              file,
+              updateProgress: (progress: number) =>
+                dispatch(updateProgress(file.name, progress)),
+            });
+          }
+          return data;
         }
-      }
-      return true;
-    },
-    enabled: false,
-  });
+        return [];
+      },
+      onSuccess: (data) => {
+        uploadFiles({
+          data,
+          onSuccess: () => {
+            api.publishBatchUpload({
+              projectId,
+              publishFiles: convertFilenames(data.map((p) => p.file.name)).map(
+                (p) => p.filename
+              ),
+            });
+          },
+        });
+      },
+      enabled: false,
+    });
 
   const handleSelectFiles = (files: File[]) => {
     dispatch(clearQueue());
     dispatch(addToQueue(files));
   };
 
-  const selectionButtonDisabled = uploadFilesIsFetching;
+  const selectionButtonDisabled = uploadFilesIsFetching || isUploading;
   const uploadButtonDisabled =
+    uploadFilesIsFetching ||
+    isUploading ||
     state.uploadQueue.length === 0 ||
-    state.uploadQueue.filter((p) => p.progress !== 100).length === 0 || // all is uploaded
-    uploadFilesIsFetching;
+    state.uploadQueue.filter((p) => p.progress !== 100).length === 0; // all is uploaded
 
   return (
     <UploadContainer>
@@ -122,7 +162,7 @@ const ProjectImagePage = () => {
         <ProgressCard
           queue={state.uploadQueue}
           disabled={uploadButtonDisabled}
-          onUpload={uploadFiles}
+          onUpload={createBatchUpload}
           onDelete={(filename) => dispatch(deleteFromQueue(filename))}
         />
       </UploadLayout>
