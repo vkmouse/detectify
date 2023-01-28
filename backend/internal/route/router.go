@@ -22,8 +22,9 @@ func InitRouter() *gin.Engine {
 	engine.POST("project", middleware.JwtMiddleware(), api.AddProject)
 	engine.GET("projects", middleware.JwtMiddleware(), api.GetProjects)
 	engine.POST("category", middleware.JwtMiddleware(), api.AddProjectCategory)
-	engine.POST("image/upload", middleware.JwtMiddleware(), api.GeneratingPresignedURL)
-	engine.POST("image", middleware.JwtMiddleware(), api.AddProjectImage)
+	engine.POST("image/upload", middleware.JwtMiddleware(), api.CreateBatchUpload)
+	engine.PUT("image/upload", middleware.JwtMiddleware(), api.PublishBatchUpload)
+	engine.GET("images", middleware.JwtMiddleware(), api.GetProjectImages)
 
 	return engine
 }
