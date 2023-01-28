@@ -15,7 +15,6 @@ const Main = styled.main`
 `;
 
 const Container = styled.div`
-  position: relative;
   width: 100%;
   max-width: ${mainContentMaxWidth}px;
   margin: 0 ${() => `${mainContentMarginX}px`};

@@ -6,6 +6,7 @@ const DialogContainer = styled.div<{ open: boolean }>`
   width: 100vw;
   height: 100vh;
   top: 0;
+  left: 0;
   z-index: 1000;
 `;
 

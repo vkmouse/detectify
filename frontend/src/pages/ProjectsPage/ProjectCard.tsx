@@ -31,9 +31,11 @@ const ProjectCard = (props: {
       </ImageContainer>
       <NameDateContainer>
         <Name>{name}</Name>
-        <DateModified>
-          modified {calculateTimeDifference(dateModified)} age
-        </DateModified>
+        {false && (
+          <DateModified>
+            modified {calculateTimeDifference(dateModified)} age
+          </DateModified>
+        )}
       </NameDateContainer>
     </Card>
   );
