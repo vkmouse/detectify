@@ -3,6 +3,8 @@ package r2
 import (
 	"context"
 	"fmt"
+	"path"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -48,4 +50,26 @@ func GeneratingPresignedURL(filename string) string {
 	}
 
 	return presignResult.URL
+}
+
+func ListBucketItems() (map[string]int, error) {
+	bucket := cfg.R2BucketName
+	results := make(map[string]int)
+
+	resp, err := client.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{Bucket: aws.String(bucket)})
+	if err != nil {
+		return results, err
+	}
+
+	for _, item := range resp.Contents {
+		size := int(item.Size)
+		if size > 0 {
+			results[*item.Key] = size
+		}
+	}
+	return results, nil
+}
+
+func getFileNameWithoutExtension(fileNameWithExt string) string {
+	return strings.TrimSuffix(path.Base(fileNameWithExt), path.Ext(fileNameWithExt))
 }
