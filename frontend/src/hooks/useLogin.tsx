@@ -1,7 +1,8 @@
+import { AxiosError } from 'axios';
 import api from '../api/api';
 import { useAppDispatch } from '../store/store';
 import { reset, setUser, startFetching } from '../store/userSlice';
-import { APIResponseStatus, LoginRequest } from '../types/api';
+import { APIResponse, APIResponseStatus, LoginRequest } from '../types/api';
 
 const useLogin = (props: {
   onSuccess?: () => void;
@@ -13,27 +14,23 @@ const useLogin = (props: {
 
   const login = async (props: LoginRequest) => {
     dispatch(startFetching());
-    const response = await api.login(props);
-
-    switch (response.status) {
-      case APIResponseStatus.SUCCESS: {
-        const userInfo = await api.getUserInfo();
-        if (userInfo) {
-          dispatch(setUser(userInfo));
-          onSuccess?.();
-        }
-        return;
+    try {
+      await api.login(props);
+      const userInfo = await api.getUserInfo();
+      if (userInfo) {
+        dispatch(setUser(userInfo));
+        onSuccess?.();
       }
-      case APIResponseStatus.ERROR_EMAIL_NOT_EXIST: {
+    } catch (data) {
+      const err = data as AxiosError;
+      const body = err?.response?.data as APIResponse | undefined;
+      if (body?.status === APIResponseStatus.ERROR_EMAIL_NOT_EXIST)
         onEmailNotExist?.();
-        break;
-      }
-      case APIResponseStatus.ERROR_PASSWORD_ERROR: {
+      else if (body?.status === APIResponseStatus.ERROR_PASSWORD_ERROR) {
         onPasswordError?.();
-        break;
       }
+      dispatch(reset());
     }
-    dispatch(reset());
   };
 
   return login;
