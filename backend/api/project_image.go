@@ -125,22 +125,14 @@ func PublishBatchUpload(ctx *gin.Context) {
 }
 
 func GetProjectImages(ctx *gin.Context) {
-	var v struct {
-		ProjectID string
-	}
-	err := ctx.BindJSON(&v)
-	if err != nil {
-		response.Response(ctx, errmsg.ERROR_INVALID_INPUT)
-		return
-	}
-
+	projectID := ctx.Query("projectId")
 	userID := ctx.GetString("userID")
-	if !repository.VerifyProjectAccess(userID, v.ProjectID) {
+	if !repository.VerifyProjectAccess(userID, projectID) {
 		response.Response(ctx, errmsg.ERROR_FORBIDDEN)
 		return
 	}
 
-	images, err := repository.QueryProjectImagesByProjectID(v.ProjectID)
+	images, err := repository.QueryProjectImagesByProjectID(projectID)
 	if err != nil {
 		response.Response(ctx, errmsg.ERROR)
 		return
