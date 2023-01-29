@@ -2,8 +2,6 @@ import { UploadContainer, UploadLayout } from './styles';
 import { useReducer } from 'react';
 import api from '../../../api/api';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import UploadCard from './UploadCard';
-import ProgressCard from './ProgressCard';
 import useProjectInfo from '../../../hooks/useProjectInfo';
 import {
   checkAnnotationExtenstion,
@@ -14,7 +12,9 @@ import {
 } from '../../../utils/file';
 import useBatchUpload from './hooks/useBatchUpload';
 import { UploadProperty } from '../../../types/api';
-import ImageList from './ImageList';
+import ImageList from './components/ImageList';
+import ProgressCard from './components/ProgressCard';
+import UploadCard from './components/UploadCard';
 
 type State = {
   uploadQueue: {

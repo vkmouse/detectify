@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import useProjectImages from './hooks/useProjectImages';
+import useProjectImages from '../hooks/useProjectImages';
 
 const ImageListLayout = styled.div`
   display: grid;

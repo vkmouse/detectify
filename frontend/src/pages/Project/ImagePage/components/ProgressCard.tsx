@@ -1,12 +1,12 @@
 import styled from 'styled-components';
-import { Card } from '../../../components/Card';
-import ProgressRow from './ProgressRow';
+import { Card } from '../../../ProjectsPage/styles';
 import {
   ProgressContainer,
   ProgressWrapper,
   ButtonGroup,
   Button,
-} from './styles';
+} from '../styles';
+import ProgressRow from './ProgressRow';
 
 const CardContainer = styled(Card)`
   display: flex;

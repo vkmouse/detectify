@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import { Card } from '../../../components/Card';
-import { ButtonGroup } from './styles';
+import { Card } from '../../../../components/Card';
+import { ButtonGroup } from '../styles';
 import UploadButton from './UploadButton';
-import UploadIcon from '../../../assets/upload-cloud.svg';
+import UploadIcon from '../../../../assets/upload-cloud.svg';
 
 const CardContainer = styled(Card)`
   display: flex;

@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import { CardPrimary } from '../../../components/Card';
-import XCircle from '../../../assets/x-circle.svg';
-import ImageIcon from '../../../assets/image.svg';
-import MaximizeIcon from '../../../assets/maximize.svg';
+import { CardPrimary } from '../../../../components/Card';
+import XCircle from '../../../../assets/x-circle.svg';
+import ImageIcon from '../../../../assets/image.svg';
+import MaximizeIcon from '../../../../assets/maximize.svg';
 
 const ProgressRowInnerWrapper = styled.div`
   display: flex;
