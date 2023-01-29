@@ -13,8 +13,10 @@ func AddProject(project *model.Project) error {
 }
 
 func AddProjectCategory(category *model.ProjectCategory) (bool, error) {
-	result := db.Clauses(
-		clause.OnConflict{DoNothing: true},
+	category.ID = uuid.NewString()
+	result := db.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "name"}, {Name: "project_id"}},
+		DoNothing: true},
 	).Create(&category)
 
 	return result.RowsAffected > 0, result.Error
@@ -41,8 +43,8 @@ func QueryProjectsWithCountsByUser(userID string) ([]ProjectResponse, error) {
 	err := db.Table("projects").
 		Select(`projects.id,
 				projects.name,
-				count(distinct project_categories.project_id) as categories_count,
-				count(distinct project_images.project_id) as images_count`).
+				count(distinct project_categories.id) as categories_count,
+				count(distinct project_images.id) as images_count`).
 		Joins(`left join project_categories on project_categories.project_id = projects.id
 			   left join project_images on project_images.project_id = projects.id`).
 		Where("projects.user_id = ?", userID).

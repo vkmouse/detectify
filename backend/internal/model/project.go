@@ -15,6 +15,7 @@ type Project struct {
 }
 
 type ProjectCategory struct {
+	ID        string `gorm:"type:varchar(36) not null;"`
 	Name      string `gorm:"primarykey;type:varchar(255) not null;" json:"name"`
 	ProjectID string `gorm:"primarykey;" json:"projectId"`
 	Project   Project
