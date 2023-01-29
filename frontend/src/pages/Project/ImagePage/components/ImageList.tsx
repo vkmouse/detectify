@@ -1,27 +1,16 @@
-import styled from 'styled-components';
+import { Grid421 as Grid } from '../../../../components/Grid';
+import ImageCard from '../../../../components/ImageCard';
 import useProjectImages from '../hooks/useProjectImages';
-
-const ImageListLayout = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-`;
-
-const Image = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-`;
 
 const ImageList = ({ projectId }: { projectId: string }) => {
   const { images } = useProjectImages(projectId);
 
   return (
-    <ImageListLayout>
+    <Grid>
       {images.map((p, i) => (
-        <Image src={p} key={i} />
+        <ImageCard key={i} src={p.imageURL} title={p.filename} />
       ))}
-    </ImageListLayout>
+    </Grid>
   );
 };
 

@@ -1,11 +1,10 @@
-import ProjectCard from './ProjectCard';
 import defaultCover from '../../assets/default-cover.png';
 import {
   Card,
   CreateProjectContainer,
   CreateProjectIcon,
   CreateProjectWrapper,
-  Grid,
+  InfoWrapper,
 } from './styles';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../api/api';
@@ -13,6 +12,8 @@ import { useState } from 'react';
 import { ProjectResponse } from '../../types/api';
 import CreateProjectDialog from './CreateProjectDialog';
 import { Link } from 'react-router-dom';
+import { Grid421 as Grid } from '../../components/Grid';
+import ImageCard from '../../components/ImageCard';
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState<ProjectResponse[]>([]);
@@ -48,13 +49,12 @@ const ProjectsPage = () => {
         </Card>
         {projects.map((project, i) => (
           <Link to={`/project/${project.id}`} key={i}>
-            <ProjectCard
-              cover={defaultCover}
-              dateModified={new Date()}
-              name={project.name}
-              numCategories={project.categoriesCount}
-              numImages={project.imagesCount}
-            />
+            <ImageCard src={defaultCover} title={project.name}>
+              <InfoWrapper>
+                <span>Category: {project.categoriesCount}</span>
+                <span>images: {project.imagesCount}</span>
+              </InfoWrapper>
+            </ImageCard>
           </Link>
         ))}
       </Grid>
