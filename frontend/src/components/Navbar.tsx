@@ -5,8 +5,18 @@ import useUserInfo from '../hooks/useUserInfo';
 import ChevronDown from '../assets/chevron-down.svg';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import ThemeToggler from './ThemeToggler';
+import LogoIcon from '../assets/logo-icon.svg';
+import LogoText from '../assets/logo-text.svg';
+import {
+  mainContentMarginX,
+  mainContentMaxWidth,
+  navbarHeight,
+} from './Layout';
 
 const NavbarContainer = styled.nav`
+  display: flex;
+  justify-content: center;
   position: fixed;
   width: 100vw;
   background: #293042;
@@ -17,19 +27,35 @@ const NavbarContainer = styled.nav`
 
 const NavbarInnerContainer = styled.div`
   display: flex;
+  width: 100%;
+  max-width: ${() => `${mainContentMaxWidth}px`};
+  margin: 0 ${() => `${mainContentMarginX}px`};
+  height: ${() => `${navbarHeight}px`};
+  user-select: none;
+`;
+
+const NavbarBrand = styled(Link)`
+  display: flex;
+  align-items: center;
+  max-width: 200px;
+  width: 100%;
+`;
+
+const NavbarExpand = styled.div`
+  display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
-  height: 70px;
+  width: 100%;
+  padding-left: 20px;
 `;
 
 const NavbarItems = styled.div`
   display: flex;
+  align-items: center;
 `;
 
 const NavbarItem = styled(Link)`
-  user-select: none;
-  padding: 5px 15px;
+  height: 100%;
   cursor: pointer;
   &:hover {
     color: ${(props) => props.theme.colors.primary};
@@ -40,7 +66,7 @@ const NavbarToggler = styled.div`
   display: flex;
   align-items: center;
   position: relative;
-  padding: 8px;
+  height: ${() => `${navbarHeight}px`};
   cursor: pointer;
 `;
 
@@ -50,7 +76,7 @@ const DropdownMenu = styled.div`
   flex-direction: column;
   position: absolute;
   right: 0;
-  top: 70px;
+  top: 100%;
   color: ${(props) => props.theme.colors.bodyColor};
   background-color: ${(props) => props.theme.colors.navBackground};
   border: 1px solid ${(props) => props.theme.colors.dropdownBorderColor};
@@ -66,6 +92,11 @@ const DropdownItem = styled.span`
   }
 `;
 
+const NavbarCollapse = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
 const Navbar = () => {
   const { isFetching, userInfo } = useUserInfo();
   const loginRedirect = useLoginRedirect();
@@ -75,24 +106,34 @@ const Navbar = () => {
   return (
     <NavbarContainer>
       <NavbarInnerContainer>
-        <NavbarItems>
-          <NavbarItem to="/">Home</NavbarItem>
-          <NavbarItem to="/projects">Projects</NavbarItem>
-        </NavbarItems>
-        <NavbarToggler
-          onClick={() => {
-            setShowDropdown((showDropdown) => !showDropdown);
-          }}
-        >
-          <span>{isFetching ? 'isFetching' : userInfo && userInfo.name}</span>
-          <ChevronDown />
-        </NavbarToggler>{' '}
-        {showDropdown && (
-          <DropdownMenu>
-            <DropdownItem>Profile</DropdownItem>
-            <DropdownItem onClick={logout}>Sign out</DropdownItem>
-          </DropdownMenu>
-        )}
+        <NavbarBrand to="/">
+          <LogoIcon width="35" height={navbarHeight} />
+          <LogoText width="90" height={navbarHeight} />
+        </NavbarBrand>
+        <NavbarExpand>
+          <NavbarItems>
+            <NavbarItem to="/projects">Projects</NavbarItem>
+          </NavbarItems>
+          <NavbarCollapse>
+            <ThemeToggler />
+            <NavbarToggler
+              onClick={() => {
+                setShowDropdown((showDropdown) => !showDropdown);
+              }}
+            >
+              <span>
+                {isFetching ? 'isFetching' : userInfo && userInfo.name}
+              </span>
+              <ChevronDown />
+              {showDropdown && (
+                <DropdownMenu>
+                  <DropdownItem>Profile</DropdownItem>
+                  <DropdownItem onClick={logout}>Sign out</DropdownItem>
+                </DropdownMenu>
+              )}
+            </NavbarToggler>
+          </NavbarCollapse>
+        </NavbarExpand>
       </NavbarInnerContainer>
     </NavbarContainer>
   );

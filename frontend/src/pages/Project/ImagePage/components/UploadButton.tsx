@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { Button } from './styles';
+import { Button } from '../styles';
 
 const UploadButton = (props: {
   children: string | JSX.Element | JSX.Element[];

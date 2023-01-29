@@ -1,16 +1,19 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, LinkProps as RouterLinkProps } from 'react-router-dom';
 import styled, { DefaultTheme } from 'styled-components';
-import { useTheme } from '../context/ThemeContext';
-import darkTheme from '../themes/dark';
-import lightTheme from '../themes/light';
-import ThemeToggler from './ToggleSwitch';
+import DatabaseIcon from '../assets/database.svg';
+import FileIcon from '../assets/file.svg';
+import GridIcon from '../assets/grid.svg';
+import ImageIcon from '../assets/image.svg';
+import MaximizeIcon from '../assets/maximize.svg';
+import useProjectInfo from '../hooks/useProjectInfo';
+import { navbarHeight, sidebarWidth } from './Layout';
 
 const SidebarContainer = styled.div`
   position: fixed;
-  width: 260px;
-  height: calc(100vh - 70px);
-  margin-top: 70px;
+  width: ${() => `${sidebarWidth}px`};
+  height: 100vh;
+  margin-top: ${() => `${navbarHeight}px`};
   background-color: ${(props) => props.theme.colors.bodyBackground};
   z-index: 999;
 `;
@@ -21,10 +24,10 @@ const SidebarWrapper = styled.div`
   height: 100%;
 `;
 
-const SidebarBrandContainer = styled.a`
+const SidebarBrandContainer = styled.div`
   display: flex;
   align-items: center;
-  padding: 20px 26px 10px 26px;
+  padding: 20px 0;
 `;
 
 const SidebarBrandText = styled.span`
@@ -33,9 +36,8 @@ const SidebarBrandText = styled.span`
 `;
 
 const HorizontalLine = styled.hr`
-  width: 80%;
   border-color: ${(props) => props.theme.colors.gray500};
-  margin: 5px 25px;
+  margin: 0;
 `;
 
 const activeColor = `
@@ -55,7 +57,7 @@ const inactiveColor = (theme: DefaultTheme) => `
 const SidebarLinkContainer = styled.div<{ isActive?: boolean }>`
   display: flex;
   justify-content: space-between;
-  padding: 10px 26px;
+  padding: 10px 0;
   cursor: pointer;
   ${({ isActive, theme }) => (isActive ? activeColor : inactiveColor(theme))}
 `;
@@ -63,13 +65,6 @@ const SidebarLinkContainer = styled.div<{ isActive?: boolean }>`
 const SidebarLinkAside = styled.div`
   display: flex;
   align-items: center;
-`;
-
-const SidebarLinkIcon = styled.img`
-  width: 18px;
-  height: 18px;
-  padding-right: 12px;
-  user-select: none;
 `;
 
 const SidebarLinkBadge = styled.div`
@@ -82,98 +77,96 @@ const SidebarLinkBadge = styled.div`
   color: white;
 `;
 
-const SidebarBrand = () => {
+const SidebarBrand = ({ name }: { name: string }) => {
   return (
-    <SidebarBrandContainer href="/">
-      <SidebarBrandText>Project Name</SidebarBrandText>
+    <SidebarBrandContainer>
+      <SidebarBrandText>{name}</SidebarBrandText>
     </SidebarBrandContainer>
   );
 };
 
-const SidebarLink = (props: {
+interface LinkProps extends RouterLinkProps {
   active?: boolean;
-  children?: string | JSX.Element;
   badge?: string | number;
-  icon?: string;
-  href: string;
-}) => {
-  const { active, children, badge, icon, href } = props;
+}
 
+const SidebarLink = ({ active, children, badge, ...rest }: LinkProps) => {
   return (
-    <Link to={href}>
+    <Link {...rest}>
       <SidebarLinkContainer isActive={active}>
-        <SidebarLinkAside>
-          <SidebarLinkIcon src={icon}></SidebarLinkIcon>
-          <span>{children}</span>
-        </SidebarLinkAside>
-        {badge ? <SidebarLinkBadge>{badge}</SidebarLinkBadge> : <></>}
+        <SidebarLinkAside>{children}</SidebarLinkAside>
+        {badge && <SidebarLinkBadge>{badge}</SidebarLinkBadge>}
       </SidebarLinkContainer>
     </Link>
   );
 };
 
-const SidebarFooter = styled.div`
+const IconContainer = styled.div`
   display: flex;
-  align-items: end;
-  height: 300px;
-  flex-grow: 1;
-`;
-
-const ThemeToggleContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding-bottom: 10px;
-`;
-
-const ThemeToggleText = styled.div`
-  padding: 10px;
+  padding-right: 5px;
+  user-select: none;
 `;
 
 const Sidebar = () => {
-  const location = useLocation();
-  const { theme, setTheme } = useTheme();
+  const [page, setPage] = useState('');
+  const { projectName } = useProjectInfo();
 
   return (
     <SidebarContainer>
       <SidebarWrapper>
-        <SidebarBrand />
+        <SidebarBrand name={projectName} />
         <HorizontalLine />
-        <SidebarLink active={location.pathname === '/'} href="/" badge={12}>
+        <SidebarLink
+          active={page === ''}
+          to=""
+          badge={12}
+          onClick={() => setPage('')}
+        >
+          <IconContainer>
+            <GridIcon />
+          </IconContainer>
           Overview
         </SidebarLink>
-        <SidebarLink active={location.pathname === '/images'} href="/images">
+        <SidebarLink
+          active={page === 'images'}
+          to="images"
+          onClick={() => setPage('images')}
+        >
+          <IconContainer>
+            <ImageIcon />
+          </IconContainer>
           Images
         </SidebarLink>
         <SidebarLink
-          active={location.pathname === '/annotate'}
-          href="/annotate"
+          active={page === 'annotate'}
+          to="annotate"
+          onClick={() => setPage('annotate')}
         >
+          <IconContainer>
+            <MaximizeIcon />
+          </IconContainer>
           Annotate
         </SidebarLink>
-        <SidebarLink active={location.pathname === '/dataset'} href="/dataset">
+        <SidebarLink
+          active={page === 'dataset'}
+          to="dataset"
+          onClick={() => setPage('dataset')}
+        >
+          <IconContainer>
+            <DatabaseIcon />
+          </IconContainer>
           Dataset
         </SidebarLink>
-        <SidebarLink active={location.pathname === '/model'} href="/model">
+        <SidebarLink
+          active={page === 'model'}
+          to="model"
+          onClick={() => setPage('model')}
+        >
+          <IconContainer>
+            <FileIcon />
+          </IconContainer>
           Model
         </SidebarLink>
-        <SidebarFooter>
-          <ThemeToggleContainer>
-            <ThemeToggleText>Light</ThemeToggleText>
-            <ThemeToggler
-              checked={theme.name === darkTheme.name}
-              onChange={(isDarkTheme) => {
-                if (isDarkTheme) {
-                  setTheme(darkTheme);
-                } else {
-                  setTheme(lightTheme);
-                }
-              }}
-            />
-            <ThemeToggleText>Dark</ThemeToggleText>
-          </ThemeToggleContainer>
-        </SidebarFooter>
       </SidebarWrapper>
     </SidebarContainer>
   );
