@@ -1,7 +1,7 @@
 import { UploadContainer, UploadLayout } from './styles';
 import { useReducer } from 'react';
 import api from '../../../api/api';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import UploadCard from './UploadCard';
 import ProgressCard from './ProgressCard';
 import useProjectInfo from '../../../hooks/useProjectInfo';
@@ -12,8 +12,9 @@ import {
   getFilenameExtension,
   getFilenameWithoutExtension,
 } from '../../../utils/file';
-import useBatchUpload from './useBatchUpload';
+import useBatchUpload from './hooks/useBatchUpload';
 import { UploadProperty } from '../../../types/api';
+import ImageList from './ImageList';
 
 type State = {
   uploadQueue: {
@@ -92,6 +93,7 @@ const ProjectImagePage = () => {
   const { projectId } = useProjectInfo();
   const [state, dispatch] = useReducer(reducer, initialState);
   const { isUploading, uploadFiles } = useBatchUpload();
+  const queryClient = useQueryClient();
   const { refetch: createBatchUpload, isFetching: uploadFilesIsFetching } =
     useQuery({
       queryKey: ['uploadFiles'],
@@ -128,12 +130,16 @@ const ProjectImagePage = () => {
         uploadFiles({
           data,
           onSuccess: () => {
-            api.publishBatchUpload({
-              projectId,
-              publishFiles: convertFilenames(data.map((p) => p.file.name)).map(
-                (p) => p.filename
-              ),
-            });
+            api
+              .publishBatchUpload({
+                projectId,
+                publishFiles: convertFilenames(
+                  data.map((p) => p.file.name)
+                ).map((p) => p.filename),
+              })
+              .then(() => {
+                queryClient.invalidateQueries(['projectImages']);
+              });
           },
         });
       },
@@ -166,6 +172,7 @@ const ProjectImagePage = () => {
           onDelete={(filename) => dispatch(deleteFromQueue(filename))}
         />
       </UploadLayout>
+      <ImageList projectId={projectId} />
     </UploadContainer>
   );
 };

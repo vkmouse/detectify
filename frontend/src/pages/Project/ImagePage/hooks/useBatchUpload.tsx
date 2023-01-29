@@ -1,6 +1,7 @@
 import axios, { AxiosProgressEvent } from 'axios';
 import { useState } from 'react';
-import { UploadProperty } from '../../../types/api';
+import { UploadProperty } from '../../../../types/api';
+import { getFilenameExtension } from '../../../../utils/file';
 
 const useUploadFiles = () => {
   const [isUploading, setIsUploading] = useState(false);
@@ -23,13 +24,27 @@ const useUploadFiles = () => {
           updateProgress(progress);
         }
       };
-      axios.put(presignedURL, file, { onUploadProgress }).then(() => {
-        count = count + 1;
-        if (count === data.length) {
-          setIsUploading(false);
-          onSuccess?.();
-        }
-      });
+      const ext = getFilenameExtension(file.name);
+      let contentType = 'image/png';
+      if (ext === '.png') {
+        contentType = 'image/png';
+      } else if (ext === '.jpg' || ext === 'jpeg') {
+        contentType = 'image/jpeg';
+      } else {
+        contentType = 'text/xml';
+      }
+      axios
+        .put(presignedURL, file, {
+          headers: { 'Content-Type': contentType },
+          onUploadProgress,
+        })
+        .then(() => {
+          count = count + 1;
+          if (count === data.length) {
+            setIsUploading(false);
+            onSuccess?.();
+          }
+        });
     }
   };
 

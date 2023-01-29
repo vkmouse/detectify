@@ -87,6 +87,14 @@ const api = {
   publishBatchUpload: async (props: BatchPublishRequest) => {
     await authAxios.put('/image/upload', props);
   },
+  getProjectImages: async (
+    projectId: string
+  ): Promise<BatchUploadResponse[]> => {
+    const response = await authAxios.get(`/images`, {
+      params: { projectId },
+    });
+    return response.data.data as BatchUploadResponse[];
+  },
 };
 
 export default api;

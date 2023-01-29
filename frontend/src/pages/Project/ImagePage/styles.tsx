@@ -12,6 +12,7 @@ export const UploadContainer = styled.div`
 
 export const UploadLayout = styled.div`
   display: grid;
+  padding-bottom: 10px;
   grid-template-columns: repeat(2, 1fr);
   grid-column-gap: 1%;
   grid-row-gap: 1%;
