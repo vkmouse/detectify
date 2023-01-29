@@ -48,3 +48,31 @@ export type ProjectResponse = {
   categoriesCount: number;
   imagesCount: number;
 };
+
+export type BatchUploadData = {
+  filename: string;
+  imageExt: string;
+  annotationExt: string;
+};
+
+export type BatchUploadRequest = {
+  projectId: string;
+  uploadedFiles: BatchUploadData[];
+};
+
+export type BatchUploadResponse = {
+  filename: string;
+  imageURL: string;
+  annotationURL: string;
+};
+
+export type BatchPublishRequest = {
+  projectId: string;
+  publishFiles: string[];
+};
+
+export type UploadProperty = {
+  presignedURL: string;
+  file: File;
+  updateProgress: (progress: number) => void;
+};

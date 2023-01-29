@@ -1,6 +1,8 @@
 import styled from 'styled-components';
-import { CardPrimary } from '../../components/Card';
-import XCircle from '../../assets/x-circle.svg';
+import { CardPrimary } from '../../../../components/Card';
+import XCircle from '../../../../assets/x-circle.svg';
+import ImageIcon from '../../../../assets/image.svg';
+import MaximizeIcon from '../../../../assets/maximize.svg';
 
 const ProgressRowInnerWrapper = styled.div`
   display: flex;
@@ -8,7 +10,7 @@ const ProgressRowInnerWrapper = styled.div`
 
 const ProgressRowWrapper = styled(CardPrimary)`
   position: relative;
-  padding: 1.25rem;
+  padding: 5px;
   margin: 0 0 10px 0;
 `;
 
@@ -17,11 +19,8 @@ const ProgressRowIconWrapper = styled.div`
   align-items: center;
 `;
 
-const ProgressIcon = styled.img`
+const ProgressIconContainer = styled.div`
   margin-right: 10px;
-  width: 48px;
-  height: 48px;
-  background: ${(props) => props.theme.colors.primary};
 `;
 
 const ProgressDetailsContainer = styled.div`
@@ -46,7 +45,7 @@ const DeleteButton = styled(XCircle)`
   position: absolute;
   top: 0;
   right: 0;
-  margin: 10px;
+  margin: 5px;
   background-color: inherit;
   border: 0px;
   cursor: pointer;
@@ -61,12 +60,15 @@ const ProgressBar = (props: { percentage: number }) => {
   );
 };
 
-const ProgressRow = (props: {
+const ProgressRow = ({
+  filename,
+  percentage,
+  onDeleteClick,
+}: {
   filename: string;
   percentage: number;
   onDeleteClick?: () => void;
 }) => {
-  const { filename, percentage, onDeleteClick } = props;
   const isCompleted = percentage === 100;
 
   return (
@@ -74,7 +76,21 @@ const ProgressRow = (props: {
       <DeleteButton onClick={onDeleteClick} />
       <ProgressRowInnerWrapper>
         <ProgressRowIconWrapper>
-          <ProgressIcon />
+          <ProgressIconContainer>
+            {filename.includes('.xml') ? (
+              <MaximizeIcon
+                width="36px"
+                height="36px"
+                transform="translate(6, 12) scale(1.5)"
+              />
+            ) : (
+              <ImageIcon
+                width="36px"
+                height="36px"
+                transform="translate(6, 12) scale(1.5)"
+              />
+            )}
+          </ProgressIconContainer>
         </ProgressRowIconWrapper>
         <ProgressDetailsContainer>
           {filename}

@@ -1,5 +1,8 @@
 import {
   APIResponse,
+  BatchPublishRequest,
+  BatchUploadRequest,
+  BatchUploadResponse,
   LoginRequest,
   ProjectResponse,
   RegisterRequest,
@@ -7,23 +10,12 @@ import {
 } from '../types/api';
 import { authAxios, normalAxios, removeToken, updateToken } from './axios';
 
-type CreateUploadResponse = {
-  id: string;
-  presignedURL: string;
-};
-
 export type Message = {
   content: string;
   imageURL: string;
 };
 
 const api = {
-  createUpload: async (): Promise<CreateUploadResponse> => {
-    const response = await normalAxios.post(`/image/upload`);
-    const body: { data: CreateUploadResponse } = response.data;
-    return body.data;
-  },
-
   // auth api
   register: async (props: RegisterRequest) => {
     await normalAxios.post(`/user`, props);
@@ -60,6 +52,48 @@ const api = {
   },
   addProject: async (props: { name: string }) => {
     await authAxios.post('/project', props);
+  },
+
+  // project image api
+  createBatchUpload: async (
+    props: BatchUploadRequest
+  ): Promise<Map<string, BatchUploadResponse>> => {
+    const response = await authAxios.post('/image/upload', props);
+    const { data } = response.data as APIResponse;
+    const body = data as BatchUploadResponse[];
+    const dataMap = new Map<string, BatchUploadResponse>();
+
+    for (const { filename, imageURL, annotationURL } of body) {
+      const existingData = dataMap.get(filename);
+      if (existingData) {
+        dataMap.set(filename, {
+          filename,
+          imageURL: existingData.imageURL ? existingData.imageURL : imageURL,
+          annotationURL: existingData.annotationURL
+            ? existingData.annotationURL
+            : annotationURL,
+        });
+      } else {
+        dataMap.set(filename, {
+          filename,
+          imageURL,
+          annotationURL,
+        });
+      }
+    }
+
+    return dataMap;
+  },
+  publishBatchUpload: async (props: BatchPublishRequest) => {
+    await authAxios.put('/image/upload', props);
+  },
+  getProjectImages: async (
+    projectId: string
+  ): Promise<BatchUploadResponse[]> => {
+    const response = await authAxios.get(`/images`, {
+      params: { projectId },
+    });
+    return response.data.data as BatchUploadResponse[];
   },
 };
 

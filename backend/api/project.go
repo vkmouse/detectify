@@ -54,40 +54,6 @@ func AddProjectCategory(ctx *gin.Context) {
 	response.Response(ctx, errmsg.SUCCESS)
 }
 
-func AddProjectImage(ctx *gin.Context) {
-	userID := ctx.GetString("userID")
-
-	var req struct {
-		ID        string
-		ProjectID string
-	}
-	err := ctx.BindJSON(&req)
-	if err != nil {
-		response.Response(ctx, errmsg.ERROR_INVALID_INPUT)
-		return
-	}
-	if !repository.VerifyProjectAccess(userID, req.ProjectID) {
-		response.Response(ctx, errmsg.ERROR_FORBIDDEN)
-		return
-	}
-
-	image := model.ProjectImage{
-		URL:       "https://images.detectify.tw/" + req.ID,
-		ProjectID: req.ProjectID,
-	}
-	success, err := repository.AddProjectImage(&image)
-	if !success {
-		response.Response(ctx, errmsg.ERROR_IMAGE_EXIST)
-		return
-	}
-	if err != nil {
-		response.Response(ctx, errmsg.ERROR)
-		return
-	}
-
-	response.Response(ctx, errmsg.SUCCESS)
-}
-
 func GetProjects(ctx *gin.Context) {
 	userID := ctx.GetString("userID")
 	projects, err := repository.QueryProjectsWithCountsByUser(userID)

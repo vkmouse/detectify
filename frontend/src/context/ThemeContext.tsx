@@ -1,23 +1,25 @@
-import React, { createContext, useContext, useState } from 'react';
+import { createContext, ReactNode, useContext, useState } from 'react';
 import {
   createGlobalStyle,
   DefaultTheme,
-  ThemeProvider,
+  ThemeProvider as StyledComponentThemeProvider,
 } from 'styled-components';
-import darkTheme from './dark';
-import lightTheme from './light';
+import darkTheme from '../themes/dark';
+import lightTheme from '../themes/light';
 
 type State = {
+  theme: DefaultTheme;
   setTheme: (theme: DefaultTheme) => void;
 };
 
 const initialState: State = {
+  theme: lightTheme,
   setTheme: () => {
     throw 'Not Implement';
   },
 };
 
-const ThemeToggleContext = createContext<State>(initialState);
+const ThemeContext = createContext<State>(initialState);
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -58,32 +60,32 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const Theme = (props: { children: JSX.Element | JSX.Element[] }) => {
+const ThemeProvider = (props: { children: ReactNode }) => {
   const { children } = props;
   const initialTheme =
     localStorage.theme === lightTheme.name ? lightTheme : darkTheme;
   const [theme, setTheme] = useState(initialTheme);
 
   return (
-    <ThemeToggleContext.Provider
+    <ThemeContext.Provider
       value={{
+        theme,
         setTheme: (theme: DefaultTheme) => {
           setTheme(theme);
           localStorage.theme = theme.name;
         },
       }}
     >
-      <ThemeProvider theme={theme}>
+      <StyledComponentThemeProvider theme={theme}>
         <GlobalStyle />
         {children}
-      </ThemeProvider>
-    </ThemeToggleContext.Provider>
+      </StyledComponentThemeProvider>
+    </ThemeContext.Provider>
   );
 };
 
-const useThemeToggleContext = (): State => {
-  return useContext(ThemeToggleContext);
+const useTheme = (): State => {
+  return useContext(ThemeContext);
 };
 
-export { useThemeToggleContext };
-export default Theme;
+export { useTheme, ThemeProvider };
