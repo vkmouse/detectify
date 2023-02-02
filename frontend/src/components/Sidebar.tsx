@@ -6,7 +6,7 @@ import FileIcon from '../assets/file.svg';
 import GridIcon from '../assets/grid.svg';
 import ImageIcon from '../assets/image.svg';
 import MaximizeIcon from '../assets/maximize.svg';
-import useProjectInfo from '../hooks/useProjectInfo';
+import { useProjectInfo } from '../context/ProjectInfoContext';
 import { navbarHeight, sidebarWidth } from './Layout';
 
 const SidebarContainer = styled.div`
@@ -109,12 +109,12 @@ const IconContainer = styled.div`
 
 const Sidebar = () => {
   const [page, setPage] = useState('');
-  const { projectName } = useProjectInfo();
+  const { name } = useProjectInfo();
 
   return (
     <SidebarContainer>
       <SidebarWrapper>
-        <SidebarBrand name={projectName} />
+        <SidebarBrand name={name ? name : ''} />
         <HorizontalLine />
         <SidebarLink
           active={page === ''}

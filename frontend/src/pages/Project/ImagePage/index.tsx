@@ -2,7 +2,6 @@ import { UploadContainer, UploadLayout } from './styles';
 import { useReducer } from 'react';
 import api from '../../../api/api';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import useProjectInfo from '../../../hooks/useProjectInfo';
 import {
   checkAnnotationExtenstion,
   checkImageExtenstion,
@@ -15,6 +14,7 @@ import { UploadProperty } from '../../../types/api';
 import ImageList from './components/ImageList';
 import ProgressCard from './components/ProgressCard';
 import UploadCard from './components/UploadCard';
+import { useProjectInfo } from '../../../context/ProjectInfoContext';
 
 type State = {
   uploadQueue: {
@@ -90,7 +90,7 @@ const reducer = (state: State, action: Action): State => {
 
 // TODO: Refactor component
 const ProjectImagePage = () => {
-  const { projectId } = useProjectInfo();
+  const { id: projectId } = useProjectInfo();
   const [state, dispatch] = useReducer(reducer, initialState);
   const { isUploading, uploadFiles } = useBatchUpload();
   const queryClient = useQueryClient();
@@ -172,7 +172,7 @@ const ProjectImagePage = () => {
           onDelete={(filename) => dispatch(deleteFromQueue(filename))}
         />
       </UploadLayout>
-      <ImageList projectId={projectId} />
+      <ImageList />
     </UploadContainer>
   );
 };
