@@ -68,7 +68,7 @@ func QueryBatchProjectImageByFilename(projectID string, filenames []string) ([]m
 func QueryProjectImagesByProjectID(projectID string) ([]model.ProjectImage, error) {
 	var projectImages []model.ProjectImage
 	err := db.
-		Where("project_id = ? and image_published = true and annotation_published = true", projectID).
+		Where("project_id = ? and image_published = true", projectID).
 		Find(&projectImages).Error
 	return projectImages, err
 }
