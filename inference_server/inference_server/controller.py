@@ -2,7 +2,8 @@ import openvino.runtime as ov
 import cv2
 import numpy as np
 
-import inference_server.utils as utils
+from inference_server import config
+from inference_server import utils
 
 
 def load_model_from_url(workspace, url):
@@ -21,7 +22,8 @@ def load_image_from_url(workspace, url):
 
 
 def infer(model_url, image_url, threshold, width, height):
-    workspace_path = utils.path.join('/tmp', utils.generate_uuid())
+    utils.mkdir_if_not_exists(config.workspace_path)
+    workspace_path = utils.path.join(config.workspace_path, utils.generate_uuid())
     utils.mkdir(workspace_path)
 
     image = load_image_from_url(workspace_path, image_url)

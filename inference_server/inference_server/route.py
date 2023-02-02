@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask import request
-import inference_server.controller as controller
+from inference_server import controller
 
 infer_bp = Blueprint("infer", __name__)
 

@@ -1,10 +1,11 @@
 import io
-import os.path as path
 import os
 import requests
 import shutil
 import uuid
 import zipfile
+
+from os import path
 
 
 def get_file_extension(path):
@@ -36,6 +37,11 @@ def zip_directory(directory):
                 zf.write(file_path, arcname=os.path.relpath(file_path, directory))
     memory_file.seek(0)
     return memory_file
+
+
+def mkdir_if_not_exists(dir):
+    if not os.path.exists(dir):
+        os.mkdir(dir)
 
 
 def mkdir(dir):
