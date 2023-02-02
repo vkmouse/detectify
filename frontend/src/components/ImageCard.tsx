@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useRef } from 'react';
 import styled from 'styled-components';
 import { Card } from './Card';
 
@@ -56,15 +56,24 @@ const ImageCard = ({
   src,
   title,
   children,
+  onClick,
 }: {
   src: string;
   title: string;
   children?: ReactNode;
+  onClick?: (element: HTMLImageElement) => void;
 }) => {
+  const imgRef = useRef<HTMLImageElement>(null);
   return (
-    <ImageCardContainer>
+    <ImageCardContainer
+      onClick={() => {
+        if (onClick && imgRef.current) {
+          onClick(imgRef.current);
+        }
+      }}
+    >
       <ImageWrapper>
-        <Image src={src} />
+        <Image ref={imgRef} src={src} />
         <Overlay>{children}</Overlay>
       </ImageWrapper>
       <TitleContainer>
