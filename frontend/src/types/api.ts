@@ -81,12 +81,10 @@ export type InferRequest = {
   modelURL: string;
   imageURL: string;
   threshold: number;
-  width: number;
-  height: number;
 };
 
 export type InferResponse = {
-  classId: number;
+  name: string;
   confidence: number;
   height: number;
   width: number;

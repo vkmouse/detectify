@@ -12,7 +12,5 @@ def predict():
         model_url=infer_params['modelURL'],
         image_url=infer_params['imageURL'],
         threshold=infer_params['threshold'],
-        width=infer_params['width'],
-        height=infer_params['height'],
     )
     return results
