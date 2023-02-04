@@ -19,6 +19,7 @@ workspace_exported_model_pipeline = os.path.join(workspace_path, 'exported_model
 workspace_fine_tune_checkpoint = os.path.join(workspace_path, 'pre-trained-model', 'checkpoint', 'ckpt-0')
 workspace_images = os.path.join(workspace_path, 'images')
 workspace_ir_model = os.path.join(workspace_path, 'ir_model')
+workspace_ir_model_data = os.path.join(workspace_path, 'ir_model', 'data.meta')
 workspace_models = os.path.join(workspace_path, 'models')
 workspace_models_pipeline = os.path.join(workspace_path, 'models', 'pipeline.config')
 workspace_pretrained_model = os.path.join(workspace_path, 'pre-trained-model')
@@ -26,4 +27,6 @@ workspace_pretrained_model_pipeline = os.path.join(workspace_path, 'pre-trained-
 
 model_main_tf2 = os.path.join(site_pkg_path, 'object_detection', 'model_main_tf2.py')
 exporter_main_v2 = os.path.join(site_pkg_path, 'object_detection', 'exporter_main_v2.py')
-transformations_config = os.path.join(site_pkg_path, 'openvino', 'tools', 'mo', 'front', 'tf', 'ssd_support_api_v2.4.json')
+transformations_config = os.path.join(
+    site_pkg_path, 'openvino', 'tools', 'mo', 'front', 'tf', 'ssd_support_api_v2.4.json'
+)
