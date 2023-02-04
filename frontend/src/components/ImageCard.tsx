@@ -1,16 +1,16 @@
-import { ReactNode } from 'react';
+import { ReactNode, useRef } from 'react';
 import styled from 'styled-components';
 import { Card } from './Card';
 
 const borderRadius = 10;
 
-const ImageCardContainer = styled(Card)`
+const Container = styled(Card)`
   cursor: pointer;
   font-size: 90%;
   border-radius: ${borderRadius}px;
 `;
 
-const ImageWrapper = styled.div`
+const Wrapper = styled.div`
   position: relative;
   width: 100%;
   padding-top: 66.67%;
@@ -36,7 +36,7 @@ const Overlay = styled.div`
   box-shadow: 0 0 20px black;
   opacity: 50%;
   border-radius: ${borderRadius}px ${borderRadius}px 0 0;
-  ${ImageCardContainer}:hover & {
+  ${Container}:hover & {
     display: block;
   }
 `;
@@ -50,27 +50,39 @@ const TitleContainer = styled.div`
 
 const Title = styled.span`
   font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const ImageCard = ({
   src,
   title,
   children,
+  onClick,
 }: {
   src: string;
   title: string;
   children?: ReactNode;
+  onClick?: (element: HTMLImageElement) => void;
 }) => {
+  const imgRef = useRef<HTMLImageElement>(null);
   return (
-    <ImageCardContainer>
-      <ImageWrapper>
-        <Image src={src} />
+    <Container
+      onClick={() => {
+        if (onClick && imgRef.current) {
+          onClick(imgRef.current);
+        }
+      }}
+    >
+      <Wrapper>
+        <Image ref={imgRef} src={src} />
         <Overlay>{children}</Overlay>
-      </ImageWrapper>
+      </Wrapper>
       <TitleContainer>
         <Title>{title}</Title>
       </TitleContainer>
-    </ImageCardContainer>
+    </Container>
   );
 };
 

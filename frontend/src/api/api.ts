@@ -3,12 +3,20 @@ import {
   BatchPublishRequest,
   BatchUploadRequest,
   BatchUploadResponse,
+  InferRequest,
+  InferResponse,
   LoginRequest,
   ProjectResponse,
   RegisterRequest,
   UserInfo,
 } from '../types/api';
-import { authAxios, normalAxios, removeToken, updateToken } from './axios';
+import {
+  authAxios,
+  inferAxios,
+  normalAxios,
+  removeToken,
+  updateToken,
+} from './axios';
 
 export type Message = {
   content: string;
@@ -94,6 +102,12 @@ const api = {
       params: { projectId },
     });
     return response.data.data as BatchUploadResponse[];
+  },
+
+  // inference api
+  infer: async (props: InferRequest): Promise<InferResponse[]> => {
+    const response = await inferAxios.post('/predict', props);
+    return response.data as InferResponse[];
   },
 };
 

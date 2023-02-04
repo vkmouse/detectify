@@ -6,6 +6,7 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env.API_URL': JSON.stringify('https://api.detectify.tw'),
+      'process.env.INFER_URL': JSON.stringify('https://inference.detectify.tw'),
     }),
   ],
 };
