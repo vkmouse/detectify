@@ -18,6 +18,7 @@ const Container = styled.div`
 
 const drawRect = (
   context: CanvasRenderingContext2D,
+  name: string,
   x: number,
   y: number,
   width: number,
@@ -34,7 +35,7 @@ const drawRect = (
   context.rect(x, y, width, height);
   context.stroke();
 
-  const labelName = 'Cat';
+  const labelName = name;
   const { width: textWidth } = context.measureText(labelName);
   context.fillStyle = color;
   context.fillRect(
@@ -87,7 +88,6 @@ const ModelPage = () => {
 
   const drawBoundingBoxes = (boundingBoxes: InferResponse[]) => {
     if (boundingBoxes && currImageURL.current) {
-      console.log(boundingBoxes);
       const canvas = canvasRef.current;
       const context = canvas?.getContext('2d');
       if (canvas && context) {
@@ -96,7 +96,8 @@ const ModelPage = () => {
           const y = rect.y + box.y * rect.ratio;
           const width = box.width * rect.ratio;
           const height = box.height * rect.ratio;
-          drawRect(context, x, y, width, height);
+          const name = box.name;
+          drawRect(context, name, x, y, width, height);
         }
       }
     }
@@ -110,8 +111,6 @@ const ModelPage = () => {
           'https://pub-524340b28b994541ba4d1f39e64d2b3d.r2.dev/ssd320.zip',
         imageURL: currImageURL.current,
         threshold: thresholdRef.current,
-        width: 320,
-        height: 320,
       }),
     onSuccess: drawBoundingBoxes,
     enabled: false,
