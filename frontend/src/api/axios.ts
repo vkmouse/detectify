@@ -15,6 +15,11 @@ const authAxios = axios.create({
   timeout: 30000,
 });
 
+const inferAxios = axios.create({
+  baseURL: process.env.INFER_URL,
+  timeout: 30000,
+});
+
 const updateToken = (token: string) => {
   window.localStorage.setItem('accessToken', token);
   authAxios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -48,4 +53,4 @@ authAxios.interceptors.response.use(null, async (error: AxiosError) => {
   }
 });
 
-export { normalAxios, authAxios, updateToken, removeToken };
+export { normalAxios, authAxios, inferAxios, updateToken, removeToken };

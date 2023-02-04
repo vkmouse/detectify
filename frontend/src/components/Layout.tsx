@@ -11,7 +11,6 @@ const mainContentMarginX = 25;
 const Main = styled.main`
   display: flex;
   justify-content: center;
-  width: 100vw;
 `;
 
 const Container = styled.div`
