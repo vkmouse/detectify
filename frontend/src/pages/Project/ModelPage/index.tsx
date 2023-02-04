@@ -1,47 +1,56 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import React, { useRef, useState } from 'react';
 import api from '../../../api/api';
-import { PrimaryButton } from '../../../components/Button';
-import ImageCard from '../../../components/ImageCard';
-import { useProjectInfo } from '../../../context/ProjectInfoContext';
 import { InferResponse } from '../../../types/api';
-import {
-  CanvasInnerWrapper,
-  CanvasWrapper,
-  HotizentalImageList,
-  ImageCardContainer,
-} from './styles';
+import InputGruop from './InputGroup';
+import PreviewCanvas from './PreviewCanvas';
+import styled from 'styled-components';
 
 type Size = {
   width: number;
   height: number;
 };
 
-const Canvas = React.forwardRef<HTMLCanvasElement>(({}, ref) => {
-  const divRef = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState<Size>({ width: 0, height: 0 });
+const Container = styled.div`
+  display: grid;
+  grid-template-columns: 80% 20%;
+`;
 
-  useEffect(() => {
-    if (divRef.current) {
-      setSize({
-        width: divRef.current?.clientWidth,
-        height: divRef.current?.clientHeight,
-      });
-    }
-  }, [divRef.current?.clientWidth, divRef.current?.clientHeight]);
+const drawRect = (
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number
+) => {
+  const fontSize = 18;
+  const color = '#FF0000';
+  context.font = `${fontSize}px Microsoft YaHei`;
+  context.strokeStyle = color;
+  context.fillStyle = color;
+  context.lineWidth = 3;
 
-  return (
-    <div ref={divRef} style={{ width: '100%', height: '100%' }}>
-      <canvas ref={ref} {...size} />
-    </div>
+  context.beginPath();
+  context.rect(x, y, width, height);
+  context.stroke();
+
+  const labelName = 'Cat';
+  const { width: textWidth } = context.measureText(labelName);
+  context.fillStyle = color;
+  context.fillRect(
+    x - context.lineWidth / 2,
+    y - fontSize - context.lineWidth / 2,
+    textWidth + context.lineWidth,
+    fontSize + context.lineWidth
   );
-});
-
-Canvas.displayName = 'Canvas';
+  context.fillStyle = '#fff';
+  context.fillText(labelName, x, y - context.lineWidth / 2);
+};
 
 const ModelPage = () => {
-  const { images } = useProjectInfo();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const currImageURL = useRef('');
+  const thresholdRef = useRef(0.5);
   const [rect, setRect] = useState({
     x: 0,
     y: 0,
@@ -87,57 +96,42 @@ const ModelPage = () => {
           const y = rect.y + box.y * rect.ratio;
           const width = box.width * rect.ratio;
           const height = box.height * rect.ratio;
-          context.strokeStyle = '#FF0000';
-          context.beginPath();
-          context.rect(x, y, width, height);
-          context.stroke();
+          drawRect(context, x, y, width, height);
         }
       }
     }
   };
 
+  const inferQuery = useQuery({
+    queryKey: ['infer'],
+    queryFn: async () =>
+      api.infer({
+        modelURL:
+          'https://pub-524340b28b994541ba4d1f39e64d2b3d.r2.dev/ssd320.zip',
+        imageURL: currImageURL.current,
+        threshold: thresholdRef.current,
+        width: 320,
+        height: 320,
+      }),
+    onSuccess: drawBoundingBoxes,
+    enabled: false,
+  });
+
   return (
-    <>
-      <HotizentalImageList>
-        {images.map((p, i) => {
-          return (
-            <ImageCardContainer key={i}>
-              <ImageCard
-                onClick={(img) => {
-                  currImageURL.current = img.src;
-                  drawCanvas(img);
-                }}
-                src={p.imageURL}
-                title={p.filename}
-              />
-            </ImageCardContainer>
-          );
-        })}
-      </HotizentalImageList>
-      <CanvasWrapper>
-        <CanvasInnerWrapper>
-          <Canvas ref={canvasRef} />
-        </CanvasInnerWrapper>
-      </CanvasWrapper>
-      <PrimaryButton
-        onClick={() => {
-          api
-            .infer({
-              modelURL:
-                'https://pub-524340b28b994541ba4d1f39e64d2b3d.r2.dev/ssd320.zip',
-              imageURL: currImageURL.current,
-              threshold: 0.5,
-              width: 320,
-              height: 320,
-            })
-            .then((data) => {
-              drawBoundingBoxes(data);
-            });
+    <Container>
+      <PreviewCanvas ref={canvasRef} isLoading={inferQuery.isFetching} />
+      <InputGruop
+        disabled={currImageURL.current === '' || inferQuery.isFetching}
+        onImageCardClick={(img) => {
+          currImageURL.current = img.src;
+          drawCanvas(img);
         }}
-      >
-        Detect
-      </PrimaryButton>
-    </>
+        onDetectionClick={(threshold) => {
+          thresholdRef.current = threshold;
+          inferQuery.refetch();
+        }}
+      />
+    </Container>
   );
 };
 

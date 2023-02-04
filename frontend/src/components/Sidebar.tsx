@@ -109,19 +109,14 @@ const IconContainer = styled.div`
 
 const Sidebar = () => {
   const [page, setPage] = useState('');
-  const { name } = useProjectInfo();
+  const { images, name } = useProjectInfo();
 
   return (
     <SidebarContainer>
       <SidebarWrapper>
         <SidebarBrand name={name ? name : ''} />
         <HorizontalLine />
-        <SidebarLink
-          active={page === ''}
-          to=""
-          badge={12}
-          onClick={() => setPage('')}
-        >
+        <SidebarLink active={page === ''} to="" onClick={() => setPage('')}>
           <IconContainer>
             <GridIcon />
           </IconContainer>
@@ -130,6 +125,7 @@ const Sidebar = () => {
         <SidebarLink
           active={page === 'images'}
           to="images"
+          badge={images.length}
           onClick={() => setPage('images')}
         >
           <IconContainer>
