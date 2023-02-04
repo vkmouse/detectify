@@ -141,3 +141,4 @@ config.json
 .vscode/
 *.png
 *.jpg
+workspace/
