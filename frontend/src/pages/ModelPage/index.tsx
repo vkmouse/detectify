@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { useRef, useState } from 'react';
-import api from '../../../api/api';
-import { InferResponse } from '../../../types/api';
+import api from '../../api/api';
+import { InferResponse } from '../../types/api';
 import InputGruop from './InputGroup';
 import PreviewCanvas from './PreviewCanvas';
 import styled from 'styled-components';

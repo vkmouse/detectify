@@ -1,7 +1,7 @@
 import axios, { AxiosProgressEvent } from 'axios';
 import { useState } from 'react';
-import { UploadProperty } from '../../../../types/api';
-import { getFilenameExtension } from '../../../../utils/file';
+import { UploadProperty } from '../../../types/api';
+import { getFilenameExtension } from '../../../utils/file';
 
 const useUploadFiles = () => {
   const [isUploading, setIsUploading] = useState(false);

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Card } from '../../../ProjectsPage/styles';
+import { Card } from '../../ProjectsPage/styles';
 import {
   ProgressContainer,
   ProgressWrapper,

@@ -3,9 +3,8 @@ import { NavbarLayout, NavbarSidebarLayout } from './components/Layout';
 import { ProjectInfoProvider } from './context/ProjectInfoContext';
 import { SignInPage, SignUpPage } from './pages/AuthPage';
 import HomePage from './pages/HomePage';
-import ProjectImagePage from './pages/Project/ImagePage';
-import ModelPage from './pages/Project/ModelPage';
-import OverviewPage from './pages/Project/OverviewPage';
+import ImagePage from './pages/ImagePage';
+import ModelPage from './pages/ModelPage';
 import Projects from './pages/ProjectsPage';
 
 export const router = createBrowserRouter([
@@ -30,11 +29,11 @@ export const router = createBrowserRouter([
         path: '/project/:projectId',
         element: <NavbarSidebarLayoutWrapper />,
         children: [
-          { path: '', element: <OverviewPage /> },
-          { path: 'images', element: <ProjectImagePage /> },
+          { path: 'images', element: <ImagePage /> },
           { path: 'annotate', element: <>annotate</> },
-          { path: 'dataset', element: <>dataset</> },
-          { path: 'model', element: <ModelPage /> },
+          { path: 'train', element: <>train</> },
+          { path: 'predict', element: <ModelPage /> },
+          { path: 'server', element: <>server</> },
         ],
       },
     ],

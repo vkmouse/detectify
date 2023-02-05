@@ -1,14 +1,10 @@
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
-import { PrimaryButton } from '../../../components/Button';
-import { Card } from '../../../components/Card';
-import ImageCard from '../../../components/ImageCard';
-import {
-  Input,
-  InputContainer,
-  InputField,
-} from '../../../components/InputFiled';
-import { useProjectInfo } from '../../../context/ProjectInfoContext';
+import { PrimaryButton } from '../../components/Button';
+import { Card } from '../../components/Card';
+import ImageCard from '../../components/ImageCard';
+import { Input, InputContainer, InputField } from '../../components/InputFiled';
+import { useProjectInfo } from '../../context/ProjectInfoContext';
 
 const Container = styled.div`
   display: flex;
