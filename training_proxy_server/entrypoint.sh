@@ -16,7 +16,7 @@ done
 
 docker pull lscr.io/linuxserver/openssh-server:latest
 docker pull nginxproxy/nginx-proxy:latest
-docker run -d -p 8080:80 -v =/var/run/docker.sock:/tmp/docker.sock:ro nginxproxy/nginx-proxy:latest
+docker run -d -p 8080:80 -v /var/run/docker.sock:/tmp/docker.sock:ro nginxproxy/nginx-proxy:latest
 
 /app/main
 
