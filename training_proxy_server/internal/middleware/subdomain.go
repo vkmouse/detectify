@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"regexp"
+	"training-proxy-server/config"
 	"training-proxy-server/internal/errmsg"
 	"training-proxy-server/internal/response"
 
@@ -30,7 +31,7 @@ func validateHost(host string) bool {
 		return false
 	}
 
-	allowDomains := []string{"localhost"}
+	allowDomains := []string{"localhost", config.DNSName}
 	for _, allowDomain := range allowDomains {
 		if allowDomain == domain {
 			return true
