@@ -7,6 +7,6 @@ RUN go build -o main .
 FROM docker:latest
 WORKDIR /app
 COPY --from=builder /src/main ./
-COPY nginx /nginx
+COPY entrypoint.sh /entrypoint.sh
 
-CMD ["./main"]
+ENTRYPOINT ["/bin/sh", "/entrypoint.sh"]

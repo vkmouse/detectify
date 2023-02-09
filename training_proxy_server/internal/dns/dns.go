@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"forwarding-server/config"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"training-proxy-server/config"
 )
 
 type DNSRecord struct {

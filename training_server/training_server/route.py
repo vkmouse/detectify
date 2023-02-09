@@ -3,19 +3,26 @@ from flask import make_response
 from flask import request
 from training_server import controller
 
-train_bp = Blueprint("infer", __name__)
+model_bp = Blueprint("model", __name__)
+server_bp = Blueprint("server", __name__)
 
 
-@train_bp.route('/model/train', methods=['POST'])
+@model_bp.route('/model/train', methods=['POST'])
 def train():
     training_params = request.get_json()
     request_success = controller.train_model_async(training_params)
     if request_success:
-        return "Training started", 202
-    return "Training already in progress", 409
+        return {
+            "message": "Accepted",
+            "status": 202,
+        }, 202
+    return {
+        "message": "Error: Training already in progress.",
+        "status": 2002,
+    }, 409
 
 
-@train_bp.route('/model/exported')
+@model_bp.route('/model/exported')
 def get_exported_model():
     memory_file = controller.get_exported_model()
     if memory_file:
@@ -23,23 +30,46 @@ def get_exported_model():
         response.headers['Content-Disposition'] = f'attachment; filename=exported_model.zip'
         response.headers['Content-Type'] = 'application/zip'
         return response
-    return "Training is not completed yet. Please try again later.", 400
+    return {
+        "message": "Error: Training is not completed yet.",
+        "status": 2002,
+    }, 400
 
 
-@train_bp.route('/model/ir')
+@model_bp.route('/model/ir')
 def get_ir_model():
     memory_file = controller.get_ir_model()
     if memory_file:
         response = make_response(memory_file.read())
-        response.headers['Content-Disposition'] = f'attachment; filename=exported_model.zip'
+        response.headers['Content-Disposition'] = f'attachment; filename=ir_model.zip'
         response.headers['Content-Type'] = 'application/zip'
         return response
-    return "Training is not completed yet. Please try again later.", 400
+    return {
+        "message": "Error: Training is not completed yet.",
+        "status": 2002,
+    }, 400
 
 
-@train_bp.route('/model', methods=['DELETE'])
+@model_bp.route('/model', methods=['DELETE'])
 def release():
     request_success = controller.release()
     if request_success:
-        return "Success", 200
-    return "Training is not completed yet. Please try again later.", 400
+        return {
+            "message": "Success",
+            "status": 200,
+        }, 200
+    return {
+        "message": "Error: Training is not completed yet.",
+        "status": 2002,
+    }, 400
+
+
+@server_bp.route('/server', methods=['GET'])
+def get_server_status():
+    return {
+        "data": {
+            "status": controller.get_server_status(),
+        },
+        "message": "Success",
+        "status": 200,
+    }, 200
