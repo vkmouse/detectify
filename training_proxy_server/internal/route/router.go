@@ -16,7 +16,7 @@ func InitRouter() *gin.Engine {
 	engine.Use(middleware.SubdomainMiddleware())
 
 	engine.GET("/server", api.GetServerStatus)
-	engine.PUT("/server", api.GetServerStatus)
+	engine.PUT("/server", api.CreateServerSpace)
 
 	engine.POST("/model/train", api.ModelProxy)
 	engine.GET("/model/exported", api.ModelProxy)

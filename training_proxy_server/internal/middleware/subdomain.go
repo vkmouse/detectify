@@ -17,7 +17,8 @@ func SubdomainMiddleware() func(ctx *gin.Context) {
 		}
 
 		_, id := parseHost(ctx.Request.Host)
-		ctx.Set("Host", "http://"+id)
+		ctx.Set("Host", "http://"+id+".localhost:8080")
+		ctx.Set("ID", id)
 		ctx.Next()
 	}
 }
