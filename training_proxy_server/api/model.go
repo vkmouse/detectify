@@ -21,7 +21,7 @@ func ModelProxy(ctx *gin.Context) {
 }
 
 func validateServerStatus(host string) bool {
-	return getServerStatus(host) != SERVER_STOPED
+	return getStatusFromTrainingServer(host) != SERVER_STOPED
 }
 
 func reverseProxy(ctx *gin.Context) {

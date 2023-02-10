@@ -53,3 +53,27 @@ func RunOpenSSH(id string, port int) error {
 
 	return nil
 }
+
+func ListContainers() ([]types.Container, error) {
+	var err error = nil
+	containers, err := cli.ContainerList(ctx, types.ContainerListOptions{})
+	return containers, err
+}
+
+func DeleteContainerByName(name string) error {
+	if err := cli.ContainerStop(ctx, name, container.StopOptions{}); err != nil {
+		log.Printf("Unable to stop container %s: %s", name, err)
+	}
+
+	removeOptions := types.ContainerRemoveOptions{
+		RemoveVolumes: true,
+		Force:         true,
+	}
+
+	if err := cli.ContainerRemove(ctx, name, removeOptions); err != nil {
+		log.Printf("Unable to remove container: %s", err)
+		return err
+	}
+
+	return nil
+}

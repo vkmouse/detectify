@@ -7,7 +7,8 @@ const (
 	ERROR_FORBIDDEN     = 403
 	ERROR               = 500
 
-	ERROR_SERVER_NOT_STARTED = 1001
+	ERROR_SERVER_NOT_STARTED       = 1001
+	ERROR_SERVER_SPACE_NOT_CREATED = 1002
 
 	ERROR_TRAINING_IN_PROGRESS   = 2001
 	ERROR_TRAINING_NOT_COMPLETED = 2002
@@ -25,7 +26,8 @@ var codeMsg = map[int]CodeMsg{
 	ERROR_FORBIDDEN:     {Code: 403, Message: "Error: Forbidden"},
 	ERROR:               {Code: 500, Message: "Error: Internal server error."},
 
-	ERROR_SERVER_NOT_STARTED: {Code: 400, Message: "Error: Server is not started."},
+	ERROR_SERVER_NOT_STARTED:       {Code: 400, Message: "Error: Server is not started."},
+	ERROR_SERVER_SPACE_NOT_CREATED: {Code: 400, Message: "Error: Server space is not created."},
 
 	ERROR_TRAINING_IN_PROGRESS:   {Code: 400, Message: "Error: Training already in progress."},
 	ERROR_TRAINING_NOT_COMPLETED: {Code: 409, Message: "Error: Training is not completed yet."},

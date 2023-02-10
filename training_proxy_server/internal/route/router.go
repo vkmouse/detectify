@@ -17,6 +17,7 @@ func InitRouter() *gin.Engine {
 
 	engine.GET("/server", api.GetServerStatus)
 	engine.PUT("/server", api.CreateServerSpace)
+	engine.DELETE("/server", api.DeleteServerSpace)
 
 	engine.POST("/model/train", api.ModelProxy)
 	engine.GET("/model/exported", api.ModelProxy)
