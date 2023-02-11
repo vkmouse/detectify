@@ -3,7 +3,16 @@ from training_server import config
 from training_server import utils
 from training_server.trainer import BaseTrainer
 
-training_status = {"status": "idle"}
+SERVER_IDLE = "Idle"
+SERVER_TRAINING = "Training"
+SERVER_COMPLETED = "Completed"
+SERVER_STOPED = "Stopped"
+
+server_status = {"status": SERVER_IDLE}
+
+
+def get_server_status():
+    return server_status["status"]
 
 
 def train_model_async(training_params):
@@ -20,10 +29,10 @@ def train_model_async(training_params):
         trainer.train()
         trainer.export_model()
         trainer.export_ir_model()
-        training_status["status"] = "completed"
+        server_status["status"] = SERVER_COMPLETED
 
-    if training_status["status"] == "idle":
-        training_status["status"] = "training"
+    if server_status["status"] == SERVER_IDLE:
+        server_status["status"] = SERVER_TRAINING
         training_thread = threading.Thread(target=train_model)
         training_thread.start()
         return True
@@ -31,19 +40,19 @@ def train_model_async(training_params):
 
 
 def get_exported_model():
-    if training_status["status"] == "completed":
+    if server_status["status"] == SERVER_COMPLETED:
         return utils.zip_directory(config.workspace_exported_model)
     return None
 
 
 def get_ir_model():
-    if training_status["status"] == "completed":
+    if server_status["status"] == SERVER_COMPLETED:
         return utils.zip_directory(config.workspace_ir_model)
     return None
 
 
 def release():
-    if training_status["status"] == "idle" or training_status["status"] == "completed":
-        training_status["status"] = "idle"
+    if server_status["status"] == SERVER_IDLE or server_status["status"] == SERVER_COMPLETED:
+        server_status["status"] = SERVER_IDLE
         return True
     return False

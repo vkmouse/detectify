@@ -91,3 +91,7 @@ export type InferResponse = {
   x: number;
   y: number;
 };
+
+export type GetServerStatusResponse = {
+  status: string;
+};

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, LinkProps as RouterLinkProps } from 'react-router-dom';
 import styled, { DefaultTheme } from 'styled-components';
-import DatabaseIcon from '../assets/database.svg';
-import FileIcon from '../assets/file.svg';
+import ServerIcon from '../assets/server.svg';
+import TrendingUpIcon from '../assets/trending-up.svg';
 import GridIcon from '../assets/grid.svg';
 import ImageIcon from '../assets/image.svg';
 import MaximizeIcon from '../assets/maximize.svg';
@@ -116,12 +116,6 @@ const Sidebar = () => {
       <SidebarWrapper>
         <SidebarBrand name={name ? name : ''} />
         <HorizontalLine />
-        <SidebarLink active={page === ''} to="" onClick={() => setPage('')}>
-          <IconContainer>
-            <GridIcon />
-          </IconContainer>
-          Overview
-        </SidebarLink>
         <SidebarLink
           active={page === 'images'}
           to="images"
@@ -144,24 +138,34 @@ const Sidebar = () => {
           Annotate
         </SidebarLink>
         <SidebarLink
-          active={page === 'dataset'}
-          to="dataset"
-          onClick={() => setPage('dataset')}
+          active={page === 'train'}
+          to="train"
+          onClick={() => setPage('train')}
         >
           <IconContainer>
-            <DatabaseIcon />
+            <GridIcon />
           </IconContainer>
-          Dataset
+          Train
         </SidebarLink>
         <SidebarLink
-          active={page === 'model'}
-          to="model"
-          onClick={() => setPage('model')}
+          active={page === 'predict'}
+          to="predict"
+          onClick={() => setPage('predict')}
         >
           <IconContainer>
-            <FileIcon />
+            <TrendingUpIcon />
           </IconContainer>
-          Model
+          Predict
+        </SidebarLink>
+        <SidebarLink
+          active={page === 'server'}
+          to="server"
+          onClick={() => setPage('server')}
+        >
+          <IconContainer>
+            <ServerIcon />
+          </IconContainer>
+          Server
         </SidebarLink>
       </SidebarWrapper>
     </SidebarContainer>

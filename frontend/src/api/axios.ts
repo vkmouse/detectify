@@ -11,12 +11,20 @@ const authAxios = axios.create({
   headers: {
     Authorization: `Bearer ${window.localStorage.getItem('accessToken')}`,
   },
-  withCredentials: true,
   timeout: 30000,
 });
 
 const inferAxios = axios.create({
   baseURL: process.env.INFER_URL,
+  timeout: 30000,
+});
+
+const trainingAxios = axios.create({
+  baseURL: process.env.TRAIN_URL,
+  headers: {
+    Authorization: `Bearer ${window.localStorage.getItem('accessToken')}`,
+  },
+  withCredentials: true,
   timeout: 30000,
 });
 
@@ -30,7 +38,7 @@ const removeToken = () => {
   authAxios.defaults.headers.common['Authorization'] = '';
 };
 
-authAxios.interceptors.response.use(null, async (error: AxiosError) => {
+const refreshInterceptors = async (error: AxiosError) => {
   const { response } = error;
   if (response && response.status === 401) {
     const refreshResponse = await normalAxios.post(
@@ -51,6 +59,16 @@ authAxios.interceptors.response.use(null, async (error: AxiosError) => {
       return axios(config);
     }
   }
-});
+};
 
-export { normalAxios, authAxios, inferAxios, updateToken, removeToken };
+authAxios.interceptors.response.use(null, refreshInterceptors);
+trainingAxios.interceptors.response.use(null, refreshInterceptors);
+
+export {
+  normalAxios,
+  authAxios,
+  inferAxios,
+  trainingAxios,
+  updateToken,
+  removeToken,
+};

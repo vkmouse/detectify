@@ -1,6 +1,6 @@
 import { UploadContainer, UploadLayout } from './styles';
 import { useReducer } from 'react';
-import api from '../../../api/api';
+import api from '../../api/api';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   checkAnnotationExtenstion,
@@ -8,13 +8,13 @@ import {
   convertFilenames,
   getFilenameExtension,
   getFilenameWithoutExtension,
-} from '../../../utils/file';
+} from '../../utils/file';
 import useBatchUpload from './hooks/useBatchUpload';
-import { UploadProperty } from '../../../types/api';
+import { UploadProperty } from '../../types/api';
 import ImageList from './components/ImageList';
 import ProgressCard from './components/ProgressCard';
 import UploadCard from './components/UploadCard';
-import { useProjectInfo } from '../../../context/ProjectInfoContext';
+import { useProjectInfo } from '../../context/ProjectInfoContext';
 
 type State = {
   uploadQueue: {
@@ -89,7 +89,7 @@ const reducer = (state: State, action: Action): State => {
 };
 
 // TODO: Refactor component
-const ProjectImagePage = () => {
+const ImagePage = () => {
   const { id: projectId } = useProjectInfo();
   const [state, dispatch] = useReducer(reducer, initialState);
   const { isUploading, uploadFiles } = useBatchUpload();
@@ -177,4 +177,4 @@ const ProjectImagePage = () => {
   );
 };
 
-export default ProjectImagePage;
+export default ImagePage;
