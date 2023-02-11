@@ -3,6 +3,7 @@ import {
   BatchPublishRequest,
   BatchUploadRequest,
   BatchUploadResponse,
+  GetServerStatusResponse,
   InferRequest,
   InferResponse,
   LoginRequest,
@@ -15,6 +16,7 @@ import {
   inferAxios,
   normalAxios,
   removeToken,
+  trainingAxios,
   updateToken,
 } from './axios';
 
@@ -108,6 +110,24 @@ const api = {
   infer: async (props: InferRequest): Promise<InferResponse[]> => {
     const response = await inferAxios.post('/predict', props);
     return response.data as InferResponse[];
+  },
+
+  // training api
+  getServerStatus: async () => {
+    const response = await trainingAxios.get('/server');
+    return response.data.data as GetServerStatusResponse;
+  },
+  getDefaultServerStatus: async () => {
+    const response = await trainingAxios.get('/server/default');
+    return response.data.data as GetServerStatusResponse;
+  },
+  createServerSpace: async () => {
+    const response = await trainingAxios.put('/server');
+    return response.data.data as GetServerStatusResponse;
+  },
+  removeServerSpace: async () => {
+    const response = await trainingAxios.delete('/server');
+    return response.data.data as GetServerStatusResponse;
   },
 };
 

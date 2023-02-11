@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 import ImagePage from './pages/ImagePage';
 import ModelPage from './pages/ModelPage';
 import Projects from './pages/ProjectsPage';
+import ServerPage from './pages/ServerPage';
 
 export const router = createBrowserRouter([
   {
@@ -33,7 +34,7 @@ export const router = createBrowserRouter([
           { path: 'annotate', element: <>annotate</> },
           { path: 'train', element: <>train</> },
           { path: 'predict', element: <ModelPage /> },
-          { path: 'server', element: <>server</> },
+          { path: 'server', element: <ServerPage /> },
         ],
       },
     ],
