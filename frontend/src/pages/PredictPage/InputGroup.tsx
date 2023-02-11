@@ -1,8 +1,7 @@
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import { PrimaryButton } from '../../components/Button';
-import { Card } from '../../components/Card';
-import ImageCard from '../../components/ImageCard';
+import ImageCardCollection from '../../components/ImageCardCollection';
 import { Input, InputContainer, InputField } from '../../components/InputFiled';
 import { useProjectInfo } from '../../context/ProjectInfoContext';
 
@@ -12,17 +11,6 @@ const Container = styled.div`
   padding-left: calc(100% - 5px);
   padding-top: 100%;
   margin-left: 5px;
-`;
-
-const ImageGroup = styled(Card)`
-  display: grid;
-  row-gap: 5px;
-  position: absolute;
-  width: 100%;
-  height: 65%;
-  top: 0;
-  left: 0;
-  overflow-x: hidden;
 `;
 
 const InputCard = styled.div`
@@ -44,7 +32,7 @@ const Button = styled(PrimaryButton)`
   margin-right: 0;
 `;
 
-const InputGruop = ({
+const InputGroup = ({
   disabled,
   onImageCardClick,
   onDetectionClick,
@@ -68,18 +56,11 @@ const InputGruop = ({
 
   return (
     <Container>
-      <ImageGroup>
-        {images.map((p, i) => {
-          return (
-            <ImageCard
-              key={i}
-              onClick={onImageCardClick}
-              src={p.imageURL}
-              title={p.filename}
-            />
-          );
-        })}
-      </ImageGroup>
+      <ImageCardCollection
+        images={images}
+        height={'65%'}
+        onImageCardClick={onImageCardClick}
+      />
       <InputCard>
         <form
           onSubmit={handleSubmit(() => {
@@ -109,4 +90,4 @@ const InputGruop = ({
     </Container>
   );
 };
-export default InputGruop;
+export default InputGroup;
