@@ -1,10 +1,11 @@
 import { createBrowserRouter, Outlet } from 'react-router-dom';
 import { NavbarLayout, NavbarSidebarLayout } from './components/Layout';
 import { ProjectInfoProvider } from './context/ProjectInfoContext';
+import AnnotatePage from './pages/AnnotatePage';
 import { SignInPage, SignUpPage } from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import ImagePage from './pages/ImagePage';
-import ModelPage from './pages/ModelPage';
+import PredictPage from './pages/PredictPage';
 import Projects from './pages/ProjectsPage';
 import ServerPage from './pages/ServerPage';
 
@@ -31,9 +32,9 @@ export const router = createBrowserRouter([
         element: <NavbarSidebarLayoutWrapper />,
         children: [
           { path: 'images', element: <ImagePage /> },
-          { path: 'annotate', element: <>annotate</> },
+          { path: 'annotate', element: <AnnotatePage /> },
           { path: 'train', element: <>train</> },
-          { path: 'predict', element: <ModelPage /> },
+          { path: 'predict', element: <PredictPage /> },
           { path: 'server', element: <ServerPage /> },
         ],
       },

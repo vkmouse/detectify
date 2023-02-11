@@ -48,7 +48,7 @@ const drawRect = (
   context.fillText(labelName, x, y - context.lineWidth / 2);
 };
 
-const ModelPage = () => {
+const PredictPage = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const currImageURL = useRef('');
   const thresholdRef = useRef(0.5);
@@ -134,4 +134,4 @@ const ModelPage = () => {
   );
 };
 
-export default ModelPage;
+export default PredictPage;
