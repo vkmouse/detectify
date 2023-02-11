@@ -19,6 +19,8 @@ var (
 	DNSAPIKey  string
 	DNSContent string
 	DNSName    string
+
+	JwtSecretKey []byte
 )
 
 func init() {
@@ -33,4 +35,6 @@ func init() {
 	DNSAPIKey = os.Getenv("DNS_API_KEY")
 	DNSContent = os.Getenv("DNS_CONTENT")
 	DNSName = os.Getenv("DNS_NAME")
+
+	JwtSecretKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 }

@@ -25,7 +25,8 @@ func validateServerStatus(host string) bool {
 }
 
 func reverseProxy(ctx *gin.Context) {
-	host := ctx.GetString("Host")
+	id := ctx.GetString("userID")
+	host := "http://" + id + ".localhost:8080"
 	remote, err := url.Parse(host + ctx.Request.RequestURI)
 	if err != nil {
 		panic(err)

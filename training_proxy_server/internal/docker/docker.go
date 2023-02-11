@@ -21,14 +21,14 @@ func init() {
 	ctx = context.Background()
 }
 
-func RunOpenSSH(id string, port int) error {
+func RunOpenSSH(id string, port int, username string) error {
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
 		Image: "lscr.io/linuxserver/openssh-server:latest",
 		Env: []string{
 			"SUDO_ACCESS=false",
 			"PASSWORD_ACCESS=true",
-			"USER_PASSWORD=" + id,
-			"USER_NAME=" + id,
+			"USER_PASSWORD=" + username,
+			"USER_NAME=" + username,
 			"DOCKER_MODS=linuxserver/mods:openssh-server-ssh-tunnel",
 			"VIRTUAL_HOST=" + id + ".localhost",
 			"VIRTUAL_PORT=80",

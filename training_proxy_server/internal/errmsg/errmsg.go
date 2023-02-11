@@ -7,6 +7,11 @@ const (
 	ERROR_FORBIDDEN     = 403
 	ERROR               = 500
 
+	ACCESS_TOKEN_NOT_FOUND    = 600
+	ACCESS_TOKEN_EXPIRED      = 601
+	ACCESS_TOKEN_INVALID      = 602
+	ACCESS_TOKEN_FORMAT_ERROR = 603
+
 	ERROR_SERVER_NOT_STARTED       = 1001
 	ERROR_SERVER_SPACE_NOT_CREATED = 1002
 
@@ -25,6 +30,11 @@ var codeMsg = map[int]CodeMsg{
 	ERROR_INVALID_INPUT: {Code: 400, Message: "Error: Invalid input"},
 	ERROR_FORBIDDEN:     {Code: 403, Message: "Error: Forbidden"},
 	ERROR:               {Code: 500, Message: "Error: Internal server error."},
+
+	ACCESS_TOKEN_NOT_FOUND:    {Code: 401, Message: "Error: Access token not found."},
+	ACCESS_TOKEN_EXPIRED:      {Code: 401, Message: "Error: Access token expired."},
+	ACCESS_TOKEN_INVALID:      {Code: 401, Message: "Error: Access token invalid."},
+	ACCESS_TOKEN_FORMAT_ERROR: {Code: 400, Message: "Error: Access token format error."},
 
 	ERROR_SERVER_NOT_STARTED:       {Code: 400, Message: "Error: Server is not started."},
 	ERROR_SERVER_SPACE_NOT_CREATED: {Code: 400, Message: "Error: Server space is not created."},

@@ -5,47 +5,64 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
+	"strings"
 	"training-proxy-server/config"
-	"training-proxy-server/internal/dns"
 	"training-proxy-server/internal/docker"
 	"training-proxy-server/internal/errmsg"
 	"training-proxy-server/internal/response"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 const (
-	SERVER_IDLE      string = "Idle"
-	SERVER_TRAINING  string = "Training"
-	SERVER_COMPLETED string = "Completed"
-	SERVER_STOPED    string = "Stopped"
-	SERVER_PENDING   string = "Pending"
+	SERVER_IDLE        string = "Idle"
+	SERVER_TRAINING    string = "Training"
+	SERVER_COMPLETED   string = "Completed"
+	SERVER_STOPED      string = "Stopped"
+	SERVER_NOT_CREATED string = "Not Created"
 )
 
 var userIdByPort map[int]string
+var usernameByPort map[int]string
+
+type ServerRequest struct {
+	UserID string `json:"userID"`
+}
 
 func init() {
 	userIdByPort = make(map[int]string, 0)
+	usernameByPort = make(map[int]string, 0)
+	createSpace("training", "training")
 }
 
 func GetServerStatus(ctx *gin.Context) {
-	id := ctx.GetString("ID")
+	id := ctx.GetString("userID")
 	if !isSpaceExists(id) {
-		response.Response(ctx, errmsg.ERROR_SERVER_SPACE_NOT_CREATED)
-		return
-	}
-
-	if !isDomainAlive(id) {
 		response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
 			"data": gin.H{
-				"status": SERVER_PENDING,
+				"status": SERVER_NOT_CREATED,
 			},
 		})
 		return
 	}
 
-	host := ctx.GetString("Host")
+	host := "http://" + id + ".localhost:8080"
+	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
+		"data": gin.H{
+			"status": getStatusFromTrainingServer(host),
+		},
+	})
+}
+
+func GetDefaultServerStatus(ctx *gin.Context) {
+	id := "training"
+	if !isSpaceExists(id) {
+		response.Response(ctx, errmsg.ERROR_SERVER_SPACE_NOT_CREATED)
+		return
+	}
+
+	host := "http://training.localhost:8080"
 	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
 		"data": gin.H{
 			"status": getStatusFromTrainingServer(host),
@@ -54,22 +71,22 @@ func GetServerStatus(ctx *gin.Context) {
 }
 
 func CreateServerSpace(ctx *gin.Context) {
-	id := ctx.GetString("ID")
+	id := ctx.GetString("userID")
 	if !isSpaceExists(id) {
-		createSpace(id)
+		username := generateUsername()
+		createSpace(id, username)
 	}
 	port, _ := getPort(id)
 	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
 		"data": gin.H{
-			"id":   id,
-			"port": port,
-			"ssh":  fmt.Sprintf("ssh -o ServerAliveInterval=20 -o TCPKeepAlive=no -R 0.0.0.0:80:localhost:5000 %s@%s -p %d", id, config.DNSContent, port),
+			"username": usernameByPort[port],
+			"port":     port,
 		},
 	})
 }
 
-func DeleteServerSpace(ctx *gin.Context) {
-	id := ctx.GetString("ID")
+func RemoveServerSpace(ctx *gin.Context) {
+	id := ctx.GetString("userID")
 	if isSpaceExists(id) {
 		deleteSpace(id)
 	}
@@ -94,46 +111,6 @@ func getStatusFromTrainingServer(host string) string {
 	return data.Data.Status
 }
 
-func isDomainAlive(id string) bool {
-	url := fmt.Sprintf("%s.%s", id, config.DNSName)
-	timeout := time.Duration(3 * time.Second)
-	client := &http.Client{
-		Timeout: timeout,
-	}
-
-	_, err := client.Get(url)
-	if err != nil {
-		log.Println(fmt.Sprintf("domain %s is alive", id))
-		return true
-	} else {
-		log.Println(fmt.Sprintf("domain %s is not alive", id))
-		return false
-	}
-}
-
-func isDomainExists(id string) bool {
-	names, err := dns.ListDNSRecord()
-	if err != nil {
-		log.Fatal(err, ": list dns failed")
-		return false
-	}
-
-	url := fmt.Sprintf("%s.%s", id, config.DNSName)
-	found := false
-	for _, name := range names {
-		if name == url {
-			found = true
-		}
-	}
-
-	if found {
-		log.Printf(fmt.Sprintf("domain %s is exists", id))
-	} else {
-		log.Printf(fmt.Sprintf("domain %s is not exists", id))
-	}
-	return found
-}
-
 func isContainerExists(id string) bool {
 	containers, err := docker.ListContainers()
 	if err != nil {
@@ -155,27 +132,23 @@ func isContainerExists(id string) bool {
 }
 
 func isSpaceExists(id string) bool {
-	return isContainerExists(id) && isDomainExists(id)
+	return isContainerExists(id)
 }
 
-func createSpace(id string) {
-	var err error
+func createSpace(id string, username string) {
 	if !isContainerExists(id) {
 		port, err := createPort(id)
 		if err != nil {
 			log.Fatal(err, ": port not enough")
 			return
 		}
-		err = docker.RunOpenSSH(id, port)
+
+		usernameByPort[port] = username
+		log.Println("username is " + username)
+		err = docker.RunOpenSSH(id, port, username)
 		if err != nil {
 			log.Fatal(err, ": run open ssh failed")
 			return
-		}
-	}
-	if !isDomainExists(id) {
-		dns.CreateDNSRecord(id)
-		if err != nil {
-			log.Fatal(err, ": create dns failed")
 		}
 	}
 }
@@ -183,7 +156,11 @@ func createSpace(id string) {
 func deleteSpace(id string) {
 	if isContainerExists(id) {
 		docker.DeleteContainerByName(id)
-		deletePort(id)
+		port, exists := getPort(id)
+		if exists {
+			delete(userIdByPort, port)
+			delete(usernameByPort, port)
+		}
 	}
 }
 
@@ -197,13 +174,6 @@ func createPort(id string) (int, error) {
 	return 0, fmt.Errorf(": port not enough")
 }
 
-func deletePort(id string) {
-	port, exists := getPort(id)
-	if exists {
-		delete(userIdByPort, port)
-	}
-}
-
 func getPort(id string) (int, bool) {
 	for port, userId := range userIdByPort {
 		if userId == id {
@@ -211,4 +181,13 @@ func getPort(id string) (int, bool) {
 		}
 	}
 	return 0, false
+}
+
+func generateUsername() string {
+	username := uuid.New().String()
+	firstChar := username[0]
+	if (firstChar >= 'a' && firstChar <= 'z') || (firstChar >= 'A' && firstChar <= 'Z') {
+		return strings.Replace(username, "-", "", -1)
+	}
+	return generateUsername()
 }

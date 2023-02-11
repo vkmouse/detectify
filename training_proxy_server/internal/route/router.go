@@ -13,16 +13,16 @@ func InitRouter() *gin.Engine {
 
 	engine.Use(log.GinLogger())
 	engine.Use(middleware.CORSMiddleware())
-	engine.Use(middleware.SubdomainMiddleware())
 
-	engine.GET("/server", api.GetServerStatus)
-	engine.PUT("/server", api.CreateServerSpace)
-	engine.DELETE("/server", api.DeleteServerSpace)
+	engine.GET("/server", middleware.JwtMiddleware(), api.GetServerStatus)
+	engine.PUT("/server", middleware.JwtMiddleware(), api.CreateServerSpace)
+	engine.DELETE("/server", middleware.JwtMiddleware(), api.RemoveServerSpace)
+	engine.GET("/server/default", api.GetDefaultServerStatus)
 
-	engine.POST("/model/train", api.ModelProxy)
-	engine.GET("/model/exported", api.ModelProxy)
-	engine.GET("/model/ir", api.ModelProxy)
-	engine.DELETE("/model", api.ModelProxy)
+	engine.POST("/model/train", middleware.JwtMiddleware(), api.ModelProxy)
+	engine.GET("/model/exported", middleware.JwtMiddleware(), api.ModelProxy)
+	engine.GET("/model/ir", middleware.JwtMiddleware(), api.ModelProxy)
+	engine.DELETE("/model", middleware.JwtMiddleware(), api.ModelProxy)
 
 	return engine
 }
