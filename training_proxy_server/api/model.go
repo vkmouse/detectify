@@ -11,7 +11,8 @@ import (
 )
 
 func ModelProxy(ctx *gin.Context) {
-	host := ctx.GetString("Host")
+	id := ctx.GetString("userID")
+	host := "http://" + id + ".localhost:8080"
 	if !validateServerStatus(host) {
 		response.Response(ctx, errmsg.ERROR_SERVER_NOT_STARTED)
 		return

@@ -120,14 +120,11 @@ func isContainerExists(id string) bool {
 
 	for _, container := range containers {
 		for _, name := range container.Names {
-			log.Printf("name is " + name)
 			if name == ("/" + id) {
-				log.Printf(fmt.Sprintf("container %s is exists", id))
 				return true
 			}
 		}
 	}
-	log.Printf(fmt.Sprintf("container %s is not exists", id))
 	return false
 }
 
@@ -144,7 +141,6 @@ func createSpace(id string, username string) {
 		}
 
 		usernameByPort[port] = username
-		log.Println("username is " + username)
 		err = docker.RunOpenSSH(id, port, username)
 		if err != nil {
 			log.Fatal(err, ": run open ssh failed")
