@@ -21,10 +21,10 @@ def train_model_async(training_params):
         trainer.init_workspace()
         trainer.import_dataset(training_params['dataset'], training_params['labels'])
         trainer.set_training_params(
-            pretrained_model_name=training_params['pre_trained_model'],
+            pretrained_model_name=training_params['preTrainedModel'],
             num_classes=len(training_params['labels']),
-            batch_size=training_params['batch_size'],
-            num_steps=training_params['num_steps'],
+            batch_size=training_params['batchSize'],
+            num_steps=training_params['numSteps'],
         )
         trainer.train()
         trainer.export_model()

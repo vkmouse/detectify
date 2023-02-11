@@ -75,6 +75,8 @@ def forward(
     verbose("Now forwarding remote port %d to %s:%d ..." % (forwarded_port, remote[0], remote[1]))
 
     try:
+        transport = client.get_transport()
+        transport.set_keepalive(30)
         reverse_forward_tunnel(forwarded_port, remote[0], remote[1], client.get_transport())
     except KeyboardInterrupt:
         print("C-c: Port forwarding stopped.")
