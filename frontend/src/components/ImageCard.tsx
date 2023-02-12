@@ -46,6 +46,7 @@ const TitleContainer = styled.div`
   justify-content: space-between;
   padding: 5px 10px;
   border-radius: 0 0 ${borderRadius}px ${borderRadius}px;
+  max-width: 150px;
 `;
 
 const Title = styled.span`
