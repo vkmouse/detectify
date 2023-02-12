@@ -129,6 +129,18 @@ const api = {
     const response = await trainingAxios.delete('/server');
     return response.data.data as GetServerStatusResponse;
   },
+  trainModel: async (data: {
+    dataset: BatchUploadResponse[];
+    labels: string[];
+    batchSize: number;
+    numSteps: number;
+  }) => {
+    const response = await trainingAxios.post('/model/train', {
+      ...data,
+      preTrainedModel: 'ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu-8',
+    });
+    console.log(response.data);
+  },
 };
 
 export default api;

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { Card } from '../../components/Card';
-import { Loading } from '../../components/Loading';
+import { Card } from './Card';
+import { Loading } from './Loading';
 
 const CanvasWrapper = styled.div`
   position: relative;
