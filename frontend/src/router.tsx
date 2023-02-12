@@ -1,12 +1,15 @@
 import { createBrowserRouter, Outlet } from 'react-router-dom';
 import { NavbarLayout, NavbarSidebarLayout } from './components/Layout';
 import { ProjectInfoProvider } from './context/ProjectInfoContext';
+import { ServerInfoProvider } from './context/ServerInfoContext';
+import AnnotatePage from './pages/AnnotatePage';
 import { SignInPage, SignUpPage } from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import ImagePage from './pages/ImagePage';
-import ModelPage from './pages/ModelPage';
+import PredictPage from './pages/PredictPage';
 import Projects from './pages/ProjectsPage';
 import ServerPage from './pages/ServerPage';
+import TrainPage from './pages/TrainPage';
 
 export const router = createBrowserRouter([
   {
@@ -20,7 +23,7 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        element: <NavbarLayout />,
+        element: <NavbarLayoutWrapper />,
         children: [
           { path: 'projects', element: <Projects /> },
           { path: '/', element: <HomePage /> },
@@ -31,9 +34,9 @@ export const router = createBrowserRouter([
         element: <NavbarSidebarLayoutWrapper />,
         children: [
           { path: 'images', element: <ImagePage /> },
-          { path: 'annotate', element: <>annotate</> },
-          { path: 'train', element: <>train</> },
-          { path: 'predict', element: <ModelPage /> },
+          { path: 'annotate', element: <AnnotatePage /> },
+          { path: 'train', element: <TrainPage /> },
+          { path: 'predict', element: <PredictPage /> },
           { path: 'server', element: <ServerPage /> },
         ],
       },
@@ -53,10 +56,20 @@ function ContextWrapper() {
   );
 }
 
+function NavbarLayoutWrapper() {
+  return (
+    <ServerInfoProvider>
+      <NavbarLayout />
+    </ServerInfoProvider>
+  );
+}
+
 function NavbarSidebarLayoutWrapper() {
   return (
-    <ProjectInfoProvider>
-      <NavbarSidebarLayout />
-    </ProjectInfoProvider>
+    <ServerInfoProvider>
+      <ProjectInfoProvider>
+        <NavbarSidebarLayout />
+      </ProjectInfoProvider>
+    </ServerInfoProvider>
   );
 }

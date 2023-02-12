@@ -1,8 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 import api from '../../api/api';
 import { PrimaryButton } from '../../components/Button';
+import { useServerInfo } from '../../context/ServerInfoContext';
 import ServerCard from './ServerCard';
 
 const ButtonContainer = styled.div`
@@ -16,8 +16,8 @@ const Button = styled(PrimaryButton)`
 `;
 
 const ServerPage = () => {
-  const [defaultServerStatus, setDefaultServerStatus] = useState('Pending');
-  const [serverStatus, setServerStatus] = useState('Not Created');
+  const { serverStatus, defaultServerStatus } = useServerInfo();
+
   const queryClient = useQueryClient();
   const { mutate: handleCreateSpace, isLoading: isCreating } = useMutation({
     mutationFn: api.createServerSpace,
@@ -28,18 +28,6 @@ const ServerPage = () => {
     onSuccess: () => queryClient.invalidateQueries(['serverStatus']),
   });
 
-  useQuery({
-    queryKey: ['serverStatus'],
-    queryFn: api.getServerStatus,
-    onSuccess: (data) => setServerStatus(data.status),
-  });
-
-  useEffect(() => {
-    api.getDefaultServerStatus().then((data) => {
-      setDefaultServerStatus(data.status);
-    });
-  }, []);
-
   return (
     <>
       <ServerCard
@@ -47,19 +35,20 @@ const ServerPage = () => {
         status={defaultServerStatus}
         removeDisabled={true}
       />
-      {serverStatus !== 'Not Created' && (
+      {serverStatus !== 'Not Created' ? (
         <ServerCard
           name="Self"
           status={serverStatus}
           removeDisabled={isRemoving}
           onRemoveClick={() => handleRemoveSpace()}
         />
+      ) : (
+        <ButtonContainer>
+          <Button disabled={isCreating} onClick={() => handleCreateSpace()}>
+            {isCreating ? 'Loading' : 'Create Space'}
+          </Button>
+        </ButtonContainer>
       )}
-      <ButtonContainer>
-        <Button disabled={isCreating} onClick={() => handleCreateSpace()}>
-          {isCreating ? 'Loading' : 'Create Space'}
-        </Button>
-      </ButtonContainer>
     </>
   );
 };
