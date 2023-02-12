@@ -1,6 +1,7 @@
 import { createBrowserRouter, Outlet } from 'react-router-dom';
 import { NavbarLayout, NavbarSidebarLayout } from './components/Layout';
 import { ProjectInfoProvider } from './context/ProjectInfoContext';
+import { ServerInfoProvider } from './context/ServerInfoContext';
 import AnnotatePage from './pages/AnnotatePage';
 import { SignInPage, SignUpPage } from './pages/AuthPage';
 import HomePage from './pages/HomePage';
@@ -22,7 +23,7 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        element: <NavbarLayout />,
+        element: <NavbarLayoutWrapper />,
         children: [
           { path: 'projects', element: <Projects /> },
           { path: '/', element: <HomePage /> },
@@ -55,10 +56,20 @@ function ContextWrapper() {
   );
 }
 
+function NavbarLayoutWrapper() {
+  return (
+    <ServerInfoProvider>
+      <NavbarLayout />
+    </ServerInfoProvider>
+  );
+}
+
 function NavbarSidebarLayoutWrapper() {
   return (
-    <ProjectInfoProvider>
-      <NavbarSidebarLayout />
-    </ProjectInfoProvider>
+    <ServerInfoProvider>
+      <ProjectInfoProvider>
+        <NavbarSidebarLayout />
+      </ProjectInfoProvider>
+    </ServerInfoProvider>
   );
 }

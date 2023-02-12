@@ -12,6 +12,7 @@ import {
 } from '../../components/InputFiled';
 
 import { useProjectInfo } from '../../context/ProjectInfoContext';
+import { useServerInfo } from '../../context/ServerInfoContext';
 import { BatchUploadResponse } from '../../types/api';
 
 const ButtonContainer = styled.div`
@@ -65,6 +66,11 @@ const prepareLabels = async (dataset: BatchUploadResponse[]) => {
 
 const TrainPage = () => {
   const { images } = useProjectInfo();
+  const { serverStatus, defaultServerStatus } = useServerInfo();
+  const trainingDisabled = !(
+    serverStatus === 'Idle' ||
+    (serverStatus === 'Not Created' && defaultServerStatus === 'Idle')
+  );
 
   const {
     register,
@@ -136,7 +142,9 @@ const TrainPage = () => {
         </InputField>
       </CardContainer>
       <ButtonContainer>
-        <PrimaryButton type="submit">Start Training</PrimaryButton>
+        <PrimaryButton disabled={trainingDisabled} type="submit">
+          Start Training
+        </PrimaryButton>
       </ButtonContainer>
     </form>
   );
