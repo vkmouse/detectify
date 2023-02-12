@@ -14,20 +14,23 @@ func ModelProxy(ctx *gin.Context) {
 	id := ctx.GetString("userID")
 	host := "http://" + id + ".localhost:8080"
 	if !validateServerStatus(host) {
+		host = "http://training.localhost:8080"
+	}
+
+	if !validateServerStatus(host) {
 		response.Response(ctx, errmsg.ERROR_SERVER_NOT_STARTED)
 		return
 	}
 
-	reverseProxy(ctx)
+	reverseProxy(ctx, host)
 }
 
 func validateServerStatus(host string) bool {
 	return getStatusFromTrainingServer(host) != SERVER_STOPED
 }
 
-func reverseProxy(ctx *gin.Context) {
-	id := ctx.GetString("userID")
-	host := "http://" + id + ".localhost:8080"
+func reverseProxy(ctx *gin.Context, host string) {
+
 	remote, err := url.Parse(host + ctx.Request.RequestURI)
 	if err != nil {
 		panic(err)
