@@ -19,10 +19,8 @@ func InitRouter() *gin.Engine {
 	engine.DELETE("/server", middleware.JwtMiddleware(), api.RemoveServerSpace)
 	engine.GET("/server/default", api.GetDefaultServerStatus)
 
-	engine.POST("/model/train", middleware.JwtMiddleware(), api.ModelProxy)
-	engine.GET("/model/exported", middleware.JwtMiddleware(), api.ModelProxy)
-	engine.GET("/model/ir", middleware.JwtMiddleware(), api.ModelProxy)
-	engine.DELETE("/model", middleware.JwtMiddleware(), api.ModelProxy)
+	engine.POST("/model/train", middleware.JwtMiddleware(), api.TrainModel)
+	engine.POST("/model/completed", api.TrainModelCompleted)
 
 	return engine
 }

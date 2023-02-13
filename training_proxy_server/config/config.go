@@ -14,11 +14,11 @@ var (
 	StartPort int
 	EndPort   int
 
-	DNSZoneID  string
-	DNSEmail   string
-	DNSAPIKey  string
-	DNSContent string
-	DNSName    string
+	R2BucketName      string
+	R2AccountId       string
+	R2AccessKeyId     string
+	R2AccessKeySecret string
+	R2AccessURL       string
 
 	JwtSecretKey []byte
 )
@@ -30,11 +30,11 @@ func init() {
 	StartPort, _ = strconv.Atoi(os.Getenv("START_PORT"))
 	EndPort, _ = strconv.Atoi(os.Getenv("END_PORT"))
 
-	DNSZoneID = os.Getenv("DNS_ZONE_ID")
-	DNSEmail = os.Getenv("DNS_EMAIL")
-	DNSAPIKey = os.Getenv("DNS_API_KEY")
-	DNSContent = os.Getenv("DNS_CONTENT")
-	DNSName = os.Getenv("DNS_NAME")
+	R2BucketName = os.Getenv("R2_BUCKET_NAME")
+	R2AccountId = os.Getenv("R2_ACCOUNT_ID")
+	R2AccessKeyId = os.Getenv("R2_ACCESS_KEY_ID")
+	R2AccessKeySecret = os.Getenv("R2_ACCESS_KEY_SECRET")
+	R2AccessURL = os.Getenv("R2_ACCESS_URL")
 
 	JwtSecretKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 }
