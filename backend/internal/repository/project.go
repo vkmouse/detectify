@@ -4,22 +4,11 @@ import (
 	"detectify/internal/model"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm/clause"
 )
 
 func AddProject(project *model.Project) error {
 	project.ID = uuid.NewString()
 	return db.Create(&project).Error
-}
-
-func AddProjectCategory(category *model.ProjectCategory) (bool, error) {
-	category.ID = uuid.NewString()
-	result := db.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "name"}, {Name: "project_id"}},
-		DoNothing: true},
-	).Create(&category)
-
-	return result.RowsAffected > 0, result.Error
 }
 
 func VerifyProjectAccess(userID string, projectID string) bool {

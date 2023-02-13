@@ -27,33 +27,6 @@ func AddProject(ctx *gin.Context) {
 	response.Response(ctx, errmsg.SUCCESS)
 }
 
-func AddProjectCategory(ctx *gin.Context) {
-	userID := ctx.GetString("userID")
-	var category model.ProjectCategory
-	err := ctx.BindJSON(&category)
-	if err != nil {
-		response.Response(ctx, errmsg.ERROR_INVALID_INPUT)
-		return
-	}
-
-	if !repository.VerifyProjectAccess(userID, category.ProjectID) {
-		response.Response(ctx, errmsg.ERROR_FORBIDDEN)
-		return
-	}
-
-	success, err := repository.AddProjectCategory(&category)
-	if !success {
-		response.Response(ctx, errmsg.ERROR_CATEGORY_EXIST)
-		return
-	}
-	if err != nil {
-		response.Response(ctx, errmsg.ERROR)
-		return
-	}
-
-	response.Response(ctx, errmsg.SUCCESS)
-}
-
 func GetProjects(ctx *gin.Context) {
 	userID := ctx.GetString("userID")
 	projects, err := repository.QueryProjectsWithCountsByUser(userID)
