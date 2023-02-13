@@ -10,5 +10,6 @@ type Project struct {
 	Name        string `gorm:"type:varchar(255) not null;" json:"name"`
 	Description string `gorm:"type:varchar(255) not null;" json:"description"`
 	Cover       string `gorm:"type:varchar(255) not null;" json:"cover"`
+	ModelURL    string `gorm:"type:varchar(255) not null;" json:"modelURL"`
 	UserID      string
 }

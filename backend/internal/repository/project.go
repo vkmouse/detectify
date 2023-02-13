@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"detectify/config"
 	"detectify/internal/model"
 
 	"github.com/google/uuid"
@@ -8,6 +9,7 @@ import (
 
 func AddProject(project *model.Project) error {
 	project.ID = uuid.NewString()
+	project.ModelURL = config.R2AccessURL + "ssd320"
 	return db.Create(&project).Error
 }
 
@@ -21,10 +23,9 @@ func VerifyProjectAccess(userID string, projectID string) bool {
 }
 
 type ProjectResponse struct {
-	ID              string `json:"id"`
-	Name            string `json:"name"`
-	CategoriesCount int    `json:"categoriesCount"`
-	ImagesCount     int    `json:"imagesCount"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	ImagesCount int    `json:"imagesCount"`
 }
 
 func QueryProjectsWithCountsByUser(userID string) ([]ProjectResponse, error) {
@@ -32,13 +33,20 @@ func QueryProjectsWithCountsByUser(userID string) ([]ProjectResponse, error) {
 	err := db.Table("projects").
 		Select(`projects.id,
 				projects.name,
-				count(distinct project_categories.id) as categories_count,
 				count(distinct project_images.id) as images_count`).
-		Joins(`left join project_categories on project_categories.project_id = projects.id
-			   left join project_images on project_images.project_id = projects.id`).
+		Joins(`left join project_images on project_images.project_id = projects.id`).
 		Where("projects.user_id = ?", userID).
 		Group("projects.id").
 		Scan(&projects).
 		Error
 	return projects, err
+}
+
+func QueryProject(userID string, projectID string) (model.Project, error) {
+	var project model.Project
+	err := db.
+		Select("id, name, model_url").
+		Where("user_id = ? AND id = ?", userID, projectID).
+		First(&project).Error
+	return project, err
 }

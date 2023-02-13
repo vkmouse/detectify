@@ -66,10 +66,10 @@ func CreateBatchUpload(ctx *gin.Context) {
 			AnnotationURL: "",
 		}
 		if data.ImageExt != "" {
-			result.ImageURL = r2.GeneratingPresignedURL(data.ID + data.ImageExt)
+			result.ImageURL = r2.GeneratingPresignedURL(getImagePath(dataset.ProjectID, data.ID, data.ImageExt))
 		}
 		if data.AnnotationExt != "" {
-			result.AnnotationURL = r2.GeneratingPresignedURL(data.ID + data.AnnotationExt)
+			result.AnnotationURL = r2.GeneratingPresignedURL(getAnnotationPath(dataset.ProjectID, data.ID, data.AnnotationExt))
 		}
 		results = append(results, result)
 	}
@@ -110,8 +110,8 @@ func PublishBatchUpload(ctx *gin.Context) {
 			ProjectID: dataset.ProjectID,
 		}
 
-		_, image.ImagePublished = bucketItems[item.ID+item.ImageExt]
-		_, image.AnnotationPublished = bucketItems[item.ID+item.AnnotationExt]
+		_, image.ImagePublished = bucketItems[getImagePath(dataset.ProjectID, item.ID, item.ImageExt)]
+		_, image.AnnotationPublished = bucketItems[getAnnotationPath(dataset.ProjectID, item.ID, item.AnnotationExt)]
 		images = append(images, image)
 	}
 
@@ -142,10 +142,18 @@ func GetProjectImages(ctx *gin.Context) {
 	for _, image := range images {
 		results = append(results, BatchUploadResult{
 			Filename:      image.Filename,
-			ImageURL:      config.R2AccessURL + image.ID + image.ImageExt,
-			AnnotationURL: config.R2AccessURL + image.ID + image.AnnotationExt,
+			ImageURL:      config.R2AccessURL + getImagePath(projectID, image.ID, image.ImageExt),
+			AnnotationURL: config.R2AccessURL + getAnnotationPath(projectID, image.ID, image.AnnotationExt),
 		})
 	}
 
 	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{"data": results})
+}
+
+func getImagePath(projectId string, imageId string, ext string) string {
+	return projectId + "/" + imageId + ext
+}
+
+func getAnnotationPath(projectId string, annotationId string, ext string) string {
+	return projectId + "/" + annotationId + ext
 }
