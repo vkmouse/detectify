@@ -14,6 +14,9 @@ const Button = styled.button`
 `;
 
 const PrimaryButton = styled(Button)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: ${(props) => props.theme.colors.primary};
   color: white;
   &:hover {
@@ -25,6 +28,9 @@ const PrimaryButton = styled(Button)`
 `;
 
 const DangerButton = styled(Button)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: ${(props) => props.theme.colors.danger};
   color: white;
   &:hover {

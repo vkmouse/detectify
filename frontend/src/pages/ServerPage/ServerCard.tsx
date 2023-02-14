@@ -1,6 +1,8 @@
 import styled from 'styled-components';
-import { PrimaryButton } from '../../components/Button';
+import { DangerButton, PrimaryButton } from '../../components/Button';
 import { Card } from '../ProjectsPage/styles';
+import ReloadIcon from '../../assets/rotate-cw.svg';
+import DeleteIcon from '../../assets/trash-2.svg';
 
 const Container = styled(Card)`
   display: flex;
@@ -32,11 +34,13 @@ const ServerCard = ({
   status,
   removeDisabled,
   onRemoveClick,
+  onReloadClick,
 }: {
   name: string;
   status: string;
   removeDisabled?: boolean;
   onRemoveClick?: () => void;
+  onReloadClick?: () => void;
 }) => {
   return (
     <Container>
@@ -52,13 +56,12 @@ const ServerCard = ({
           </Detail>
         </DetailContainer>
       </Grid>
-      <PrimaryButton
-        disabled={removeDisabled}
-        style={{ visibility: onRemoveClick ? 'visible' : 'hidden' }}
-        onClick={onRemoveClick}
-      >
-        Remove
+      <PrimaryButton onClick={onReloadClick}>
+        <ReloadIcon />
       </PrimaryButton>
+      <DangerButton disabled={removeDisabled} onClick={onRemoveClick}>
+        <DeleteIcon />
+      </DangerButton>
     </Container>
   );
 };

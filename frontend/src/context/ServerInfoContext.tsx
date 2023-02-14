@@ -1,43 +1,63 @@
-import { useQuery } from '@tanstack/react-query';
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { createContext, ReactNode, useContext, useState } from 'react';
 import api from '../api/api';
 
 type State = {
   serverStatus: string;
   defaultServerStatus: string;
+  reloadServerStatus: () => void;
+  reloadDefaultServerStatus: () => void;
 };
 
 const initialState: State = {
   serverStatus: '',
   defaultServerStatus: '',
+  reloadServerStatus: () => void 0,
+  reloadDefaultServerStatus: () => void 0,
 };
 
 const ServeInfoContext = createContext<State>(initialState);
 
 const ServerInfoProvider = ({ children }: { children: ReactNode }) => {
+  const queryClient = useQueryClient();
   const [defaultServerStatus, setDefaultServerStatus] = useState('Pending');
   const [serverStatus, setServerStatus] = useState('Not Created');
 
-  useEffect(() => {
-    api.getDefaultServerStatus().then((data) => {
-      setDefaultServerStatus(data.status);
-    });
-  }, []);
+  useQuery({
+    queryKey: ['defaultServerStatus'],
+    queryFn: () => {
+      setDefaultServerStatus('');
+      return api.getDefaultServerStatus();
+    },
+    onSuccess: (data) => setDefaultServerStatus(data.status),
+  });
 
   useQuery({
     queryKey: ['serverStatus'],
-    queryFn: api.getServerStatus,
+    queryFn: () => {
+      setServerStatus('');
+      return api.getServerStatus();
+    },
     onSuccess: (data) => setServerStatus(data.status),
   });
 
+  const reloadServerStatus = () => {
+    queryClient.invalidateQueries(['serverStatus']);
+  };
+
+  const reloadDefaultServerStatus = () => {
+    queryClient.invalidateQueries(['defaultServerStatus']);
+  };
+
   return (
-    <ServeInfoContext.Provider value={{ defaultServerStatus, serverStatus }}>
+    <ServeInfoContext.Provider
+      value={{
+        defaultServerStatus,
+        serverStatus,
+        reloadServerStatus,
+        reloadDefaultServerStatus,
+      }}
+    >
       {children}
     </ServeInfoContext.Provider>
   );

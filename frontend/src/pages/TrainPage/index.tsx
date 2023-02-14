@@ -78,8 +78,8 @@ const TrainPage = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      batchSize: 8,
-      numSteps: 10000,
+      batchSize: 4,
+      numSteps: 1000,
     },
   });
 
