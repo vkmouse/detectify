@@ -11,7 +11,9 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"training-proxy-server/config"
 	"training-proxy-server/internal/errmsg"
+	"training-proxy-server/internal/repository"
 	"training-proxy-server/internal/response"
 	"training-proxy-server/pkg/r2"
 
@@ -82,16 +84,51 @@ func TrainModelCompleted(ctx *gin.Context) {
 	if err != nil {
 		log.Println(err)
 	}
-	filename := fmt.Sprintf("%s/exported.zip", body.ProjectID)
+	filename := fmt.Sprintf("%s/exported_model.zip", body.ProjectID)
+	log.Printf("exported: %d", len(fileBytes))
 	r2.UploadFile(filename, fileBytes, "application/zip")
 
 	// upload ir model
 	resp, err = http.Get(host + "/model/ir")
+	fileBytes, _ = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Println(err)
 	}
-	filename = fmt.Sprintf("%s/ir.zip", body.ProjectID)
+	filename = fmt.Sprintf("%s/ir_model.zip", body.ProjectID)
+	log.Printf("ir: %d", len(fileBytes))
 	r2.UploadFile(filename, fileBytes, "application/zip")
+
+	// update database
+	err = repository.UpdateProjectModelURL(body.UserID, body.ProjectID, config.R2AccessURL+body.ProjectID)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// Create client
+	client := &http.Client{}
+	req, err := http.NewRequest("DELETE", host+"/model", nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	resp, err = client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer resp.Body.Close()
+
+	req, err = http.NewRequest("DELETE", host+"/webhooks/model/completed", nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	resp, err = client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer resp.Body.Close()
 }
 
 func validateServerStatus(host string) bool {
