@@ -15,6 +15,8 @@ var (
 	StartPort int
 	EndPort   int
 
+	SshHost string
+
 	MySQLHost     string
 	MySQLPort     string
 	MySQLUser     string
@@ -38,6 +40,8 @@ func init() {
 
 	StartPort, _ = strconv.Atoi(os.Getenv("START_PORT"))
 	EndPort, _ = strconv.Atoi(os.Getenv("END_PORT"))
+
+	SshHost = os.Getenv("SSH_HOST")
 
 	MySQLHost = os.Getenv("MYSQL_HOST")
 	MySQLPort = os.Getenv("MYSQL_PORT")

@@ -79,24 +79,16 @@ func TrainModelCompleted(ctx *gin.Context) {
 	}
 
 	// upload exported model
-	resp, err := http.Get(host + "/model/exported")
-	fileBytes, _ := ioutil.ReadAll(resp.Body)
+	err := receiveAndUpload(host+"/model/exported", fmt.Sprintf("%s/exported_model.zip", body.ProjectID))
 	if err != nil {
 		log.Println(err)
 	}
-	filename := fmt.Sprintf("%s/exported_model.zip", body.ProjectID)
-	log.Printf("exported: %d", len(fileBytes))
-	r2.UploadFile(filename, fileBytes, "application/zip")
 
 	// upload ir model
-	resp, err = http.Get(host + "/model/ir")
-	fileBytes, _ = ioutil.ReadAll(resp.Body)
+	err = receiveAndUpload(host+"/model/ir", fmt.Sprintf("%s/ir_model.zip", body.ProjectID))
 	if err != nil {
 		log.Println(err)
 	}
-	filename = fmt.Sprintf("%s/ir_model.zip", body.ProjectID)
-	log.Printf("ir: %d", len(fileBytes))
-	r2.UploadFile(filename, fileBytes, "application/zip")
 
 	// update database
 	err = repository.UpdateProjectModelURL(body.UserID, body.ProjectID, config.R2AccessURL+body.ProjectID)
@@ -111,7 +103,7 @@ func TrainModelCompleted(ctx *gin.Context) {
 		fmt.Println(err)
 		return
 	}
-	resp, err = client.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -156,4 +148,15 @@ func reverseProxy(ctx *gin.Context, host string) {
 	}
 
 	proxy.ServeHTTP(ctx.Writer, ctx.Request)
+}
+
+func receiveAndUpload(receiveURL string, filepath string) error {
+	resp, err := http.Get(receiveURL)
+	fileBytes, _ := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	log.Printf("exported: %d", len(fileBytes))
+	r2.UploadFile(filepath, fileBytes, "application/zip")
+	return nil
 }

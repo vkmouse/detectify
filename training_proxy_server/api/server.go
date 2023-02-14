@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -77,10 +78,14 @@ func CreateServerSpace(ctx *gin.Context) {
 		createSpace(id, username)
 	}
 	port, _ := getPort(id)
+
+	host := config.SshHost
+	username := usernameByPort[port]
+	password := usernameByPort[port]
+
 	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
 		"data": gin.H{
-			"username": usernameByPort[port],
-			"port":     port,
+			"token": createToken(host, port, username, password),
 		},
 	})
 }
@@ -186,4 +191,18 @@ func generateUsername() string {
 		return strings.Replace(username, "-", "", -1)
 	}
 	return generateUsername()
+}
+
+func createToken(host string, port int, username string, password string) string {
+	data := &gin.H{
+		"host":     host,
+		"port":     port,
+		"username": username,
+		"password": password,
+	}
+	b, err := json.Marshal(data)
+	if err != nil {
+		log.Println(err)
+	}
+	return base64.StdEncoding.EncodeToString(b)
 }
