@@ -12,7 +12,7 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.API_URL': JSON.stringify('http://localhost:5000'),
       'process.env.INFER_URL': JSON.stringify('http://localhost:8000'),
-      'process.env.TRAIN_URL': JSON.stringify('https://training.detectify.tw'),
+      'process.env.TRAIN_URL': JSON.stringify('http://localhost'),
     }),
   ],
 };

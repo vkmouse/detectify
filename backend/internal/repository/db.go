@@ -21,7 +21,7 @@ var db *gorm.DB
 
 func InitDbContext() {
 	var err error
-	models := []interface{}{&model.User{}, &model.Project{}, &model.ProjectCategory{}, &model.ProjectImage{}}
+	models := []interface{}{&model.User{}, &model.Project{}, &model.ProjectImage{}}
 
 	if config.DbMode == "MySQL" {
 		dns := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True",

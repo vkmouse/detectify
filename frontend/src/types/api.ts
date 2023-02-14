@@ -45,8 +45,14 @@ export type UserInfo = {
 export type ProjectResponse = {
   id: string;
   name: string;
-  categoriesCount: number;
   imagesCount: number;
+};
+
+export type ProjectInfoResponse = {
+  projectId: string;
+  projectName: string;
+  irModel: string;
+  exportedModel: string;
 };
 
 export type BatchUploadData = {

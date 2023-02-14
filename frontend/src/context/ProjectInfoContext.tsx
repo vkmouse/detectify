@@ -13,12 +13,16 @@ type State = {
   id: string;
   name: string | null;
   images: BatchUploadResponse[];
+  irModel: string;
+  exportedModel: string;
 };
 
 const initialState: State = {
   id: '',
   name: null,
   images: [],
+  irModel: '',
+  exportedModel: '',
 };
 
 const ProjectInfoContext = createContext<State>(initialState);
@@ -41,29 +45,31 @@ const useProjectImages = (projectId: string) => {
 
 const useProjectName = (projectId: string) => {
   const [name, setName] = useState('');
+  const [irModel, setIRModel] = useState('');
+  const [exportedModel, setExportedModel] = useState('');
 
   useEffect(() => {
-    // TODO: new project info api to get name
-    api.getProjects().then((data) => {
-      const detail = data.filter((p) => p.id === projectId).at(0);
-      if (detail) {
-        setName(detail.name);
-      }
+    api.getProject(projectId).then((data) => {
+      setName(data.projectName);
+      setIRModel(data.irModel);
+      setExportedModel(data.exportedModel);
     });
   }, []);
 
-  return { name };
+  return { irModel, exportedModel, name };
 };
 
 const ProjectInfoProvider = ({ children }: { children: ReactNode }) => {
   const { pathname } = window.location;
   const subs = pathname.split('/');
   const id = subs[subs.findIndex((p) => p === 'project') + 1];
-  const { name } = useProjectName(id);
+  const { name, irModel, exportedModel } = useProjectName(id);
   const { images } = useProjectImages(id);
 
   return (
-    <ProjectInfoContext.Provider value={{ id, name, images }}>
+    <ProjectInfoContext.Provider
+      value={{ id, name, images, irModel, exportedModel }}
+    >
       {children}
     </ProjectInfoContext.Provider>
   );

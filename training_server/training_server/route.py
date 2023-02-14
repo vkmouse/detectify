@@ -5,6 +5,7 @@ from training_server import controller
 
 model_bp = Blueprint("model", __name__)
 server_bp = Blueprint("server", __name__)
+server_bp = Blueprint("webhooks", __name__)
 
 
 @model_bp.route('/model/train', methods=['POST'])
@@ -70,6 +71,26 @@ def get_server_status():
         "data": {
             "status": controller.get_server_status(),
         },
+        "message": "Success",
+        "status": 200,
+    }, 200
+
+
+@server_bp.route('/webhooks/model/completed', methods=['POST'])
+def register_training_completed():
+    data = request.get_json()
+    controller.add_training_completed_hook(data['url'], data['data'])
+    return {
+        "message": "Success",
+        "status": 200,
+    }, 200
+
+
+@server_bp.route('/webhooks/model/completed', methods=['DELETE'])
+def unregister_training_completed():
+    data = request.get_json()
+    controller.remove_training_completed_hook(data['url'])
+    return {
         "message": "Success",
         "status": 200,
     }, 200

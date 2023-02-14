@@ -7,6 +7,7 @@ import {
   InferRequest,
   InferResponse,
   LoginRequest,
+  ProjectInfoResponse,
   ProjectResponse,
   RegisterRequest,
   UserInfo,
@@ -62,6 +63,11 @@ const api = {
   },
   addProject: async (props: { name: string }) => {
     await authAxios.post('/project', props);
+  },
+  getProject: async (projectId: string): Promise<ProjectInfoResponse> => {
+    const response = await authAxios.get(`/project/${projectId}`);
+    const { data } = await response.data;
+    return data;
   },
 
   // project image api
@@ -130,6 +136,7 @@ const api = {
     return response.data.data as GetServerStatusResponse;
   },
   trainModel: async (data: {
+    projectId: string;
     dataset: BatchUploadResponse[];
     labels: string[];
     batchSize: number;

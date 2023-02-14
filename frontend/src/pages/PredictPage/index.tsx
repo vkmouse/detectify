@@ -5,6 +5,7 @@ import InputGroup from './InputGroup';
 import PreviewCanvas from '../../components/PreviewCanvas';
 import styled from 'styled-components';
 import { drawBoundingBoxes } from '../../utils/canvasUtils';
+import { useProjectInfo } from '../../context/ProjectInfoContext';
 
 type Size = {
   width: number;
@@ -27,6 +28,7 @@ const PredictPage = () => {
     height: 0,
   });
   const [displayRadio, setDisplayRadio] = useState(1.0);
+  const { irModel } = useProjectInfo();
 
   const updateRect = (canvasSize: Size, size: Size) => {
     let { width, height } = size;
@@ -59,8 +61,7 @@ const PredictPage = () => {
     queryKey: ['infer'],
     queryFn: async () =>
       api.infer({
-        modelURL:
-          'https://pub-524340b28b994541ba4d1f39e64d2b3d.r2.dev/ssd320.zip',
+        modelURL: irModel,
         imageURL: currImageURL.current,
         threshold: thresholdRef.current,
       }),
