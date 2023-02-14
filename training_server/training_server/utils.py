@@ -1,3 +1,5 @@
+import ast
+import base64
 import io
 import os.path as path
 import os
@@ -55,3 +57,13 @@ def cpdir(src, dst):
 
 def generate_uuid():
     return str(uuid.uuid4())
+
+
+def parse_token(token):
+    try:
+        byte_str = base64.b64decode(token)
+        dict_str = byte_str.decode("UTF-8")
+        data = ast.literal_eval(dict_str)
+        return data
+    except:
+        return None
