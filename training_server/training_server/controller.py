@@ -73,8 +73,9 @@ def remove_training_completed_hook(url):
 
 
 def call_training_completed_hooks():
-    for url in training_completed_hooks:
-        send_training_completed(url, training_completed_hooks[url])
+    hooks = training_completed_hooks.copy()
+    for url in hooks:
+        send_training_completed(url, hooks[url])
 
 
 def send_training_completed(url, data):
