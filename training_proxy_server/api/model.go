@@ -118,7 +118,12 @@ func TrainModelCompleted(ctx *gin.Context) {
 	}
 	defer resp.Body.Close()
 
-	req, err = http.NewRequest("DELETE", host+"/webhooks/model/completed", nil)
+	values := gin.H{
+		"url": config.DomainName + "/model/completed",
+	}
+	jsonValue, _ := json.Marshal(values)
+	req, err = http.NewRequest("DELETE", host+"/webhooks/model/completed", bytes.NewBuffer(jsonValue))
+	req.Header.Add("content-type", "application/json")
 	if err != nil {
 		fmt.Println(err)
 		return
