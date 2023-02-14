@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask import make_response
 from flask import request
+from flask import send_file
 from training_server import controller
 
 model_bp = Blueprint("model", __name__)
@@ -27,10 +28,7 @@ def train():
 def get_exported_model():
     memory_file = controller.get_exported_model()
     if memory_file:
-        response = make_response(memory_file.read())
-        response.headers['Content-Disposition'] = f'attachment; filename=exported_model.zip'
-        response.headers['Content-Type'] = 'application/zip'
-        return response
+        return send_file(memory_file, mimetype='application/zip')
     return {
         "message": "Error: Training is not completed yet.",
         "status": 2002,
@@ -41,10 +39,7 @@ def get_exported_model():
 def get_ir_model():
     memory_file = controller.get_ir_model()
     if memory_file:
-        response = make_response(memory_file.read())
-        response.headers['Content-Disposition'] = f'attachment; filename=ir_model.zip'
-        response.headers['Content-Type'] = 'application/zip'
-        return response
+        return send_file(memory_file, mimetype='application/zip')
     return {
         "message": "Error: Training is not completed yet.",
         "status": 2002,
