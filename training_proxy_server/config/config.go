@@ -10,6 +10,7 @@ import (
 var (
 	HttpPort    string
 	AllowOrigin string
+	DomainName  string
 
 	StartPort int
 	EndPort   int
@@ -33,6 +34,7 @@ var (
 func init() {
 	HttpPort = os.Getenv("HTTP_PORT")
 	AllowOrigin = os.Getenv("ALLOWED_CORS_ORIGIN")
+	DomainName = os.Getenv("DOMAIN_NAME")
 
 	StartPort, _ = strconv.Atoi(os.Getenv("START_PORT"))
 	EndPort, _ = strconv.Atoi(os.Getenv("END_PORT"))

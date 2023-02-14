@@ -48,7 +48,7 @@ func TrainModel(ctx *gin.Context) {
 
 	// add hook to training completed
 	values := gin.H{
-		"url": "http://localhost/model/completed",
+		"url": config.DomainName + "/model/completed",
 		"data": gin.H{
 			"userId":    id,
 			"projectId": data.ProjectID,
