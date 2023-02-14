@@ -65,7 +65,7 @@ const prepareLabels = async (dataset: BatchUploadResponse[]) => {
 };
 
 const TrainPage = () => {
-  const { images } = useProjectInfo();
+  const { id: projectId, images } = useProjectInfo();
   const { serverStatus, defaultServerStatus } = useServerInfo();
   const trainingDisabled = !(
     serverStatus === 'Idle' ||
@@ -89,6 +89,7 @@ const TrainPage = () => {
 
     if (dataset.length > 0 && labels.length > 0) {
       api.trainModel({
+        projectId,
         dataset,
         labels,
         batchSize,

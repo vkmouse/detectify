@@ -136,6 +136,7 @@ const api = {
     return response.data.data as GetServerStatusResponse;
   },
   trainModel: async (data: {
+    projectId: string;
     dataset: BatchUploadResponse[];
     labels: string[];
     batchSize: number;
