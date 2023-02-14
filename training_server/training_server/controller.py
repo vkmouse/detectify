@@ -13,7 +13,7 @@ SERVER_COMPLETED = "Completed"
 SERVER_STOPED = "Stopped"
 
 server_status = {"status": SERVER_IDLE}
-training_completed_hooks = []
+training_completed_hooks = {}
 
 
 def get_server_status():
@@ -65,12 +65,16 @@ def release():
 
 
 def add_training_completed_hook(url, data):
-    training_completed_hooks.append({'url': url, 'data': data})
+    training_completed_hooks[url] = data
+
+
+def remove_training_completed_hook(url):
+    training_completed_hooks.pop(url, None)
 
 
 def call_training_completed_hooks():
-    for hook in training_completed_hooks:
-        send_training_completed(hook['url'], hook['data'])
+    for url in training_completed_hooks:
+        send_training_completed(url, training_completed_hooks[url])
 
 
 def send_training_completed(url, data):

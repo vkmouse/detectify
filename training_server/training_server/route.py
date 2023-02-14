@@ -84,3 +84,13 @@ def register_training_completed():
         "message": "Success",
         "status": 200,
     }, 200
+
+
+@server_bp.route('/webhooks/model/completed', methods=['DELETE'])
+def unregister_training_completed():
+    data = request.get_json()
+    controller.remove_training_completed_hook(data['url'])
+    return {
+        "message": "Success",
+        "status": 200,
+    }, 200
