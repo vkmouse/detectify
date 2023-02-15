@@ -7,6 +7,7 @@ import ServerCard from './ServerCard';
 import PlusIcon from '../../assets/plus-circle.svg';
 import { Loader } from '../../components/Loading';
 import { Card } from '../../components/Card';
+import Tutorial from './Tutorial';
 
 const CardContainer = styled(Card)`
   display: flex;
@@ -64,6 +65,7 @@ const ServerPage = () => {
           name="Self"
           status={serverStatus}
           removeDisabled={isRemoving}
+          onCopyClick={() => void 0}
           onRemoveClick={handleRemoveSpace}
           onReloadClick={reloadServerStatus}
         />
@@ -74,6 +76,7 @@ const ServerPage = () => {
           </Button>
         </ButtonContainer>
       )}
+      <Tutorial />
     </>
   );
 };

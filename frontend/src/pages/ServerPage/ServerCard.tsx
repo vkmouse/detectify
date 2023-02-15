@@ -1,8 +1,9 @@
 import styled from 'styled-components';
 import { DangerButton, PrimaryButton } from '../../components/Button';
 import { Card } from '../ProjectsPage/styles';
-import ReloadIcon from '../../assets/rotate-cw.svg';
+import CopyIcon from '../../assets/copy.svg';
 import DeleteIcon from '../../assets/trash-2.svg';
+import ReloadIcon from '../../assets/rotate-cw.svg';
 
 const Container = styled(Card)`
   display: flex;
@@ -33,12 +34,14 @@ const ServerCard = ({
   name,
   status,
   removeDisabled,
+  onCopyClick,
   onRemoveClick,
   onReloadClick,
 }: {
   name: string;
   status: string;
   removeDisabled?: boolean;
+  onCopyClick?: () => void;
   onRemoveClick?: () => void;
   onReloadClick?: () => void;
 }) => {
@@ -56,6 +59,9 @@ const ServerCard = ({
           </Detail>
         </DetailContainer>
       </Grid>
+      <PrimaryButton style={{ visibility: onCopyClick ? 'visible' : 'hidden' }}>
+        <CopyIcon />
+      </PrimaryButton>
       <PrimaryButton onClick={onReloadClick}>
         <ReloadIcon />
       </PrimaryButton>
