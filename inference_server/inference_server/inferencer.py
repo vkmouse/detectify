@@ -9,18 +9,20 @@ from inference_server import utils
 
 class BaseInferencer:
     def __init__(self, model_url):
-        self.workspace = utils.path.join(config.workspace_path, utils.generate_uuid())
+        segments = model_url.split('/')
+        project_id = segments[-2]
+        self.workspace = utils.path.join(config.workspace_path, project_id)
         utils.mkdir_if_not_exists(config.workspace_path)
-        utils.mkdir(self.workspace)
-        BaseInferencer.download_model(model_url, self.workspace)
+        utils.mkdir_if_not_exists(self.workspace)
+
+        if not utils.path.exists(self.workspace):
+            BaseInferencer.download_model(model_url, self.workspace)
+
         self.model = BaseInferencer.load_model(self.workspace)
         data = self.load_meta_data(self.workspace)
         self.model_width = int(data['model']['width'])
         self.model_height = int(data['model']['height'])
         self.label_map = data['labels']
-
-    def __del__(self):
-        utils.rmdir(self.workspace)
 
     def infer(self, url):
         filepath = BaseInferencer.download_image(url, self.workspace)
@@ -75,5 +77,10 @@ class BaseInferencer:
 
     @staticmethod
     def download_image(url, savedir):
-        id = utils.generate_uuid()
+        segments = url.split('/')
+        id = segments[-1].split('.')[0]
+        extension = utils.get_file_extension(url)
+        filepath = utils.path.join(savedir, id + extension)
+        if utils.path.exists(filepath):
+            return filepath
         return utils.download_file(url, savedir, f'{id}')
