@@ -32,6 +32,7 @@ const Button = styled(OutlinePrimaryButton)`
 
 const ServerPage = () => {
   const {
+    token,
     serverStatus,
     defaultServerStatus,
     reloadServerStatus,
@@ -65,7 +66,7 @@ const ServerPage = () => {
           name="Self"
           status={serverStatus}
           removeDisabled={isRemoving}
-          token="123"
+          token={token}
           onCopyClick={() => void 0}
           onRemoveClick={handleRemoveSpace}
           onReloadClick={reloadServerStatus}
