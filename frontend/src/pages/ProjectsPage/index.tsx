@@ -51,7 +51,6 @@ const ProjectsPage = () => {
           <Link to={`/project/${project.id}`} key={i}>
             <ImageCard src={defaultCover} title={project.name}>
               <InfoWrapper>
-                <span>Category: {project.categoriesCount}</span>
                 <span>images: {project.imagesCount}</span>
               </InfoWrapper>
             </ImageCard>
