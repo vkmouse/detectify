@@ -98,6 +98,7 @@ export type InferResponse = {
   y: number;
 };
 
-export type GetServerStatusResponse = {
+export type ServerStatusResponse = {
   status: string;
+  token: string;
 };

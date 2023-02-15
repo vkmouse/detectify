@@ -3,7 +3,7 @@ import {
   BatchPublishRequest,
   BatchUploadRequest,
   BatchUploadResponse,
-  GetServerStatusResponse,
+  ServerStatusResponse,
   InferRequest,
   InferResponse,
   LoginRequest,
@@ -121,19 +121,19 @@ const api = {
   // training api
   getServerStatus: async () => {
     const response = await trainingAxios.get('/server');
-    return response.data.data as GetServerStatusResponse;
+    return response.data.data as ServerStatusResponse;
   },
   getDefaultServerStatus: async () => {
     const response = await trainingAxios.get('/server/default');
-    return response.data.data as GetServerStatusResponse;
+    return response.data.data as ServerStatusResponse;
   },
   createServerSpace: async () => {
     const response = await trainingAxios.put('/server');
-    return response.data.data as GetServerStatusResponse;
+    return response.data.data as ServerStatusResponse;
   },
   removeServerSpace: async () => {
     const response = await trainingAxios.delete('/server');
-    return response.data.data as GetServerStatusResponse;
+    return response.data.data as ServerStatusResponse;
   },
   trainModel: async (data: {
     projectId: string;

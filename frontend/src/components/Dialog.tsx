@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import styled from 'styled-components';
 
 const DialogContainer = styled.div<{ open: boolean }>`
@@ -48,7 +49,7 @@ const DialogTitle = styled.div`
 `;
 
 const Dialog = (props: {
-  children?: string | JSX.Element | JSX.Element[];
+  children?: ReactNode;
   open: boolean;
   onClose: () => void;
 }) => {

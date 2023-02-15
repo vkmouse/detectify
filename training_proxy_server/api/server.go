@@ -49,9 +49,11 @@ func GetServerStatus(ctx *gin.Context) {
 	}
 
 	host := "http://" + id + ".localhost:8080"
+	token, _ := encodeToken(id)
 	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
 		"data": gin.H{
 			"status": getStatusFromTrainingServer(host),
+			"token":  token,
 		},
 	})
 }
@@ -67,6 +69,7 @@ func GetDefaultServerStatus(ctx *gin.Context) {
 	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
 		"data": gin.H{
 			"status": getStatusFromTrainingServer(host),
+			"token":  "",
 		},
 	})
 }
@@ -77,15 +80,12 @@ func CreateServerSpace(ctx *gin.Context) {
 		username := generateUsername()
 		createSpace(id, username)
 	}
-	port, _ := getPort(id)
 
-	host := config.SshHost
-	username := usernameByPort[port]
-	password := usernameByPort[port]
+	token, _ := encodeToken(id)
 
 	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
 		"data": gin.H{
-			"token": createToken(host, port, username, password),
+			"token": token,
 		},
 	})
 }
@@ -193,16 +193,21 @@ func generateUsername() string {
 	return generateUsername()
 }
 
-func createToken(host string, port int, username string, password string) string {
+func encodeToken(id string) (string, bool) {
+	port, exists := getPort(id)
+	if !exists {
+		return "", false
+	}
+
 	data := &gin.H{
-		"host":     host,
+		"host":     config.SshHost,
 		"port":     port,
-		"username": username,
-		"password": password,
+		"username": usernameByPort[port],
+		"password": usernameByPort[port],
 	}
 	b, err := json.Marshal(data)
 	if err != nil {
 		log.Println(err)
 	}
-	return base64.StdEncoding.EncodeToString(b)
+	return base64.StdEncoding.EncodeToString(b), true
 }
