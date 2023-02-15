@@ -20,3 +20,4 @@ docker run -d -p 8080:80 -v /var/run/docker.sock:/tmp/docker.sock:ro nginxproxy/
 
 /app/main
 
+
