@@ -1,7 +1,8 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import styled from 'styled-components';
 import { PrimaryButton } from '../../components/Button';
 import { Card } from '../../components/Card';
+import ImageModal from '../../components/ImageModal';
 import { H3 } from '../../components/Typography';
 
 const Container = styled(Card)`
@@ -23,6 +24,7 @@ const Image = styled.img`
   object-position: center;
   width: 100%;
   border-radius: 10px;
+  cursor: pointer;
 `;
 
 const Article = styled.div`
@@ -56,26 +58,31 @@ const TutorialCard = ({
   onNextStepClick?: () => void;
   onPrevStepClick?: () => void;
 }) => {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Container>
-      <Image src={img} />
-      <Article>
-        <H3>{title}</H3>
-        <p>{description}</p>
-        <BottomContainer>
-          <div>
-            {onPrevStepClick && (
-              <StepButton onClick={onPrevStepClick}>Previous Step</StepButton>
-            )}
-          </div>
-          <div>
-            {onNextStepClick && (
-              <StepButton onClick={onNextStepClick}>Next Step</StepButton>
-            )}
-          </div>
-        </BottomContainer>
-      </Article>
-    </Container>
+    <>
+      <ImageModal src={img} open={open} onClose={() => setOpen(false)} />
+      <Container>
+        <Image src={img} onClick={() => setOpen(true)} />
+        <Article>
+          <H3>{title}</H3>
+          <p>{description}</p>
+          <BottomContainer>
+            <div>
+              {onPrevStepClick && (
+                <StepButton onClick={onPrevStepClick}>Previous Step</StepButton>
+              )}
+            </div>
+            <div>
+              {onNextStepClick && (
+                <StepButton onClick={onNextStepClick}>Next Step</StepButton>
+              )}
+            </div>
+          </BottomContainer>
+        </Article>
+      </Container>
+    </>
   );
 };
 
