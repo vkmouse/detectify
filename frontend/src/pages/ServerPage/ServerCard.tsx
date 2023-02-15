@@ -4,6 +4,7 @@ import { Card } from '../ProjectsPage/styles';
 import CopyIcon from '../../assets/copy.svg';
 import DeleteIcon from '../../assets/trash-2.svg';
 import ReloadIcon from '../../assets/rotate-cw.svg';
+import { useState } from 'react';
 
 const Container = styled(Card)`
   display: flex;
@@ -30,10 +31,37 @@ const Detail = styled.div`
   font-weight: bold;
 `;
 
+const TooltipText = styled.div`
+  visibility: hidden;
+  position: absolute;
+  bottom: 110%;
+  right: -125%;
+  z-index: 1;
+  width: 170px;
+  background-color: #555;
+  color: #fff;
+  border-radius: 6px;
+  padding: 5px;
+  opacity: 0;
+  transition: opacity 0.3s;
+`;
+
+const Tooltip = styled(PrimaryButton)`
+  position: relative;
+  &:hover ${TooltipText} {
+    visibility: visible;
+    opacity: 1;
+  }
+`;
+
+const copyMsgClick = 'Click to copy token';
+const copyMsgSuccess = 'Copied to clipboard!';
+
 const ServerCard = ({
   name,
   status,
   removeDisabled,
+  token,
   onCopyClick,
   onRemoveClick,
   onReloadClick,
@@ -41,10 +69,13 @@ const ServerCard = ({
   name: string;
   status: string;
   removeDisabled?: boolean;
+  token?: string;
   onCopyClick?: () => void;
   onRemoveClick?: () => void;
   onReloadClick?: () => void;
 }) => {
+  const [tooltip, setTooltip] = useState(copyMsgClick);
+
   return (
     <Container>
       <Grid>
@@ -59,9 +90,21 @@ const ServerCard = ({
           </Detail>
         </DetailContainer>
       </Grid>
-      <PrimaryButton style={{ visibility: onCopyClick ? 'visible' : 'hidden' }}>
+      <Tooltip
+        style={{ visibility: onCopyClick ? 'visible' : 'hidden' }}
+        onClick={() => {
+          if (token) {
+            setTooltip(copyMsgSuccess);
+            navigator.clipboard.writeText(token);
+          }
+        }}
+        onMouseLeave={() => {
+          setTooltip(copyMsgClick);
+        }}
+      >
+        <TooltipText>{tooltip}</TooltipText>
         <CopyIcon />
-      </PrimaryButton>
+      </Tooltip>
       <PrimaryButton onClick={onReloadClick}>
         <ReloadIcon />
       </PrimaryButton>

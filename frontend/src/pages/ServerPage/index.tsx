@@ -65,6 +65,7 @@ const ServerPage = () => {
           name="Self"
           status={serverStatus}
           removeDisabled={isRemoving}
+          token="123"
           onCopyClick={() => void 0}
           onRemoveClick={handleRemoveSpace}
           onReloadClick={reloadServerStatus}
