@@ -7,6 +7,7 @@ const darkTheme: DefaultTheme = {
     primary: '#3f80ea',
     backgroundColor: '#293042',
     gray: '#a9acb3',
+    gray200: '#545968',
     gray400: '#7f838e',
     gray500: '#9498a1',
     gray600: '#a9acb3',

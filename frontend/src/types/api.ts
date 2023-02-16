@@ -102,3 +102,9 @@ export type ServerStatusResponse = {
   status: string;
   token: string;
 };
+
+export type TrainingStatusResponse = {
+  progress: number | null;
+  status: string | null;
+  duration: string | null;
+};

@@ -22,6 +22,7 @@ workspace_ir_model = os.path.join(workspace_path, 'ir_model')
 workspace_ir_model_data = os.path.join(workspace_path, 'ir_model', 'data.meta')
 workspace_models = os.path.join(workspace_path, 'models')
 workspace_models_pipeline = os.path.join(workspace_path, 'models', 'pipeline.config')
+workspace_models_checkpoint = os.path.join(workspace_path, 'models', 'checkpoint')
 workspace_pretrained_model = os.path.join(workspace_path, 'pre-trained-model')
 workspace_pretrained_model_pipeline = os.path.join(workspace_path, 'pre-trained-model', 'pipeline.config')
 

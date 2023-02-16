@@ -37,6 +37,7 @@ func QueryProjectsWithCountsByUser(userID string) ([]ProjectResponse, error) {
 		Joins(`left join project_images on project_images.project_id = projects.id`).
 		Where("projects.user_id = ?", userID).
 		Group("projects.id").
+		Order("projects.created_at desc").
 		Scan(&projects).
 		Error
 	return projects, err

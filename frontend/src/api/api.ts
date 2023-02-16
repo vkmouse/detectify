@@ -11,6 +11,7 @@ import {
   ProjectResponse,
   RegisterRequest,
   UserInfo,
+  TrainingStatusResponse,
 } from '../types/api';
 import {
   authAxios,
@@ -135,6 +136,10 @@ const api = {
     const response = await trainingAxios.delete('/server');
     return response.data.data as ServerStatusResponse;
   },
+  getTrainingStatus: async () => {
+    const response = await trainingAxios.get('/model/train');
+    return response.data.data as TrainingStatusResponse;
+  },
   trainModel: async (data: {
     projectId: string;
     dataset: BatchUploadResponse[];
@@ -146,7 +151,7 @@ const api = {
       ...data,
       preTrainedModel: 'ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu-8',
     });
-    console.log(response.data);
+    return response.data;
   },
 };
 
