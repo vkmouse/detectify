@@ -1,11 +1,19 @@
 import json
 import subprocess
+
+from object_detection import model_lib_v2
 from training_server import config
 from training_server import utils
+
+TRAINER_INIT = "Initializing"
+TRAINER_TRAINING = "Training"
+TRAINER_EXPORT = "Exporting"
+TRAINER_COMPLETED = "Completed"
 
 
 class BaseTrainer:
     def init_workspace(self):
+        self.status = TRAINER_INIT
         if utils.path.exists(config.workspace_path):
             utils.rmdir(config.workspace_path)
         utils.mkdir(config.workspace_path)
@@ -66,16 +74,16 @@ class BaseTrainer:
             f.write(content)
 
     def train(self):
-        subprocess.run(
-            [
-                "python",
-                config.model_main_tf2,
-                f"--model_dir={config.workspace_models}",
-                f"--pipeline_config_path={config.workspace_models_pipeline}",
-            ]
+        self.status = TRAINER_TRAINING
+        model_lib_v2.train_loop(
+            model_dir=config.workspace_models,
+            pipeline_config_path=config.workspace_models_pipeline,
+            checkpoint_every_n=100,
+            checkpoint_max_to_keep=5,
         )
 
     def export_model(self):
+        self.status = TRAINER_EXPORT
         subprocess.run(
             [
                 "python",
@@ -85,8 +93,10 @@ class BaseTrainer:
                 f"--output_directory={config.workspace_exported_model}",
             ]
         )
+        self.status = TRAINER_COMPLETED
 
     def export_ir_model(self):
+        self.status = TRAINER_EXPORT
         subprocess.run(
             [
                 "mo",
@@ -107,6 +117,7 @@ class BaseTrainer:
                     indent=4,
                 )
             )
+        self.status = TRAINER_COMPLETED
 
     def _generate_label_map(self, labels):
         self.label_map = {}
