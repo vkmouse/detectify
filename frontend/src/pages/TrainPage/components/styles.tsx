@@ -15,7 +15,7 @@ export const InputGroup = styled.div`
   grid-template-columns: repeat(2, 1fr);
   column-gap: 12px;
   row-gap: 12px;
-  margin-top: 6px;
+  margin: 6px 0;
   @media (max-width: 960px) {
     grid-template-columns: repeat(1, 1fr);
     grid-column-gap: 0;

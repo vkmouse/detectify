@@ -146,7 +146,7 @@ const api = {
       ...data,
       preTrainedModel: 'ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu-8',
     });
-    console.log(response.data);
+    return response.data;
   },
 };
 

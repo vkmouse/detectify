@@ -7,6 +7,12 @@ import DownIcon from '../../assets/chevron-down.svg';
 import UpIcon from '../../assets/chevron-up.svg';
 import HelpIcon from '../../assets/help-circle.svg';
 import { Form, InputGroup, Title } from './components/styles';
+import { FormProvider, useForm, useFormContext } from 'react-hook-form';
+import { BatchUploadResponse } from '../../types/api';
+import axios from 'axios';
+import api from '../../api/api';
+import { useProjectInfo } from '../../context/ProjectInfoContext';
+import { useServerInfo } from '../../context/ServerInfoContext';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -54,38 +60,86 @@ const Tooltip = styled.div`
 `;
 
 const TrainingConfig = () => {
-  const [advance, setAdvance] = useState(true);
+  const { id: projectId, images } = useProjectInfo();
+  const { reloadServerStatus, reloadDefaultServerStatus } = useServerInfo();
+  const [advance, setAdvance] = useState(false);
+  const methods = useForm({
+    defaultValues: {
+      batchSize: 4,
+      numSteps: 1000,
+      learningRateBase: 0.08,
+      warmupLearningRate: 0.026,
+      warmupSteps: 100,
+    },
+  });
+
+  const trainModel = async (props: {
+    batchSize: number;
+    numSteps: number;
+    learningRateBase: number;
+    warmupLearningRate: number;
+    warmupSteps: number;
+  }) => {
+    const dataset = prepareDataset(images);
+    const labels = await prepareLabels(dataset);
+
+    if (dataset.length > 0 && labels.length > 0) {
+      api
+        .trainModel({
+          ...props,
+          projectId,
+          dataset,
+          labels,
+        })
+        .then(() => {
+          reloadServerStatus();
+          reloadDefaultServerStatus();
+        });
+    }
+  };
+
+  const handleSubmit = methods.handleSubmit((data) => {
+    trainModel(data);
+  });
+
   return (
     <Card>
-      <Form>
-        <InputGroup>
-          <Title>Training Configuration</Title>
-          <ButtonContainer>
-            <PrimaryButton>Start Training</PrimaryButton>
-          </ButtonContainer>
-        </InputGroup>
-        <AdvanceToggle
-          type="button"
-          onClick={() => setAdvance((advance) => !advance)}
-        >
-          Advance Options {advance ? <UpIcon /> : <DownIcon />}
-        </AdvanceToggle>
-        {advance && (
-          <>
-            <InputGroup>
-              <PreTrainedModel />
-              <BatchSize />
-              <Epochs />
-              <LearningRateBase />
-              <WarmupLearningRate />
-              <WarmupSteps />
-            </InputGroup>
+      <FormProvider {...methods}>
+        <Form onSubmit={handleSubmit}>
+          <InputGroup>
+            <Title>Training Configuration</Title>
             <ButtonContainer>
-              <PrimaryButton>Reset Defaults</PrimaryButton>
+              <PrimaryButton>Start Training</PrimaryButton>
             </ButtonContainer>
-          </>
-        )}
-      </Form>
+          </InputGroup>
+          <AdvanceToggle
+            type="button"
+            onClick={() => setAdvance((advance) => !advance)}
+          >
+            Advance Options {advance ? <UpIcon /> : <DownIcon />}
+          </AdvanceToggle>
+          {advance && (
+            <>
+              <InputGroup>
+                <PreTrainedModel />
+                <BatchSize />
+                <Epochs />
+                <LearningRateBase />
+                <WarmupLearningRate />
+                <WarmupSteps />
+              </InputGroup>
+              <ButtonContainer>
+                <OutlinePrimaryButton
+                  type="button"
+                  onClick={() => methods.reset()}
+                >
+                  Reset Defaults
+                </OutlinePrimaryButton>
+              </ButtonContainer>
+            </>
+          )}
+        </Form>
+      </FormProvider>
     </Card>
   );
 };
@@ -110,6 +164,7 @@ function PreTrainedModel() {
 }
 
 function BatchSize() {
+  const { register } = useFormContext();
   return (
     <InputContainer>
       <FieldTitle>
@@ -123,12 +178,19 @@ function BatchSize() {
           </TooltipText>
         </Tooltip>
       </FieldTitle>
-      <Input placeholder="Enter batch size" />
+      <Input
+        placeholder="Enter batch size"
+        {...register('batchSize', {
+          valueAsNumber: true,
+          validate: (value) => [1, 2, 4, 8, 16].includes(value),
+        })}
+      />
     </InputContainer>
   );
 }
 
 function Epochs() {
+  const { register } = useFormContext();
   return (
     <InputContainer>
       <FieldTitle>
@@ -142,12 +204,19 @@ function Epochs() {
           </TooltipText>
         </Tooltip>
       </FieldTitle>
-      <Input placeholder="Enter training epochs" />
+      <Input
+        placeholder="Enter training epochs"
+        {...register('numSteps', {
+          valueAsNumber: true,
+          validate: (value) => 100 <= value && value <= 100000,
+        })}
+      />
     </InputContainer>
   );
 }
 
 function LearningRateBase() {
+  const { register } = useFormContext();
   return (
     <InputContainer>
       <FieldTitle>
@@ -161,12 +230,19 @@ function LearningRateBase() {
           </TooltipText>
         </Tooltip>
       </FieldTitle>
-      <Input placeholder="Enter learning rate base" />
+      <Input
+        placeholder="Enter learning rate base"
+        {...register('learningRateBase', {
+          valueAsNumber: true,
+          validate: (value) => 0 <= value && value <= 1,
+        })}
+      />
     </InputContainer>
   );
 }
 
 function WarmupLearningRate() {
+  const { register } = useFormContext();
   return (
     <InputContainer>
       <FieldTitle>
@@ -181,16 +257,23 @@ function WarmupLearningRate() {
           </TooltipText>
         </Tooltip>
       </FieldTitle>
-      <Input placeholder="Enter warmup learning rate" />
+      <Input
+        placeholder="Enter warmup learning rate"
+        {...register('warmupLearningRate', {
+          valueAsNumber: true,
+          validate: (value) => 0 <= value && value <= 1,
+        })}
+      />
     </InputContainer>
   );
 }
 
 function WarmupSteps() {
+  const { register } = useFormContext();
   return (
     <InputContainer>
       <FieldTitle>
-        Warmup Learning Rate
+        Warmup Steps
         <Tooltip>
           <HelpIcon />
           <TooltipText>
@@ -200,9 +283,53 @@ function WarmupSteps() {
           </TooltipText>
         </Tooltip>
       </FieldTitle>
-      <Input placeholder="Enter warmup steps" />
+      <Input
+        placeholder="Enter warmup steps"
+        {...register('warmupSteps', {
+          valueAsNumber: true,
+          validate: (value) => 0 <= value && value <= 100000,
+        })}
+      />
     </InputContainer>
   );
+}
+
+function prepareDataset(dataset: BatchUploadResponse[]) {
+  return dataset.filter(
+    (p) =>
+      (p.imageURL.includes('.png') || p.imageURL.includes('.jpg')) &&
+      p.annotationURL.includes('.xml')
+  );
+}
+
+async function generateLabelMap(dataset: BatchUploadResponse[]) {
+  const labelMap = new Map<string, boolean>();
+  const parser = new DOMParser();
+  for (const data of dataset) {
+    const response = await axios.get(data.annotationURL);
+    const xml = response.data;
+    const xmlDoc = parser.parseFromString(xml, 'text/xml');
+    const objects = xmlDoc.getElementsByTagName('object');
+    for (let i = 0; i < objects.length; i++) {
+      const label = objects[i].getElementsByTagName('name')[0].textContent;
+      if (label) {
+        labelMap.set(label, true);
+      }
+    }
+  }
+  return labelMap;
+}
+
+async function prepareLabels(dataset: BatchUploadResponse[]) {
+  const labelMap = await generateLabelMap(dataset);
+  console.log(labelMap);
+
+  const labels: string[] = [];
+  labelMap.forEach((value: boolean, key: string) => {
+    labels.push(key);
+  });
+
+  return labels;
 }
 
 export default TrainingConfig;

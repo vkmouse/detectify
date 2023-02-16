@@ -1,6 +1,8 @@
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { PrimaryButton } from '../../components/Button';
 import { Card } from '../../components/Card';
+import { useProjectInfo } from '../../context/ProjectInfoContext';
 import { Form, Title } from './components/styles';
 
 const Filed = styled.div`
@@ -20,9 +22,11 @@ const TextMuted = styled.span`
 `;
 
 const ModelExport = () => {
+  const { irModel, exportedModel } = useProjectInfo();
+
   return (
     <Card>
-      <Form>
+      <Form onSubmit={(e) => e.preventDefault()}>
         <Title>Model Export</Title>
         <Filed>
           <div>
@@ -33,11 +37,15 @@ const ModelExport = () => {
               well-suited for large-scale projects.
             </TextMuted>
           </div>
-          <PrimaryButton>Export</PrimaryButton>
+          <PrimaryButton>
+            <Link to={exportedModel} target="_blank" download>
+              Export
+            </Link>
+          </PrimaryButton>
         </Filed>
         <Filed>
           <div>
-            <FiledTitle>Export IR Model</FiledTitle>
+            <FiledTitle>Export IR Model (OpenVINO)</FiledTitle>
             <TextMuted>
               The Intermediate Representation (IR) model is a format used by the
               OpenVINO toolkit to optimize machine learning models for
@@ -46,7 +54,11 @@ const ModelExport = () => {
               to deploy models across a variety of devices and systems.
             </TextMuted>
           </div>
-          <PrimaryButton>Export</PrimaryButton>
+          <PrimaryButton>
+            <Link to={irModel} target="_blank" download>
+              Export
+            </Link>
+          </PrimaryButton>
         </Filed>
       </Form>
     </Card>
