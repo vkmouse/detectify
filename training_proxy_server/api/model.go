@@ -128,6 +128,23 @@ func TrainModelCompleted(ctx *gin.Context) {
 	defer resp.Body.Close()
 }
 
+func Proxy(ctx *gin.Context) {
+	// Get host
+	id := ctx.GetString("userID")
+	host := "http://" + id + ".localhost:8080"
+	if !validateServerStatus(host) {
+		host = "http://training.localhost:8080"
+	}
+
+	// Check server
+	if !validateServerStatus(host) {
+		response.Response(ctx, errmsg.ERROR_SERVER_NOT_STARTED)
+		return
+	}
+
+	reverseProxy(ctx, host)
+}
+
 func validateServerStatus(host string) bool {
 	return getStatusFromTrainingServer(host) != SERVER_STOPED
 }

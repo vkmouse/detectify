@@ -3,6 +3,7 @@ import { CardPrimary } from '../../../components/Card';
 import XCircle from '../../../assets/x-circle.svg';
 import ImageIcon from '../../../assets/image.svg';
 import MaximizeIcon from '../../../assets/maximize.svg';
+import ProgressBar from '../../../components/ProgressBar';
 
 const ProgressRowInnerWrapper = styled.div`
   display: flex;
@@ -27,20 +28,6 @@ const ProgressDetailsContainer = styled.div`
   flex-grow: 1;
 `;
 
-const ProgressContainer = styled.div`
-  margin: 5px 0;
-  flex-grow: 1;
-  height: 8px;
-  background: ${(props) => props.theme.colors.progressBackground};
-  border-radius: 5px;
-`;
-
-const ProgressIndicator = styled.div`
-  height: 8px;
-  background: ${(props) => props.theme.colors.progressBackgroundPrimary};
-  border-radius: 5px;
-`;
-
 const DeleteButton = styled(XCircle)`
   position: absolute;
   top: 0;
@@ -50,15 +37,6 @@ const DeleteButton = styled(XCircle)`
   border: 0px;
   cursor: pointer;
 `;
-
-const ProgressBar = (props: { percentage: number }) => {
-  const { percentage } = props;
-  return (
-    <ProgressContainer>
-      <ProgressIndicator style={{ width: `${percentage}%` }} />
-    </ProgressContainer>
-  );
-};
 
 const ProgressRow = ({
   filename,
