@@ -6,27 +6,7 @@ import { Input, InputContainer } from '../../components/InputFiled';
 import DownIcon from '../../assets/chevron-down.svg';
 import UpIcon from '../../assets/chevron-up.svg';
 import HelpIcon from '../../assets/help-circle.svg';
-
-const Form = styled.form`
-  padding: 20px;
-`;
-
-const Title = styled.span`
-  font-weight: bold;
-  font-size: 110%;
-`;
-
-const InputGroup = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  column-gap: 12px;
-  row-gap: 12px;
-  @media (max-width: 960px) {
-    grid-template-columns: repeat(1, 1fr);
-    grid-column-gap: 0;
-    grid-row-gap: 12px;
-  }
-`;
+import { Form, InputGroup, Title } from './components/styles';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -39,7 +19,7 @@ const AdvanceToggle = styled(OutlinePrimaryButton)`
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin: 6px 0;
+  margin: 6px 0 0 0;
 `;
 
 const FieldTitle = styled.span`
@@ -74,12 +54,12 @@ const Tooltip = styled.div`
 `;
 
 const TrainingConfig = () => {
-  const [advance, setAdvance] = useState(true);
+  const [advance, setAdvance] = useState(false);
   return (
     <Card>
       <Form>
         <InputGroup>
-          <Title>Model Training Configuration</Title>
+          <Title>Training Configuration</Title>
           <ButtonContainer>
             <PrimaryButton>Start Training</PrimaryButton>
           </ButtonContainer>
@@ -88,7 +68,7 @@ const TrainingConfig = () => {
           type="button"
           onClick={() => setAdvance((advance) => !advance)}
         >
-          Advance Options {advance ? <DownIcon /> : <UpIcon />}
+          Advance Options {advance ? <UpIcon /> : <DownIcon />}
         </AdvanceToggle>
         {advance && (
           <InputGroup>
