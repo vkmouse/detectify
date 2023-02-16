@@ -14,9 +14,7 @@ class BaseInferencer:
         self.workspace = utils.path.join(config.workspace_path, project_id)
         utils.mkdir_if_not_exists(config.workspace_path)
         utils.mkdir_if_not_exists(self.workspace)
-
-        if not utils.path.exists(self.workspace):
-            BaseInferencer.download_model(model_url, self.workspace)
+        BaseInferencer.download_model(model_url, self.workspace)
 
         self.model = BaseInferencer.load_model(self.workspace)
         data = self.load_meta_data(self.workspace)
