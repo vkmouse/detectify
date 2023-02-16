@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const ModalContainer = styled.div<{ open: boolean }>`
   display: ${(props) => (props.open ? 'block' : 'none')};
-  position: absolute;
+  position: fixed;
   width: 100vw;
   height: 100vh;
   top: 0;
@@ -30,7 +30,6 @@ const ModalWrapper = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  max-width: calc(100vw - 40px);
   background: ${(props) => props.theme.colors.cardBackground};
   padding: 20px;
   border-radius: 10px;
@@ -38,7 +37,8 @@ const ModalWrapper = styled.div`
 `;
 
 const Image = styled.img`
-  width: 100%;
+  max-width: 80vw;
+  max-height: 80vh;
 `;
 
 const ImageModal = ({
@@ -50,6 +50,9 @@ const ImageModal = ({
   open: boolean;
   onClose: () => void;
 }) => {
+  const handleStopWheel = (e: WheelEvent) => e.preventDefault();
+  const handleStopTouchMove = (e: TouchEvent) => e.preventDefault();
+
   useEffect(() => {
     if (open) {
       const callback = (e: KeyboardEvent) => {
@@ -59,6 +62,21 @@ const ImageModal = ({
       };
       window.addEventListener('keydown', callback);
       return () => window.removeEventListener('keydown', callback);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (open) {
+      window.addEventListener('wheel', handleStopWheel, {
+        passive: false,
+      });
+      window.addEventListener('touchmove', handleStopTouchMove, {
+        passive: false,
+      });
+      return () => {
+        window.removeEventListener('wheel', handleStopWheel);
+        window.removeEventListener('touchmove', handleStopTouchMove);
+      };
     }
   }, [open]);
 
