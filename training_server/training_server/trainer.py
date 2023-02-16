@@ -18,6 +18,7 @@ class BaseTrainer:
     def __init__(self):
         self.status = None
         self.start_time = None
+        self.end_time = None
         self.progress = None
 
     def train_model(
@@ -34,11 +35,12 @@ class BaseTrainer:
     ):
         self.status = TRAINER_INIT
         self.start_time = datetime.datetime.now()
+        self.end_time = None
         self.progress = 0
 
-        self.init_workspace()
-        self.import_dataset(dataset, labels)
-        self.set_training_params(
+        self._init_workspace()
+        self._import_dataset(dataset, labels)
+        self._set_training_params(
             pretrained_model_name=pretrained_model_name,
             num_classes=num_classes,
             batch_size=batch_size,
@@ -49,22 +51,44 @@ class BaseTrainer:
         )
 
         self.status = TRAINER_TRAINING
-        self.train()
+        self._train()
 
         self.status = TRAINER_EXPORT
-        self.export_model()
-        self.export_ir_model()
+        self._export_model()
+        self._export_ir_model()
 
         self.status = TRAINER_COMPLETED
+        self.end_time = datetime.datetime.now()
 
-    def init_workspace(self):
+    def get_duration(self):
+        if self.start_time:
+            if self.end_time:
+                difference = self.end_time - self.start_time
+            else:
+                difference = datetime.datetime.now() - self.start_time
+
+            if difference.days > 0:  # X day(s) ago
+                return f"{difference.days} day{'s' if difference.days > 1 else ''} ago"
+
+            seconds = difference.seconds
+            hours = seconds // 3600
+            minutes = (seconds // 60) % 60
+            seconds = seconds % 60
+
+            if hours > 0:  # X hour(s) ago
+                return f"{hours} hour{'s' if hours > 1 else ''} ago"
+            if minutes > 0:  # X minute(s) ago
+                return f"{minutes} minute{'s' if minutes > 1 else ''} age"
+            return "Less than 1 minute ago"
+
+    def _init_workspace(self):
         if utils.path.exists(config.workspace_path):
             utils.rmdir(config.workspace_path)
         utils.mkdir(config.workspace_path)
         utils.mkdir(config.workspace_models)
         utils.mkdir(config.workspace_pretrained_model)
 
-    def import_dataset(self, dataset, labels):
+    def _import_dataset(self, dataset, labels):
         utils.rmdir(config.workspace_annotations)
         utils.rmdir(config.workspace_images)
         utils.mkdir(config.workspace_images)
@@ -75,7 +99,7 @@ class BaseTrainer:
         self._generate_label_map(labels)
         self._generate_tfrecord()
 
-    def set_training_params(
+    def _set_training_params(
         self,
         pretrained_model_name,
         num_classes,
@@ -118,7 +142,7 @@ class BaseTrainer:
             f.write(content)
         self.num_steps = num_steps
 
-    def train(self):
+    def _train(self):
         monitor = FileChangeMonitor(config.workspace_models_checkpoint, self._update_progress)
         monitor.start()
         model_lib_v2.train_loop(
@@ -129,7 +153,7 @@ class BaseTrainer:
         )
         monitor.stop()
 
-    def export_model(self):
+    def _export_model(self):
         subprocess.run(
             [
                 "python",
@@ -140,7 +164,7 @@ class BaseTrainer:
             ]
         )
 
-    def export_ir_model(self):
+    def _export_ir_model(self):
         subprocess.run(
             [
                 "mo",
