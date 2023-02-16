@@ -11,6 +11,7 @@ import {
   ProjectResponse,
   RegisterRequest,
   UserInfo,
+  TrainingStatusResponse,
 } from '../types/api';
 import {
   authAxios,
@@ -134,6 +135,10 @@ const api = {
   removeServerSpace: async () => {
     const response = await trainingAxios.delete('/server');
     return response.data.data as ServerStatusResponse;
+  },
+  getTrainingStatus: async () => {
+    const response = await trainingAxios.get('/model/train');
+    return response.data.data as TrainingStatusResponse;
   },
   trainModel: async (data: {
     projectId: string;

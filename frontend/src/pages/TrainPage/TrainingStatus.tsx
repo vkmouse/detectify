@@ -1,6 +1,10 @@
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import styled from 'styled-components';
+import api from '../../api/api';
 import { Card } from '../../components/Card';
 import ProgressBar from '../../components/ProgressBar';
+import { TrainingStatusResponse } from '../../types/api';
 import { Form, Title } from './components/styles';
 
 const Text = styled.span`
@@ -25,9 +29,24 @@ const FiledTitle = styled.div`
 `;
 
 const TrainingStatus = () => {
-  const status = 'Training';
-  const startTime = '3 day age';
-  const percentage = 25;
+  const queryClient = useQueryClient();
+  const [status, setStatus] = useState<TrainingStatusResponse>({
+    status: null,
+    duration: null,
+    progress: null,
+  });
+
+  useQuery({
+    queryKey: ['trainingStatus'],
+    queryFn: async () => {
+      return await api.getTrainingStatus();
+    },
+    onSuccess: (data) => {
+      setStatus(data);
+      setTimeout(() => queryClient.invalidateQueries(['trainingStatus']), 3000);
+    },
+  });
+
   return (
     <Card>
       <Form>
@@ -36,18 +55,18 @@ const TrainingStatus = () => {
         </TitleContainer>
         <Filed>
           <FiledTitle>Status:</FiledTitle>
-          <Text>{status}</Text>
+          <Text>{status.status}</Text>
         </Filed>
         <Filed>
           <FiledTitle>Started:</FiledTitle>
-          <Text>{startTime}</Text>
+          <Text>{status.duration}</Text>
         </Filed>
         <Filed>
           <FiledTitle>Progress:</FiledTitle>
-          <Text>{percentage}%</Text>
+          <Text>{status.progress}%</Text>
         </Filed>
         <Filed>
-          <ProgressBar percentage={percentage} />
+          <ProgressBar percentage={status.progress ? status.progress : 0} />
         </Filed>
       </Form>
     </Card>
