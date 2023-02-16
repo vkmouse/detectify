@@ -55,15 +55,17 @@ const TrainingStatus = () => {
         </TitleContainer>
         <Filed>
           <FiledTitle>Status:</FiledTitle>
-          <Text>{status.status}</Text>
+          <Text>{status.status !== null ? status.status : '---'}</Text>
         </Filed>
         <Filed>
           <FiledTitle>Started:</FiledTitle>
-          <Text>{status.duration}</Text>
+          <Text>{status.duration !== null ? status.duration : '---'}</Text>
         </Filed>
         <Filed>
           <FiledTitle>Progress:</FiledTitle>
-          <Text>{status.progress}%</Text>
+          <Text>
+            {status.progress !== null ? status.progress + '%' : '---'}
+          </Text>
         </Filed>
         <Filed>
           <ProgressBar percentage={status.progress ? status.progress : 0} />

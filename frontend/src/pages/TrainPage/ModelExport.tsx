@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { PrimaryButton } from '../../components/Button';
 import { Card } from '../../components/Card';
@@ -23,7 +22,6 @@ const TextMuted = styled.span`
 
 const ModelExport = () => {
   const { irModel, exportedModel } = useProjectInfo();
-
   return (
     <Card>
       <Form onSubmit={(e) => e.preventDefault()}>
@@ -38,9 +36,9 @@ const ModelExport = () => {
             </TextMuted>
           </div>
           <PrimaryButton>
-            <Link to={exportedModel} target="_blank" download>
+            <a href={exportedModel} target="_blank" rel="noreferrer">
               Export
-            </Link>
+            </a>
           </PrimaryButton>
         </Filed>
         <Filed>
@@ -55,9 +53,9 @@ const ModelExport = () => {
             </TextMuted>
           </div>
           <PrimaryButton>
-            <Link to={irModel} target="_blank" download>
+            <a href={irModel} target="_blank" rel="noreferrer">
               Export
-            </Link>
+            </a>
           </PrimaryButton>
         </Filed>
       </Form>
