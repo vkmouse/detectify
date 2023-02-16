@@ -54,7 +54,7 @@ const Tooltip = styled.div`
 `;
 
 const TrainingConfig = () => {
-  const [advance, setAdvance] = useState(false);
+  const [advance, setAdvance] = useState(true);
   return (
     <Card>
       <Form>
@@ -71,71 +71,138 @@ const TrainingConfig = () => {
           Advance Options {advance ? <UpIcon /> : <DownIcon />}
         </AdvanceToggle>
         {advance && (
-          <InputGroup>
-            <InputContainer>
-              <FieldTitle>
-                Pre-trained model &nbsp;
-                <Tooltip>
-                  <HelpIcon />
-                  <TooltipText>
-                    A pre-trained model is a machine learning model trained on
-                    other dataset, used as a starting point for other tasks, and
-                    can save time and resources by leveraging the learned
-                    features of model.
-                  </TooltipText>
-                </Tooltip>
-              </FieldTitle>
-              <Input value="ssd320" disabled={true} />
-            </InputContainer>
-            <InputContainer>
-              <FieldTitle>
-                Batch size &nbsp;
-                <Tooltip>
-                  <HelpIcon />
-                  <TooltipText>
-                    A batch is a subset of samples used in one training
-                    iteration, with batch size determining the number of
-                    batches. Batch size adjustment is usually not required for
-                    optimal training results.
-                  </TooltipText>
-                </Tooltip>
-              </FieldTitle>
-              <Input placeholder="Enter batch size" />
-            </InputContainer>
-            <InputContainer>
-              <FieldTitle>
-                Epochs
-                <Tooltip>
-                  <HelpIcon />
-                  <TooltipText>
-                    An epoch is a complete iteration through the training
-                    dataset during model training, with increasing epochs
-                    typically leading to better results.
-                  </TooltipText>
-                </Tooltip>
-              </FieldTitle>
-              <Input placeholder="Enter training epochs" />
-            </InputContainer>
-            <InputContainer>
-              <FieldTitle>
-                Learning Rate
-                <Tooltip>
-                  <HelpIcon />
-                  <TooltipText>
-                    The learning rate determines the size of the steps of model
-                    during training. Tweaking it can significantly affect model
-                    performance, so experimentation is recommended to find the
-                    optimal value.
-                  </TooltipText>
-                </Tooltip>
-              </FieldTitle>
-              <Input placeholder="Enter learning rate" />
-            </InputContainer>
-          </InputGroup>
+          <>
+            <InputGroup>
+              <PreTrainedModel />
+              <BatchSize />
+              <Epochs />
+              <LearningRateBase />
+              <WarmupLearningRate />
+              <WarmupSteps />
+            </InputGroup>
+            <ButtonContainer>
+              <PrimaryButton>Reset Defaults</PrimaryButton>
+            </ButtonContainer>
+          </>
         )}
       </Form>
     </Card>
   );
 };
+
+function PreTrainedModel() {
+  return (
+    <InputContainer>
+      <FieldTitle>
+        Pre-trained model &nbsp;
+        <Tooltip>
+          <HelpIcon />
+          <TooltipText>
+            A pre-trained model is a machine learning model trained on other
+            dataset, used as a starting point for other tasks, and can save time
+            and resources by leveraging the learned features of model.
+          </TooltipText>
+        </Tooltip>
+      </FieldTitle>
+      <Input value="ssd320" disabled={true} />
+    </InputContainer>
+  );
+}
+
+function BatchSize() {
+  return (
+    <InputContainer>
+      <FieldTitle>
+        Batch size &nbsp;
+        <Tooltip>
+          <HelpIcon />
+          <TooltipText>
+            A batch is a subset of samples used in one training iteration, with
+            batch size determining the number of batches. Batch size adjustment
+            is usually not required for optimal training results.
+          </TooltipText>
+        </Tooltip>
+      </FieldTitle>
+      <Input placeholder="Enter batch size" />
+    </InputContainer>
+  );
+}
+
+function Epochs() {
+  return (
+    <InputContainer>
+      <FieldTitle>
+        Epochs
+        <Tooltip>
+          <HelpIcon />
+          <TooltipText>
+            An epoch is a complete iteration through the training dataset during
+            model training, with increasing epochs typically leading to better
+            results.
+          </TooltipText>
+        </Tooltip>
+      </FieldTitle>
+      <Input placeholder="Enter training epochs" />
+    </InputContainer>
+  );
+}
+
+function LearningRateBase() {
+  return (
+    <InputContainer>
+      <FieldTitle>
+        Learning Rate Base
+        <Tooltip>
+          <HelpIcon />
+          <TooltipText>
+            The learning rate determines the size of the steps of model during
+            training. Learning rate base is the maximum learning rate of the
+            schedule, and it starts at this value.
+          </TooltipText>
+        </Tooltip>
+      </FieldTitle>
+      <Input placeholder="Enter learning rate base" />
+    </InputContainer>
+  );
+}
+
+function WarmupLearningRate() {
+  return (
+    <InputContainer>
+      <FieldTitle>
+        Warmup Learning Rate
+        <Tooltip>
+          <HelpIcon />
+          <TooltipText>
+            Warmup learning rate is the learning rate at the beginning of the
+            schedule, before it starts to increase towards the learning rate
+            base value. This is used to gradually increase the learning rate to
+            avoid unstable training at the beginning.
+          </TooltipText>
+        </Tooltip>
+      </FieldTitle>
+      <Input placeholder="Enter warmup learning rate" />
+    </InputContainer>
+  );
+}
+
+function WarmupSteps() {
+  return (
+    <InputContainer>
+      <FieldTitle>
+        Warmup Learning Rate
+        <Tooltip>
+          <HelpIcon />
+          <TooltipText>
+            Warmup steps is the number of steps (iterations) used for the warmup
+            phase, during which the learning rate gradually increases from the
+            warmup learning rate to the learning_rate_base value.
+          </TooltipText>
+        </Tooltip>
+      </FieldTitle>
+      <Input placeholder="Enter warmup steps" />
+    </InputContainer>
+  );
+}
 
 export default TrainingConfig;
