@@ -18,17 +18,20 @@ class BaseTrainer:
         utils.mkdir(config.workspace_images)
         utils.mkdir(config.workspace_annotations)
         for data in dataset:
-            utils.download_file(
-                data["imageURL"], config.workspace_images, data["filename"]
-            )
-            utils.download_file(
-                data["annotationURL"], config.workspace_images, data["filename"]
-            )
+            utils.download_file(data["imageURL"], config.workspace_images, data["filename"])
+            utils.download_file(data["annotationURL"], config.workspace_images, data["filename"])
         self._generate_label_map(labels)
         self._generate_tfrecord()
 
     def set_training_params(
-        self, pretrained_model_name, num_classes, batch_size, num_steps
+        self,
+        pretrained_model_name,
+        num_classes,
+        batch_size,
+        num_steps,
+        learning_rate_base,
+        warmup_learning_rate,
+        warmup_steps,
     ):
         # copy selected model to workspace/pre-trained-model
         src = utils.path.join(config.models_path, pretrained_model_name)
@@ -39,18 +42,16 @@ class BaseTrainer:
         replacements = {
             "num_classes": num_classes,
             "batch_size": batch_size,
-            "fine_tune_checkpoint": self._to_pipeline_string(
-                config.workspace_fine_tune_checkpoint
-            ),
+            "fine_tune_checkpoint": self._to_pipeline_string(config.workspace_fine_tune_checkpoint),
             "num_steps": num_steps,
             "fine_tune_checkpoint_type": '"detection"',
             "use_bfloat16": "false",
-            "label_map_path": self._to_pipeline_string(
-                config.workspace_annotations_label_map
-            ),
-            "input_path": self._to_pipeline_string(
-                config.workspace_annotations_train_record
-            ),
+            "label_map_path": self._to_pipeline_string(config.workspace_annotations_label_map),
+            "input_path": self._to_pipeline_string(config.workspace_annotations_train_record),
+            "total_steps": num_steps,
+            "learning_rate_base": learning_rate_base,
+            "warmup_learning_rate": warmup_learning_rate,
+            "warmup_steps": warmup_steps,
         }
         with open(config.workspace_pretrained_model_pipeline, "r") as f:
             content = f.read()

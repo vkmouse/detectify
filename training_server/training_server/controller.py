@@ -21,15 +21,27 @@ def get_server_status():
 
 
 def train_model_async(training_params):
+    batch_size = training_params['batchSize']
+    dataset = training_params['dataset']
+    labels = training_params['labels']
+    learning_rate_base = training_params['learningRateBase']
+    num_steps = training_params['numSteps']
+    pretrained_model = training_params['preTrainedModel']
+    warmup_learning_rate = training_params['warmupLearningRate']
+    warmup_steps = training_params['warmupSteps']
+
     def train_model():
         trainer = BaseTrainer()
         trainer.init_workspace()
-        trainer.import_dataset(training_params['dataset'], training_params['labels'])
+        trainer.import_dataset(dataset, labels)
         trainer.set_training_params(
-            pretrained_model_name=training_params['preTrainedModel'],
-            num_classes=len(training_params['labels']),
-            batch_size=training_params['batchSize'],
-            num_steps=training_params['numSteps'],
+            pretrained_model_name=pretrained_model,
+            num_classes=len(labels),
+            batch_size=batch_size,
+            num_steps=num_steps,
+            learning_rate_base=learning_rate_base,
+            warmup_learning_rate=warmup_learning_rate,
+            warmup_steps=warmup_steps,
         )
         trainer.train()
         trainer.export_model()
