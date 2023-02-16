@@ -9,6 +9,16 @@ server_bp = Blueprint("server", __name__)
 server_bp = Blueprint("webhooks", __name__)
 
 
+@model_bp.route('/model/train', methods=['GET'])
+def get_training_status():
+    data = controller.get_training_status()
+    return {
+        "data": data,
+        "message": "Success",
+        "status": 200,
+    }, 200
+
+
 @model_bp.route('/model/train', methods=['POST'])
 def train():
     training_params = request.get_json()

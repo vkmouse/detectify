@@ -1,5 +1,8 @@
+import datetime
 import json
 import subprocess
+import threading
+import time
 
 from object_detection import model_lib_v2
 from training_server import config
@@ -12,8 +15,49 @@ TRAINER_COMPLETED = "Completed"
 
 
 class BaseTrainer:
-    def init_workspace(self):
+    def __init__(self):
+        self.status = None
+        self.start_time = None
+        self.progress = None
+
+    def train_model(
+        self,
+        dataset,
+        labels,
+        pretrained_model_name,
+        num_classes,
+        batch_size,
+        num_steps,
+        learning_rate_base,
+        warmup_learning_rate,
+        warmup_steps,
+    ):
         self.status = TRAINER_INIT
+        self.start_time = datetime.datetime.now()
+        self.progress = 0
+
+        self.init_workspace()
+        self.import_dataset(dataset, labels)
+        self.set_training_params(
+            pretrained_model_name=pretrained_model_name,
+            num_classes=num_classes,
+            batch_size=batch_size,
+            num_steps=num_steps,
+            learning_rate_base=learning_rate_base,
+            warmup_learning_rate=warmup_learning_rate,
+            warmup_steps=warmup_steps,
+        )
+
+        self.status = TRAINER_TRAINING
+        self.train()
+
+        self.status = TRAINER_EXPORT
+        self.export_model()
+        self.export_ir_model()
+
+        self.status = TRAINER_COMPLETED
+
+    def init_workspace(self):
         if utils.path.exists(config.workspace_path):
             utils.rmdir(config.workspace_path)
         utils.mkdir(config.workspace_path)
@@ -72,18 +116,20 @@ class BaseTrainer:
 
         with open(config.workspace_models_pipeline, "w") as f:
             f.write(content)
+        self.num_steps = num_steps
 
     def train(self):
-        self.status = TRAINER_TRAINING
+        monitor = FileChangeMonitor(config.workspace_models_checkpoint, self._update_progress)
+        monitor.start()
         model_lib_v2.train_loop(
             model_dir=config.workspace_models,
             pipeline_config_path=config.workspace_models_pipeline,
             checkpoint_every_n=100,
             checkpoint_max_to_keep=5,
         )
+        monitor.stop()
 
     def export_model(self):
-        self.status = TRAINER_EXPORT
         subprocess.run(
             [
                 "python",
@@ -93,10 +139,8 @@ class BaseTrainer:
                 f"--output_directory={config.workspace_exported_model}",
             ]
         )
-        self.status = TRAINER_COMPLETED
 
     def export_ir_model(self):
-        self.status = TRAINER_EXPORT
         subprocess.run(
             [
                 "mo",
@@ -117,7 +161,6 @@ class BaseTrainer:
                     indent=4,
                 )
             )
-        self.status = TRAINER_COMPLETED
 
     def _generate_label_map(self, labels):
         self.label_map = {}
@@ -139,3 +182,40 @@ class BaseTrainer:
 
     def _to_pipeline_string(self, s):
         return f'"{s}"'.replace("\\", "/")
+
+    def _update_progress(self):
+        line = None
+        with open(config.workspace_models_checkpoint, 'r') as file:
+            line = file.readline()
+        total_ckpt = self.num_steps / 100 + 1
+        ckpt = int(line.split('ckpt-')[1][:-2])
+        self.progress = ckpt / total_ckpt
+
+
+class FileChangeMonitor:
+    def __init__(self, filepath, callback):
+        self.filepath = filepath
+        self.callback = callback
+        self.modified_on = 0
+
+    def start(self):
+        self.key = True
+        t = threading.Thread(target=self.loop)
+        t.start()
+
+    def stop(self):
+        self.key = False
+
+    def loop(self):
+        try:
+            while self.key:
+                time.sleep(1)
+                modified = 0
+                if utils.path.exists(self.filepath):
+                    modified = utils.path.getmtime(self.filepath)
+                if modified != self.modified_on:
+                    self.modified_on = modified
+                    if self.callback():
+                        break
+        except Exception as e:
+            print(e)

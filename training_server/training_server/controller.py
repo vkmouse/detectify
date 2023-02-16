@@ -14,10 +14,19 @@ SERVER_STOPED = "Stopped"
 
 server_status = {"status": SERVER_IDLE}
 training_completed_hooks = {}
+trainer = BaseTrainer()
 
 
 def get_server_status():
     return server_status["status"]
+
+
+def get_training_status():
+    return {
+        'progress': trainer.progress,
+        'status': trainer.status,
+        'start_time': trainer.start_time,
+    }
 
 
 def train_model_async(training_params):
@@ -31,10 +40,9 @@ def train_model_async(training_params):
     warmup_steps = training_params['warmupSteps']
 
     def train_model():
-        trainer = BaseTrainer()
-        trainer.init_workspace()
-        trainer.import_dataset(dataset, labels)
-        trainer.set_training_params(
+        trainer.train_model(
+            dataset=dataset,
+            labels=labels,
             pretrained_model_name=pretrained_model,
             num_classes=len(labels),
             batch_size=batch_size,
@@ -43,9 +51,6 @@ def train_model_async(training_params):
             warmup_learning_rate=warmup_learning_rate,
             warmup_steps=warmup_steps,
         )
-        trainer.train()
-        trainer.export_model()
-        trainer.export_ir_model()
         server_status["status"] = SERVER_COMPLETED
         call_training_completed_hooks()
 
