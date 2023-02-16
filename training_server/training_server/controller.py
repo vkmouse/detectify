@@ -1,7 +1,6 @@
-import json
+import datetime
 import requests
 import threading
-import time
 
 from training_server import config
 from training_server import utils
@@ -22,10 +21,31 @@ def get_server_status():
 
 
 def get_training_status():
+    if trainer.start_time:
+        difference = datetime.datetime.now() - trainer.start_time
+
+        duration = ''
+        if difference.days > 0:
+            duration += f"{difference.days} day{'s' if difference.days > 1 else ''} "
+
+        seconds = difference.seconds
+        hours = seconds // 3600
+        minutes = (seconds // 60) % 60
+        seconds = seconds % 60
+
+        if hours > 0:
+            duration += f"{hours} hour{'s' if hours > 1 else ''} "
+
+        if minutes > 0:
+            duration += f"{minutes} minute{'s' if minutes > 1 else ''} "
+
+        if seconds > 0:
+            duration += f"{seconds} second{'s' if seconds > 1 else ''} "
+
     return {
         'progress': trainer.progress,
         'status': trainer.status,
-        'start_time': trainer.start_time,
+        'duration': duration,
     }
 
 

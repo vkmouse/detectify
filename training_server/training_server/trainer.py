@@ -189,7 +189,7 @@ class BaseTrainer:
             line = file.readline()
         total_ckpt = self.num_steps / 100 + 1
         ckpt = int(line.split('ckpt-')[1][:-2])
-        self.progress = ckpt / total_ckpt
+        self.progress = round((ckpt / total_ckpt) * 100, 2)
 
 
 class FileChangeMonitor:
