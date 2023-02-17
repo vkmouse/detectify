@@ -79,13 +79,13 @@ func TrainModelCompleted(ctx *gin.Context) {
 	}
 
 	// upload exported model
-	err := receiveAndUpload(host+"/model/exported", fmt.Sprintf("%s/exported_model.zip", body.ProjectID))
+	err := receiveAndUpload(host+"/static/exported_model.zip", fmt.Sprintf("%s/exported_model.zip", body.ProjectID))
 	if err != nil {
 		log.Println(err)
 	}
 
 	// upload ir model
-	err = receiveAndUpload(host+"/model/ir", fmt.Sprintf("%s/ir_model.zip", body.ProjectID))
+	err = receiveAndUpload(host+"/static/ir_model.zip", fmt.Sprintf("%s/ir_model.zip", body.ProjectID))
 	if err != nil {
 		log.Println(err)
 	}
