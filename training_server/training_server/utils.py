@@ -29,7 +29,7 @@ def unzip_file(zip_file_path, extract_path):
         zip_ref.extractall(extract_path)
 
 
-def zip_directory(directory):
+def zip_directory(directory, output):
     memory_file = io.BytesIO()
     with zipfile.ZipFile(memory_file, 'w') as zf:
         for root, _, files in os.walk(directory):
@@ -37,7 +37,13 @@ def zip_directory(directory):
                 file_path = os.path.join(root, file)
                 zf.write(file_path, arcname=os.path.relpath(file_path, directory))
     memory_file.seek(0)
-    return memory_file
+    with open(output, 'wb') as f:
+        f.write(memory_file.getvalue())
+
+
+def mkdir_if_not_exists(dir):
+    if not os.path.exists(dir):
+        os.mkdir(dir)
 
 
 def mkdir(dir):

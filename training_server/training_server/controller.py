@@ -61,18 +61,6 @@ def train_model_async(training_params):
     return False
 
 
-def get_exported_model():
-    if server_status["status"] == SERVER_COMPLETED:
-        return utils.zip_directory(config.workspace_exported_model)
-    return None
-
-
-def get_ir_model():
-    if server_status["status"] == SERVER_COMPLETED:
-        return utils.zip_directory(config.workspace_ir_model)
-    return None
-
-
 def release():
     if server_status["status"] == SERVER_IDLE or server_status["status"] == SERVER_COMPLETED:
         server_status["status"] = SERVER_IDLE
