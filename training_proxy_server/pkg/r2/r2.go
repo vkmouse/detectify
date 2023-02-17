@@ -46,3 +46,18 @@ func UploadFile(filename string, fileBytes []byte, fileType string) error {
 
 	return err
 }
+
+func GeneratingPresignedURL(filename string) string {
+	presignClient := s3.NewPresignClient(client)
+
+	presignResult, err := presignClient.PresignPutObject(context.TODO(), &s3.PutObjectInput{
+		Bucket: aws.String(cfg.R2BucketName),
+		Key:    aws.String(filename),
+	})
+
+	if err != nil {
+		panic("Couldn't get presigned URL for PutObject")
+	}
+
+	return presignResult.URL
+}

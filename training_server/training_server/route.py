@@ -34,28 +34,6 @@ def train():
     }, 409
 
 
-@model_bp.route('/model/exported')
-def get_exported_model():
-    memory_file = controller.get_exported_model()
-    if memory_file:
-        return send_file(memory_file, mimetype='application/zip')
-    return {
-        "message": "Error: Training is not completed yet.",
-        "status": 2002,
-    }, 400
-
-
-@model_bp.route('/model/ir')
-def get_ir_model():
-    memory_file = controller.get_ir_model()
-    if memory_file:
-        return send_file(memory_file, mimetype='application/zip')
-    return {
-        "message": "Error: Training is not completed yet.",
-        "status": 2002,
-    }, 400
-
-
 @model_bp.route('/model', methods=['DELETE'])
 def release():
     request_success = controller.release()
@@ -68,6 +46,17 @@ def release():
         "message": "Error: Training is not completed yet.",
         "status": 2002,
     }, 400
+
+
+@model_bp.route('/model/export', methods=['POST'])
+def upload_models():
+    upload_params = request.get_json()
+    controller.upload_exported_model(upload_params['exportedModelURL'])
+    controller.upload_ir_model(upload_params['irModelURL'])
+    return {
+        "message": "Success",
+        "status": 200,
+    }, 200
 
 
 @server_bp.route('/server', methods=['GET'])

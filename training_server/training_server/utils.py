@@ -73,3 +73,16 @@ def parse_token(token):
         return data
     except:
         return None
+
+
+def zip_and_upload(directory, presigned_url):
+    memory_file = io.BytesIO()
+    with zipfile.ZipFile(memory_file, 'w') as zf:
+        for root, _, files in os.walk(directory):
+            for file in files:
+                file_path = os.path.join(root, file)
+                zf.write(file_path, arcname=os.path.relpath(file_path, directory))
+    memory_file.seek(0)
+    headers = {'Content-Type': 'application/zip'}
+    response = requests.put(presigned_url, data=memory_file.getvalue(), headers=headers)
+    return response.status_code == 200

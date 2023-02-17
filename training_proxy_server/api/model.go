@@ -78,27 +78,18 @@ func TrainModelCompleted(ctx *gin.Context) {
 		return
 	}
 
-	// upload exported model
-	err := receiveAndUpload(host+"/static/exported_model.zip", fmt.Sprintf("%s/exported_model.zip", body.ProjectID))
-	if err != nil {
-		log.Println(err)
+	// Export model
+	exportedModelURL := r2.GeneratingPresignedURL(fmt.Sprintf("%s/exported_model.zip", body.ProjectID))
+	irModelURL := r2.GeneratingPresignedURL(fmt.Sprintf("%s/ir_model.zip", body.ProjectID))
+	values := gin.H{
+		"exportedModelURL": exportedModelURL,
+		"irModelURL":       irModelURL,
 	}
 
-	// upload ir model
-	err = receiveAndUpload(host+"/static/ir_model.zip", fmt.Sprintf("%s/ir_model.zip", body.ProjectID))
-	if err != nil {
-		log.Println(err)
-	}
-
-	// update database
-	err = repository.UpdateProjectModelURL(body.UserID, body.ProjectID, config.R2AccessURL+body.ProjectID)
-	if err != nil {
-		log.Println(err)
-	}
-
-	// Create client
 	client := &http.Client{}
-	req, err := http.NewRequest("DELETE", host+"/model", nil)
+	jsonValue, _ := json.Marshal(values)
+	req, err := http.NewRequest("POST", host+"/model/export", bytes.NewBuffer(jsonValue))
+	req.Header.Add("content-type", "application/json")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -110,10 +101,32 @@ func TrainModelCompleted(ctx *gin.Context) {
 	}
 	defer resp.Body.Close()
 
-	values := gin.H{
+	// update database
+	err = repository.UpdateProjectModelURL(body.UserID, body.ProjectID, config.R2AccessURL+body.ProjectID)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// release training
+	client = &http.Client{}
+	req, err = http.NewRequest("DELETE", host+"/model", nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	resp, err = client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer resp.Body.Close()
+
+	values = gin.H{
 		"url": config.DomainName + "/model/completed",
 	}
-	jsonValue, _ := json.Marshal(values)
+	jsonValue, _ = json.Marshal(values)
+
+	// unregister webhook
 	req, err = http.NewRequest("DELETE", host+"/webhooks/model/completed", bytes.NewBuffer(jsonValue))
 	req.Header.Add("content-type", "application/json")
 	if err != nil {

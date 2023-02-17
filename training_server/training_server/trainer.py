@@ -163,7 +163,6 @@ class BaseTrainer:
                 f"--output_directory={config.workspace_exported_model}",
             ]
         )
-        utils.zip_directory(config.workspace_exported_model, 'static/exported_model.zip')
 
     def _export_ir_model(self):
         subprocess.run(
@@ -186,7 +185,6 @@ class BaseTrainer:
                     indent=4,
                 )
             )
-        utils.zip_directory(config.workspace_ir_model, 'static/ir_model.zip')
 
     def _generate_label_map(self, labels):
         self.label_map = {}
