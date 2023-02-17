@@ -87,3 +87,11 @@ def send_training_completed(url, data):
         resp = requests.post(url, json=data)
     except:
         print(resp)
+
+
+def upload_exported_model(url):
+    return utils.zip_and_upload(config.workspace_exported_model, url)
+
+
+def upload_ir_model(url):
+    return utils.zip_and_upload(config.workspace_ir_model, url)
