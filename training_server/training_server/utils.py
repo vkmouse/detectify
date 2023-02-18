@@ -85,4 +85,4 @@ def zip_and_upload(directory, presigned_url):
     memory_file.seek(0)
     headers = {'Content-Type': 'application/zip'}
     response = requests.put(presigned_url, data=memory_file.getvalue(), headers=headers)
-    return response.status_code == 200
+    return response.status_code != 200

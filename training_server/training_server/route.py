@@ -51,8 +51,16 @@ def release():
 @model_bp.route('/model/export', methods=['POST'])
 def upload_models():
     upload_params = request.get_json()
-    controller.upload_exported_model(upload_params['exportedModelURL'])
-    controller.upload_ir_model(upload_params['irModelURL'])
+    if controller.upload_exported_model(upload_params['exportedModelURL']):
+        return {
+            "message": "Error: Upload exported model failed",
+            "status": 400,
+        }, 400
+    if controller.upload_ir_model(upload_params['irModelURL']):
+        return {
+            "message": "Error: Upload ir model failed",
+            "status": 400,
+        }, 400
     return {
         "message": "Success",
         "status": 200,
