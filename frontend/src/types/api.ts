@@ -99,8 +99,8 @@ export type InferResponse = {
 };
 
 export type ServerStatusResponse = {
-  status: string;
-  token: string;
+  alive: boolean;
+  token: string | null;
 };
 
 export type TrainingStatusResponse = {

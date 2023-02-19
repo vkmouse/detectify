@@ -4,13 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"os"
 	"training-proxy-server/config"
 	"training-proxy-server/internal/errmsg"
 	"training-proxy-server/internal/repository"
@@ -46,17 +44,17 @@ func TrainModel(ctx *gin.Context) {
 	// call real training server
 	reverseProxy(ctx, host)
 
-	// add hook to training completed
-	values := gin.H{
+	// make request to training completed hook
+	err := makeRequestWithData("POST", host+"/webhooks/model/completed", gin.H{
 		"url": config.DomainName + "/model/completed",
 		"data": gin.H{
 			"userId":    id,
 			"projectId": data.ProjectID,
 		},
+	})
+	if err != nil {
+		log.Println(err)
 	}
-	jsonValue, _ := json.Marshal(values)
-	resp, _ := http.Post(host+"/webhooks/model/completed", "application/json", bytes.NewBuffer(jsonValue))
-	io.Copy(os.Stdout, resp.Body)
 }
 
 func TrainModelCompleted(ctx *gin.Context) {
@@ -78,28 +76,14 @@ func TrainModelCompleted(ctx *gin.Context) {
 		return
 	}
 
-	// Export model
-	exportedModelURL := r2.GeneratingPresignedURL(fmt.Sprintf("%s/exported_model.zip", body.ProjectID))
-	irModelURL := r2.GeneratingPresignedURL(fmt.Sprintf("%s/ir_model.zip", body.ProjectID))
-	values := gin.H{
-		"exportedModelURL": exportedModelURL,
-		"irModelURL":       irModelURL,
-	}
-
-	client := &http.Client{}
-	jsonValue, _ := json.Marshal(values)
-	req, err := http.NewRequest("POST", host+"/model/export", bytes.NewBuffer(jsonValue))
-	req.Header.Add("content-type", "application/json")
+	// make request to export model
+	err := makeRequestWithData("POST", host+"/model/export", gin.H{
+		"exportedModelURL": r2.GeneratingPresignedURL(fmt.Sprintf("%s/exported_model.zip", body.ProjectID)),
+		"irModelURL":       r2.GeneratingPresignedURL(fmt.Sprintf("%s/ir_model.zip", body.ProjectID)),
+	})
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Println(err)
 	}
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer resp.Body.Close()
 
 	// update database
 	err = repository.UpdateProjectModelURL(body.UserID, body.ProjectID, config.R2AccessURL+body.ProjectID)
@@ -107,38 +91,19 @@ func TrainModelCompleted(ctx *gin.Context) {
 		log.Println(err)
 	}
 
-	// release training
-	client = &http.Client{}
-	req, err = http.NewRequest("DELETE", host+"/model", nil)
+	// make request release training
+	err = makeRequest("DELETE", host+"/model")
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Println(err)
 	}
-	resp, err = client.Do(req)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer resp.Body.Close()
 
-	values = gin.H{
+	// make request unregister webhook
+	err = makeRequestWithData("DELETE", host+"/webhooks/model/completed", gin.H{
 		"url": config.DomainName + "/model/completed",
-	}
-	jsonValue, _ = json.Marshal(values)
-
-	// unregister webhook
-	req, err = http.NewRequest("DELETE", host+"/webhooks/model/completed", bytes.NewBuffer(jsonValue))
-	req.Header.Add("content-type", "application/json")
+	})
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Println(err)
 	}
-	resp, err = client.Do(req)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer resp.Body.Close()
 }
 
 func Proxy(ctx *gin.Context) {
@@ -159,7 +124,7 @@ func Proxy(ctx *gin.Context) {
 }
 
 func validateServerStatus(host string) bool {
-	return getStatusFromTrainingServer(host) != SERVER_STOPED
+	return trainingServerIsAlive(host)
 }
 
 func reverseProxy(ctx *gin.Context, host string) {
@@ -180,13 +145,56 @@ func reverseProxy(ctx *gin.Context, host string) {
 	proxy.ServeHTTP(ctx.Writer, ctx.Request)
 }
 
-func receiveAndUpload(receiveURL string, filepath string) error {
-	resp, err := http.Get(receiveURL)
-	fileBytes, _ := ioutil.ReadAll(resp.Body)
+func makeRequest(method string, url string) error {
+	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		return err
 	}
-	log.Printf("exported: %d", len(fileBytes))
-	r2.UploadFile(filepath, fileBytes, "application/zip")
-	return nil
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if 200 <= resp.StatusCode && resp.StatusCode < 300 {
+		return nil
+	}
+
+	return fmt.Errorf(
+		"Error: Request to %s %s returned status code %d.",
+		method,
+		url,
+		resp.StatusCode,
+	)
+}
+
+func makeRequestWithData(method string, url string, data gin.H) error {
+	jsonValue, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(jsonValue))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if 200 <= resp.StatusCode && resp.StatusCode < 300 {
+		return nil
+	}
+
+	return fmt.Errorf(
+		"Error: Request to %s %s returned status code %d.",
+		method,
+		url,
+		resp.StatusCode,
+	)
 }

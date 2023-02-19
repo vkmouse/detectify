@@ -1,10 +1,7 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
 import styled from 'styled-components';
-import api from '../../api/api';
 import { Card } from '../../components/Card';
 import ProgressBar from '../../components/ProgressBar';
-import { TrainingStatusResponse } from '../../types/api';
+import { useTrainingInfo } from '../../context/TrainingInfoContext';
 import { Form, Title } from './components/styles';
 
 const Text = styled.span`
@@ -29,23 +26,7 @@ const FiledTitle = styled.div`
 `;
 
 const TrainingStatus = () => {
-  const queryClient = useQueryClient();
-  const [status, setStatus] = useState<TrainingStatusResponse>({
-    status: null,
-    duration: null,
-    progress: null,
-  });
-
-  useQuery({
-    queryKey: ['trainingStatus'],
-    queryFn: async () => {
-      return await api.getTrainingStatus();
-    },
-    onSuccess: (data) => {
-      setStatus(data);
-      setTimeout(() => queryClient.invalidateQueries(['trainingStatus']), 3000);
-    },
-  });
+  const status = useTrainingInfo();
 
   return (
     <Card>

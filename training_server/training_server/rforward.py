@@ -42,7 +42,8 @@ def reverse_forward_tunnel(server_port, remote_host, remote_port, transport):
 
 
 def verbose(s):
-    print(s)
+    pass
+    # print(s)
 
 
 def forward(

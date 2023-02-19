@@ -16,14 +16,6 @@ import (
 	"github.com/google/uuid"
 )
 
-const (
-	SERVER_IDLE        string = "Idle"
-	SERVER_TRAINING    string = "Training"
-	SERVER_COMPLETED   string = "Completed"
-	SERVER_STOPED      string = "Stopped"
-	SERVER_NOT_CREATED string = "Not Created"
-)
-
 var userIdByPort map[int]string
 var usernameByPort map[int]string
 
@@ -42,7 +34,8 @@ func GetServerStatus(ctx *gin.Context) {
 	if !isSpaceExists(id) {
 		response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
 			"data": gin.H{
-				"status": SERVER_NOT_CREATED,
+				"alive": false,
+				"token": nil,
 			},
 		})
 		return
@@ -52,8 +45,8 @@ func GetServerStatus(ctx *gin.Context) {
 	token, _ := encodeToken(id)
 	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
 		"data": gin.H{
-			"status": getStatusFromTrainingServer(host),
-			"token":  token,
+			"alive": trainingServerIsAlive(host),
+			"token": token,
 		},
 	})
 }
@@ -68,8 +61,8 @@ func GetDefaultServerStatus(ctx *gin.Context) {
 	host := "http://training.localhost:8080"
 	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{
 		"data": gin.H{
-			"status": getStatusFromTrainingServer(host),
-			"token":  "",
+			"alive": trainingServerIsAlive(host),
+			"token": "",
 		},
 	})
 }
@@ -98,22 +91,13 @@ func RemoveServerSpace(ctx *gin.Context) {
 	response.Response(ctx, errmsg.SUCCESS)
 }
 
-func getStatusFromTrainingServer(host string) string {
-	res, err := http.Get(host + "/server")
+func trainingServerIsAlive(host string) bool {
+	resp, err := http.Get(host + "/model/train")
 	if err != nil {
-		return SERVER_STOPED
+		return false
 	}
-	defer res.Body.Close()
-
-	var data struct {
-		Data struct {
-			Status string `json:"status"`
-		} `json:"data"`
-	}
-	if err := json.NewDecoder(res.Body).Decode(&data); err != nil {
-		return SERVER_STOPED
-	}
-	return data.Data.Status
+	defer resp.Body.Close()
+	return resp.StatusCode == 200
 }
 
 func isContainerExists(id string) bool {
