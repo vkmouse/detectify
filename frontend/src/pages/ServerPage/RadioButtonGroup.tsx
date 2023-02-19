@@ -4,7 +4,9 @@ import { OutlinePrimaryButton, PrimaryButton } from '../../components/Button';
 
 const ButtonGroup = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
+  column-gap: 10px;
+  padding: 32px 0;
 `;
 
 const RadioButton = ({

@@ -9,7 +9,6 @@ const Container = styled(Card)`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-column-gap: 24px;
-  margin-top: 36px;
   padding: 48px;
   border-radius: 10px;
   @media (max-width: 960px) {
@@ -19,12 +18,33 @@ const Container = styled(Card)`
   }
 `;
 
+const ImageContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+`;
+
 const Image = styled.img`
   object-fit: cover;
   object-position: center;
   width: 100%;
+  height: 100%;
   border-radius: 10px;
-  cursor: pointer;
+`;
+
+const ImageOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  opacity: 0;
+  border-radius: 10px;
+  &:hover {
+    opacity: 20%;
+    cursor: pointer;
+  }
 `;
 
 const Article = styled.div`
@@ -64,7 +84,10 @@ const TutorialCard = ({
     <>
       <ImageModal src={img} open={open} onClose={() => setOpen(false)} />
       <Container>
-        <Image src={img} onClick={() => setOpen(true)} />
+        <ImageContainer>
+          <ImageOverlay onClick={() => setOpen(true)} />
+          <Image src={img} />
+        </ImageContainer>
         <Article>
           <H3>{title}</H3>
           <p>{description}</p>

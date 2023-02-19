@@ -21,6 +21,7 @@ const ButtonContainer = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
+  padding-bottom: 20px;
 `;
 
 const Button = styled(OutlinePrimaryButton)`
@@ -51,7 +52,7 @@ const ServerPage = () => {
   const getStatus = (alive: boolean) => (alive ? 'On' : 'Off');
 
   return (
-    <>
+    <div>
       <ServerCard
         name="Default"
         status={getStatus(isdefaultServerAlive)}
@@ -80,7 +81,7 @@ const ServerPage = () => {
         </ButtonContainer>
       )}
       <Tutorial />
-    </>
+    </div>
   );
 };
 
