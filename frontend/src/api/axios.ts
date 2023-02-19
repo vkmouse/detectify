@@ -31,11 +31,13 @@ const trainingAxios = axios.create({
 const updateToken = (token: string) => {
   window.localStorage.setItem('accessToken', token);
   authAxios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  trainingAxios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 };
 
 const removeToken = () => {
   window.localStorage.removeItem('accessToken');
   authAxios.defaults.headers.common['Authorization'] = '';
+  trainingAxios.defaults.headers.common['Authorization'] = '';
 };
 
 const refreshInterceptors = async (error: AxiosError) => {
