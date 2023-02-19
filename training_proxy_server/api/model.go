@@ -124,7 +124,7 @@ func Proxy(ctx *gin.Context) {
 }
 
 func validateServerStatus(host string) bool {
-	return getStatusFromTrainingServer(host) != SERVER_STOPED
+	return trainingServerIsAlive(host)
 }
 
 func reverseProxy(ctx *gin.Context, host string) {
