@@ -120,11 +120,11 @@ const api = {
   },
 
   // training api
-  getServerStatus: async () => {
+  getServerAlive: async () => {
     const response = await trainingAxios.get('/server');
     return response.data.data as ServerStatusResponse;
   },
-  getDefaultServerStatus: async () => {
+  getDefaultServerAlive: async () => {
     const response = await trainingAxios.get('/server/default');
     return response.data.data as ServerStatusResponse;
   },
@@ -146,11 +146,9 @@ const api = {
     labels: string[];
     batchSize: number;
     numSteps: number;
+    pretrainedModelURL: string;
   }) => {
-    const response = await trainingAxios.post('/model/train', {
-      ...data,
-      preTrainedModel: 'ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu-8',
-    });
+    const response = await trainingAxios.post('/model/train', data);
     return response.data;
   },
 };

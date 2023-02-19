@@ -13,6 +13,7 @@ import axios from 'axios';
 import api from '../../api/api';
 import { useProjectInfo } from '../../context/ProjectInfoContext';
 import { useServerInfo } from '../../context/ServerInfoContext';
+import { useTrainingInfo } from '../../context/TrainingInfoContext';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -60,9 +61,13 @@ const Tooltip = styled.div`
 `;
 
 const TrainingConfig = () => {
-  const { id: projectId, images } = useProjectInfo();
-  const { reloadServerStatus, reloadDefaultServerStatus } = useServerInfo();
+  const { id: projectId, images, exportedModel } = useProjectInfo();
+  const {
+    reloadIsServerAlive: reloadIsServerAlive,
+    reloadIsDefaultServerAlive: reloadIsDefaultServerAlive,
+  } = useServerInfo();
   const [advance, setAdvance] = useState(false);
+  const { isTraining, reloadServerInfo } = useTrainingInfo();
   const methods = useForm({
     defaultValues: {
       batchSize: 4,
@@ -90,10 +95,12 @@ const TrainingConfig = () => {
           projectId,
           dataset,
           labels,
+          pretrainedModelURL: exportedModel,
         })
         .then(() => {
-          reloadServerStatus();
-          reloadDefaultServerStatus();
+          reloadIsServerAlive();
+          reloadIsDefaultServerAlive();
+          reloadServerInfo();
         });
     }
   };
@@ -109,7 +116,9 @@ const TrainingConfig = () => {
           <InputGroup>
             <Title>Training Configuration</Title>
             <ButtonContainer>
-              <PrimaryButton>Start Training</PrimaryButton>
+              <PrimaryButton disabled={isTraining}>
+                Start Training
+              </PrimaryButton>
             </ButtonContainer>
           </InputGroup>
           <AdvanceToggle

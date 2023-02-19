@@ -3,66 +3,66 @@ import { createContext, ReactNode, useContext, useState } from 'react';
 import api from '../api/api';
 
 type State = {
-  token: string;
-  serverStatus: string;
-  defaultServerStatus: string;
-  reloadServerStatus: () => void;
-  reloadDefaultServerStatus: () => void;
+  token: string | null;
+  isServerAlive: boolean;
+  isdefaultServerAlive: boolean;
+  reloadIsServerAlive: () => void;
+  reloadIsDefaultServerAlive: () => void;
 };
 
 const initialState: State = {
-  token: '',
-  serverStatus: '',
-  defaultServerStatus: '',
-  reloadServerStatus: () => void 0,
-  reloadDefaultServerStatus: () => void 0,
+  token: null,
+  isServerAlive: false,
+  isdefaultServerAlive: false,
+  reloadIsServerAlive: () => void 0,
+  reloadIsDefaultServerAlive: () => void 0,
 };
 
 const ServeInfoContext = createContext<State>(initialState);
 
 const ServerInfoProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
-  const [defaultServerStatus, setDefaultServerStatus] = useState('Pending');
-  const [serverStatus, setServerStatus] = useState('Not Created');
-  const [token, setToken] = useState('');
+  const [isDefaultServerAlive, setIsDefaultServerAlive] = useState(false);
+  const [isServerAlive, setIsServerAlive] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
 
   useQuery({
-    queryKey: ['defaultServerStatus'],
+    queryKey: ['isDefaultServerAlive'],
     queryFn: () => {
-      setDefaultServerStatus('');
-      return api.getDefaultServerStatus();
+      setIsDefaultServerAlive(false);
+      return api.getDefaultServerAlive();
     },
-    onSuccess: (data) => setDefaultServerStatus(data.status),
+    onSuccess: (data) => setIsDefaultServerAlive(data.alive),
   });
 
   useQuery({
-    queryKey: ['serverStatus'],
+    queryKey: ['isServerAlive'],
     queryFn: () => {
-      setServerStatus('');
-      return api.getServerStatus();
+      setIsServerAlive(false);
+      return api.getServerAlive();
     },
     onSuccess: (data) => {
       setToken(data.token);
-      setServerStatus(data.status);
+      setIsServerAlive(data.alive);
     },
   });
 
-  const reloadServerStatus = () => {
-    queryClient.invalidateQueries(['serverStatus']);
+  const reloadIsServerAlive = () => {
+    queryClient.invalidateQueries(['isServerAlive']);
   };
 
-  const reloadDefaultServerStatus = () => {
-    queryClient.invalidateQueries(['defaultServerStatus']);
+  const reloadIsDefaultServerAlive = () => {
+    queryClient.invalidateQueries(['isDefaultServerAlive']);
   };
 
   return (
     <ServeInfoContext.Provider
       value={{
         token,
-        defaultServerStatus,
-        serverStatus,
-        reloadServerStatus,
-        reloadDefaultServerStatus,
+        isdefaultServerAlive: isDefaultServerAlive,
+        isServerAlive: isServerAlive,
+        reloadIsServerAlive,
+        reloadIsDefaultServerAlive,
       }}
     >
       {children}
