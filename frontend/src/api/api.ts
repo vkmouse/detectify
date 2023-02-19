@@ -146,11 +146,9 @@ const api = {
     labels: string[];
     batchSize: number;
     numSteps: number;
+    pretrainedModelURL: string;
   }) => {
-    const response = await trainingAxios.post('/model/train', {
-      ...data,
-      preTrainedModel: 'ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu-8',
-    });
+    const response = await trainingAxios.post('/model/train', data);
     return response.data;
   },
 };

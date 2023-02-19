@@ -60,7 +60,7 @@ const Tooltip = styled.div`
 `;
 
 const TrainingConfig = () => {
-  const { id: projectId, images } = useProjectInfo();
+  const { id: projectId, images, exportedModel } = useProjectInfo();
   const {
     reloadIsServerAlive: reloadIsServerAlive,
     reloadIsDefaultServerAlive: reloadIsDefaultServerAlive,
@@ -93,6 +93,7 @@ const TrainingConfig = () => {
           projectId,
           dataset,
           labels,
+          pretrainedModelURL: exportedModel,
         })
         .then(() => {
           reloadIsServerAlive();
