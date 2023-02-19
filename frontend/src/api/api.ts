@@ -120,11 +120,11 @@ const api = {
   },
 
   // training api
-  getServerStatus: async () => {
+  getServerAlive: async () => {
     const response = await trainingAxios.get('/server');
     return response.data.data as ServerStatusResponse;
   },
-  getDefaultServerStatus: async () => {
+  getDefaultServerAlive: async () => {
     const response = await trainingAxios.get('/server/default');
     return response.data.data as ServerStatusResponse;
   },

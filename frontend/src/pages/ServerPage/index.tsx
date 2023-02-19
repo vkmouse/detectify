@@ -33,43 +33,44 @@ const Button = styled(OutlinePrimaryButton)`
 const ServerPage = () => {
   const {
     token,
-    serverStatus,
-    defaultServerStatus,
-    reloadServerStatus,
-    reloadDefaultServerStatus,
+    isServerAlive,
+    isdefaultServerAlive,
+    reloadIsServerAlive,
+    reloadIsDefaultServerAlive,
   } = useServerInfo();
 
   const queryClient = useQueryClient();
   const { mutate: handleCreateSpace, isLoading: isCreating } = useMutation({
     mutationFn: api.createServerSpace,
-    onSuccess: () => queryClient.invalidateQueries(['serverStatus']),
+    onSuccess: () => queryClient.invalidateQueries(['isServerAlive']),
   });
   const { mutate: handleRemoveSpace, isLoading: isRemoving } = useMutation({
     mutationFn: api.removeServerSpace,
-    onSuccess: () => queryClient.invalidateQueries(['serverStatus']),
+    onSuccess: () => queryClient.invalidateQueries(['isServerAlive']),
   });
+  const getStatus = (alive: boolean) => (alive ? 'On' : 'Off');
 
   return (
     <>
       <ServerCard
         name="Default"
-        status={defaultServerStatus}
+        status={getStatus(isdefaultServerAlive)}
         removeDisabled={true}
-        onReloadClick={reloadDefaultServerStatus}
+        onReloadClick={reloadIsDefaultServerAlive}
       />
       {isCreating || isRemoving ? (
         <CardContainer>
           <Loader />
         </CardContainer>
-      ) : serverStatus !== 'Not Created' ? (
+      ) : token !== null ? (
         <ServerCard
           name="Self"
-          status={serverStatus}
+          status={getStatus(isServerAlive)}
           removeDisabled={isRemoving}
           token={token}
           onCopyClick={() => void 0}
           onRemoveClick={handleRemoveSpace}
-          onReloadClick={reloadServerStatus}
+          onReloadClick={reloadIsServerAlive}
         />
       ) : (
         <ButtonContainer>

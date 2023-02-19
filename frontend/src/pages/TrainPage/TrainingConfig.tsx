@@ -61,7 +61,10 @@ const Tooltip = styled.div`
 
 const TrainingConfig = () => {
   const { id: projectId, images } = useProjectInfo();
-  const { reloadServerStatus, reloadDefaultServerStatus } = useServerInfo();
+  const {
+    reloadIsServerAlive: reloadIsServerAlive,
+    reloadIsDefaultServerAlive: reloadIsDefaultServerAlive,
+  } = useServerInfo();
   const [advance, setAdvance] = useState(false);
   const methods = useForm({
     defaultValues: {
@@ -92,8 +95,8 @@ const TrainingConfig = () => {
           labels,
         })
         .then(() => {
-          reloadServerStatus();
-          reloadDefaultServerStatus();
+          reloadIsServerAlive();
+          reloadIsDefaultServerAlive();
         });
     }
   };
