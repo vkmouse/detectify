@@ -45,7 +45,7 @@ class WorkflowManager:
         self.start_time = None
         self.end_time = None
         self.progress = None
-        self.status = 'Idle'
+        self.status = TRAINER_IDLE
 
     def execute(
         self,
@@ -144,4 +144,7 @@ class WorkflowManager:
 
     def reset(self):
         if not self.is_training():
+            self.start_time = None
+            self.end_time = None
+            self.progress = None
             self.status = TRAINER_IDLE
