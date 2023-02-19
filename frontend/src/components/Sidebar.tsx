@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, LinkProps as RouterLinkProps } from 'react-router-dom';
 import styled, { DefaultTheme } from 'styled-components';
-import ServerIcon from '../assets/server.svg';
 import TrendingUpIcon from '../assets/trending-up.svg';
 import GridIcon from '../assets/grid.svg';
 import ImageIcon from '../assets/image.svg';
@@ -156,16 +155,6 @@ const Sidebar = () => {
             <TrendingUpIcon />
           </IconContainer>
           Predict
-        </SidebarLink>
-        <SidebarLink
-          active={page === 'server'}
-          to="server"
-          onClick={() => setPage('server')}
-        >
-          <IconContainer>
-            <ServerIcon />
-          </IconContainer>
-          Server
         </SidebarLink>
       </SidebarWrapper>
     </SidebarContainer>

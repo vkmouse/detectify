@@ -52,13 +52,20 @@ const NavbarExpand = styled.div`
 const NavbarItems = styled.div`
   display: flex;
   align-items: center;
+  height: 100%;
 `;
 
 const NavbarItem = styled(Link)`
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
   height: 100%;
   cursor: pointer;
   &:hover {
     color: ${(props) => props.theme.colors.primary};
+  }
+  &:first-child {
+    padding-left: 0;
   }
 `;
 
@@ -113,6 +120,7 @@ const Navbar = () => {
         <NavbarExpand>
           <NavbarItems>
             <NavbarItem to="/projects">Projects</NavbarItem>
+            <NavbarItem to="/server">Server</NavbarItem>
           </NavbarItems>
           <NavbarCollapse>
             <ThemeToggler />
