@@ -26,6 +26,7 @@ export const router = createBrowserRouter([
         element: <NavbarLayoutWrapper />,
         children: [
           { path: 'projects', element: <Projects /> },
+          { path: 'server', element: <ServerPage /> },
           { path: '/', element: <HomePage /> },
         ],
       },
@@ -37,7 +38,6 @@ export const router = createBrowserRouter([
           { path: 'annotate', element: <AnnotatePage /> },
           { path: 'train', element: <TrainPage /> },
           { path: 'predict', element: <PredictPage /> },
-          { path: 'server', element: <ServerPage /> },
         ],
       },
     ],

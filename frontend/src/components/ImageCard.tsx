@@ -26,6 +26,23 @@ const Image = styled.img`
   border-radius: ${borderRadius}px ${borderRadius}px 0 0;
 `;
 
+const ImageOverlay = styled.div`
+  display: none;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  color: white;
+  box-shadow: 0 0 20px black;
+  opacity: 20%;
+  border-radius: ${borderRadius}px ${borderRadius}px 0 0;
+  ${Container}:hover & {
+    display: block;
+  }
+  z-index: 1;
+`;
+
 const Overlay = styled.div`
   display: none;
   position: absolute;
@@ -36,6 +53,7 @@ const Overlay = styled.div`
   box-shadow: 0 0 20px black;
   opacity: 50%;
   border-radius: ${borderRadius}px ${borderRadius}px 0 0;
+  z-index: 2;
   ${Container}:hover & {
     display: block;
   }
@@ -77,6 +95,7 @@ const ImageCard = ({
       }}
     >
       <Wrapper>
+        <ImageOverlay />
         <Image ref={imgRef} src={src} />
         <Overlay>{children}</Overlay>
       </Wrapper>

@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { H3 } from '../../components/Typography';
 import { RadioButton, RadioButtonGroup } from './RadioButtonGroup';
 import TutorialCard from './TutorialCard';
-import checkServerStatus from '../../assets/CheckServerStatus.png';
+import createSpaceIcon from '../../assets/CreateSpace.png';
+import checkStatusIcon from '../../assets/CheckStatus.png';
 import openColabIcon from '../../assets/OpenColab.png';
 import enableGPUIcon from '../../assets/EnableGPU.png';
 import installPackagesIcon from '../../assets/InstallPackages.png';
@@ -13,7 +14,20 @@ const Bold = styled.span`
   font-weight: bold;
 `;
 
+const CreateSpaceInfo = {
+  name: 'Create Space',
+  img: createSpaceIcon,
+  title: 'Creating Server Environment Space',
+  description: (
+    <>
+      To enable server connectivity, click on the <Bold>+ button</Bold> located
+      at the bottom of the default server and create a server environment.
+    </>
+  ),
+};
+
 const OpenColabInfo = {
+  name: 'Open Colab',
   img: openColabIcon,
   title: 'Open Colab Notebook and sign in with Google',
   description: (
@@ -36,6 +50,7 @@ const OpenColabInfo = {
 };
 
 const EnableGPUInfo = {
+  name: 'Enable GPU',
   img: enableGPUIcon,
   title:
     'Configure the runtime settings to use a GPU as the hardware accelerator',
@@ -49,6 +64,7 @@ const EnableGPUInfo = {
 };
 
 const InstallPackagesInfo = {
+  name: 'Install packages',
   img: installPackagesIcon,
   title: 'Install the necessary packages by running cell',
   description: (
@@ -60,6 +76,7 @@ const InstallPackagesInfo = {
 };
 
 const StartServerInfo = {
+  name: 'Start server',
   img: startServerIcon,
   title: 'Start the server by running cell',
   description: (
@@ -71,26 +88,29 @@ const StartServerInfo = {
 };
 
 const CheckServerStatusInfo = {
-  img: checkServerStatus,
+  name: 'Check server',
+  img: checkStatusIcon,
   title: 'Check the server status in Detectify',
   description: (
     <>
       After successfully starting the server, you will see the status of your
-      server on the website as <Bold>Idle</Bold>.
+      server on the website as <Bold>On</Bold>.
     </>
   ),
 };
 
+const infoArray = [
+  CreateSpaceInfo,
+  OpenColabInfo,
+  EnableGPUInfo,
+  InstallPackagesInfo,
+  StartServerInfo,
+  CheckServerStatusInfo,
+];
+
 const Tutorial = () => {
-  const [info, setInfo] = useState(OpenColabInfo);
+  const [info, setInfo] = useState(infoArray[0]);
   const [selected, setSelected] = useState(0);
-  const infoArray = [
-    OpenColabInfo,
-    EnableGPUInfo,
-    InstallPackagesInfo,
-    StartServerInfo,
-    CheckServerStatusInfo,
-  ];
 
   const handleClick = (index: number) => {
     if (selected !== index) {
@@ -101,23 +121,21 @@ const Tutorial = () => {
 
   return (
     <>
-      <H3>Prepare your own server</H3>
+      <H3>Prepare your own server on Colab</H3>
+      While using default servers on Detectify, limited computing resources may
+      not always be available when needed. To overcome this limitation, it is
+      recommended to set up your own server. We provide the ability to set up
+      your own server on Colab with GPU computing resources.
       <RadioButtonGroup>
-        <RadioButton selected={selected === 0} onClick={() => handleClick(0)}>
-          Open Colab
-        </RadioButton>
-        <RadioButton selected={selected === 1} onClick={() => handleClick(1)}>
-          Enable GPU
-        </RadioButton>
-        <RadioButton selected={selected === 2} onClick={() => handleClick(2)}>
-          Install packages
-        </RadioButton>
-        <RadioButton selected={selected === 3} onClick={() => handleClick(3)}>
-          Start server
-        </RadioButton>
-        <RadioButton selected={selected === 4} onClick={() => handleClick(4)}>
-          Check server status
-        </RadioButton>
+        {infoArray.map((p, i) => (
+          <RadioButton
+            key={i}
+            selected={selected === i}
+            onClick={() => handleClick(i)}
+          >
+            {p.name}
+          </RadioButton>
+        ))}
       </RadioButtonGroup>
       <TutorialCard
         {...info}
@@ -125,7 +143,9 @@ const Tutorial = () => {
           selected !== 0 ? () => handleClick(selected - 1) : undefined
         }
         onNextStepClick={
-          selected !== 4 ? () => handleClick(selected + 1) : undefined
+          selected !== infoArray.length - 1
+            ? () => handleClick(selected + 1)
+            : undefined
         }
       />
     </>
