@@ -85,7 +85,7 @@ const ServerCard = ({
         </DetailContainer>
         <DetailContainer>
           <Title>Server Status</Title>
-          <Detail style={{ color: status === 'Idle' ? '#169D5A' : '#DA874A' }}>
+          <Detail style={{ color: status === 'On' ? '#169D5A' : '#DA874A' }}>
             {status}
           </Detail>
         </DetailContainer>

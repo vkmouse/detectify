@@ -13,6 +13,7 @@ import axios from 'axios';
 import api from '../../api/api';
 import { useProjectInfo } from '../../context/ProjectInfoContext';
 import { useServerInfo } from '../../context/ServerInfoContext';
+import { useTrainingInfo } from '../../context/TrainingInfoContext';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -66,6 +67,7 @@ const TrainingConfig = () => {
     reloadIsDefaultServerAlive: reloadIsDefaultServerAlive,
   } = useServerInfo();
   const [advance, setAdvance] = useState(false);
+  const { isTraining, reloadServerInfo } = useTrainingInfo();
   const methods = useForm({
     defaultValues: {
       batchSize: 4,
@@ -98,6 +100,7 @@ const TrainingConfig = () => {
         .then(() => {
           reloadIsServerAlive();
           reloadIsDefaultServerAlive();
+          reloadServerInfo();
         });
     }
   };
@@ -113,7 +116,9 @@ const TrainingConfig = () => {
           <InputGroup>
             <Title>Training Configuration</Title>
             <ButtonContainer>
-              <PrimaryButton>Start Training</PrimaryButton>
+              <PrimaryButton disabled={isTraining}>
+                Start Training
+              </PrimaryButton>
             </ButtonContainer>
           </InputGroup>
           <AdvanceToggle
