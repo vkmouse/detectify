@@ -1,15 +1,32 @@
-import axios from 'axios';
 import { useRef } from 'react';
 import styled from 'styled-components';
+import Canvas from '../../components/Canvas';
 import ImageCardCollection from '../../components/ImageCardCollection';
-import PreviewCanvas from '../../components/PreviewCanvas';
 import { useProjectInfo } from '../../context/ProjectInfoContext';
 import { BatchUploadResponse } from '../../types/api';
-import { drawBoundingBoxes } from '../../utils/canvasUtils';
+import { resizeCanvasAndCallCallback } from '../../utils/canvasUtils';
+import ImageScaler from '../../utils/ImageScale';
+import { Card } from '../ProjectsPage/styles';
 
 const Container = styled.div`
   display: grid;
   grid-template-columns: 80% 20%;
+`;
+
+const CanvasWrapper = styled(Card)`
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-top: 75%;
+  cursor: crosshair;
+`;
+
+const CustomCanvas = styled(Canvas)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 `;
 
 const ImageCollectionContainer = styled.div`
@@ -20,94 +37,114 @@ const ImageCollectionContainer = styled.div`
   margin-left: 5px;
 `;
 
-type Size = {
-  width: number;
-  height: number;
-};
-
 const AnnotatePage = () => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const { images } = useProjectInfo();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const displayRegion = useRef({
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-  });
-  const displayRadio = useRef(1.0);
+  const selectedRef = useRef<{
+    img: HTMLImageElement;
+    annotationURL: string;
+  } | null>(null);
+  const scalarRef = useRef<ImageScaler>(new ImageScaler());
 
-  const updateRect = (canvasSize: Size, size: Size) => {
-    let { width, height } = size;
-    let ratio = 1.0;
-    if (canvasSize.width < width || canvasSize.height < height) {
-      ratio = Math.min(canvasSize.width / width, canvasSize.height / height);
-      width = width * ratio;
-      height = height * ratio;
-    }
-    const x = (canvasSize.width - width) / 2;
-    const y = (canvasSize.height - height) / 2;
-    displayRegion.current = { x, y, width, height };
-    displayRadio.current = ratio;
-    return { x, y, width, height };
+  const convertToCoordinates = (
+    e: React.MouseEvent<HTMLCanvasElement, MouseEvent>
+  ) => {
+    const canvas = e.target as HTMLCanvasElement;
+    const rect = canvas.getBoundingClientRect();
+    const canvasX = e.clientX - rect.left;
+    const canvasY = e.clientY - rect.top;
+    const [imageX, imageY] = scalarRef.current.paintToImage(canvasX, canvasY);
+    return { canvasX, canvasY, imageX, imageY };
   };
 
-  const drawCanvas = (image: HTMLImageElement) => {
-    const canvas = canvasRef.current;
-    const context = canvas?.getContext('2d');
-    if (canvas && context) {
-      const canvasSize = { width: canvas.width, height: canvas.height };
-      const size = { width: image.naturalWidth, height: image.naturalHeight };
-      const { x, y, width, height } = updateRect(canvasSize, size);
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.drawImage(image, x, y, width, height);
+  const handleCanvasPaint = (
+    ctx: CanvasRenderingContext2D,
+    canvasWidth: number,
+    canvasHeight: number
+  ) => {
+    if (selectedRef.current) {
+      const { img } = selectedRef.current;
+      scalarRef.current.setPaintAndImageSizes(
+        canvasWidth,
+        canvasHeight,
+        img.naturalWidth,
+        img.naturalHeight
+      );
+      scalarRef.current.autoScale();
+      if (scalarRef.current.getScale() > 1) {
+        scalarRef.current.setScale(1);
+      }
+      const [x, y, width, height] = scalarRef.current.imageToPaintRect(
+        0,
+        0,
+        img.naturalWidth,
+        img.naturalHeight
+      );
+      ctx.drawImage(img, x, y, width, height);
     }
+  };
+
+  const handleCanvasMouseDown = ({
+    canvasX,
+    canvasY,
+    imageX,
+    imageY,
+  }: {
+    canvasX: number;
+    canvasY: number;
+    imageX: number;
+    imageY: number;
+  }) => {
+    console.log([canvasX, canvasY, imageX, imageY]);
+  };
+
+  const handleCanvasMouseMove = ({
+    canvasX,
+    canvasY,
+    imageX,
+    imageY,
+  }: {
+    canvasX: number;
+    canvasY: number;
+    imageX: number;
+    imageY: number;
+  }) => {
+    console.log([canvasX, canvasY, imageX, imageY]);
+  };
+
+  const handleCanvasMouseUp = ({
+    canvasX,
+    canvasY,
+    imageX,
+    imageY,
+  }: {
+    canvasX: number;
+    canvasY: number;
+    imageX: number;
+    imageY: number;
+  }) => {
+    console.log([canvasX, canvasY, imageX, imageY]);
   };
 
   const handleCardClick = (
     img: HTMLImageElement,
     { annotationURL }: BatchUploadResponse
   ) => {
-    drawCanvas(img);
-    axios.get(annotationURL).then(({ data: xml }) => {
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(xml, 'text/xml');
-
-      const objects = xmlDoc.getElementsByTagName('object');
-      const boundingBoxes = [];
-
-      for (let i = 0; i < objects.length; i++) {
-        const name = objects[i].getElementsByTagName('name')[0].textContent;
-        const bndbox = objects[i].getElementsByTagName('bndbox')[0];
-        const xmin = bndbox.getElementsByTagName('xmin')[0].textContent;
-        const ymin = bndbox.getElementsByTagName('ymin')[0].textContent;
-        const xmax = bndbox.getElementsByTagName('xmax')[0].textContent;
-        const ymax = bndbox.getElementsByTagName('ymax')[0].textContent;
-        if (xmin !== null && xmax !== null && ymin !== null && ymax !== null) {
-          boundingBoxes.push({
-            name: name === null ? '' : name,
-            confidence: 1,
-            height: parseInt(xmax) - parseInt(xmin),
-            width: parseInt(ymax) - parseInt(ymin),
-            x: parseInt(xmin),
-            y: parseInt(ymin),
-          });
-        }
-      }
-
-      if (boundingBoxes && canvasRef.current) {
-        drawBoundingBoxes(
-          canvasRef.current,
-          displayRegion.current,
-          displayRadio.current,
-          boundingBoxes
-        );
-      }
-    });
+    selectedRef.current = { img, annotationURL };
+    resizeCanvasAndCallCallback(canvasRef?.current, handleCanvasPaint);
   };
 
   return (
     <Container>
-      <PreviewCanvas ref={canvasRef} isLoading={false} />
+      <CanvasWrapper>
+        <CustomCanvas
+          ref={canvasRef}
+          onPaint={handleCanvasPaint}
+          onMouseDown={(e) => handleCanvasMouseDown(convertToCoordinates(e))}
+          onMouseMove={(e) => handleCanvasMouseMove(convertToCoordinates(e))}
+          onMouseUp={(e) => handleCanvasMouseUp(convertToCoordinates(e))}
+        />
+      </CanvasWrapper>
       <ImageCollectionContainer>
         <ImageCardCollection
           images={images.filter((p) => p.annotationURL.includes('.xml'))}
