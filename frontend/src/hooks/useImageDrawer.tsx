@@ -42,9 +42,9 @@ const useImageDrawer = (
 
   // repaint on roi change
   useEffect(() => {
+    drawerRef.current?.draw();
     if (roi) {
       const { x, y, width, height } = roi;
-      drawerRef.current?.draw();
       drawerRef.current?.drawRect(x, y, width, height);
     }
   }, [roi]);

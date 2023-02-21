@@ -27,14 +27,16 @@ const ActiveDropdownItem = styled(DropdownItem)`
 const Dropdowns = ({
   value,
   items,
+  className,
   onSelectedChange,
 }: {
   value: string;
   items: { text: string; value: string }[];
+  className?: string;
   onSelectedChange?: (value: string) => void;
 }) => {
   return (
-    <DropdownMenu>
+    <DropdownMenu className={className}>
       {items.map((p, i) =>
         value === p.value ? (
           <ActiveDropdownItem

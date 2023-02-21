@@ -10,6 +10,7 @@ import {
   InputField,
 } from '../../components/InputFiled';
 import Modal, { ModalTitle } from '../../components/Modal';
+import { categoryNameOptions } from '../../utils/validate';
 
 const CustomModal = styled(Modal)`
   width: 600px;
@@ -31,23 +32,33 @@ const ButtonGroup = styled.div`
   justify-content: space-between;
 `;
 
+const CustomDropdowns = styled(Dropdowns)`
+  height: 175px;
+  overflow-y: auto;
+`;
+
 const InputModal = ({
+  categoryList,
   open,
   onClose,
   onSuccess,
   onCancel,
 }: {
+  categoryList: string[];
   open: boolean;
   onClose: () => void;
   onSuccess?: (category: string) => void;
   onCancel?: () => void;
 }) => {
-  const categoryList = ['cat', 'dog', 'apple'];
-  const initialCategory = categoryList.length > 0 ? categoryList[0] : '';
-  const [category, setCategory] = useState(initialCategory);
-  const { register, handleSubmit, setValue } = useForm({
+  const [category, setCategory] = useState('');
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
-      category: initialCategory,
+      category: '',
     },
   });
 
@@ -69,14 +80,16 @@ const InputModal = ({
           <InputContainer>
             <Input
               placeholder="Enter category name"
-              {...register('category')}
+              {...register('category', categoryNameOptions)}
               onChange={(e) => {
                 setCategory(e.target.value);
               }}
             />
           </InputContainer>
-          <ErrorMessage>&nbsp;</ErrorMessage>
-          <Dropdowns
+          <ErrorMessage>
+            {errors.category ? errors.category.message : <>&nbsp;</>}
+          </ErrorMessage>
+          <CustomDropdowns
             value={category}
             items={categoryList.map((p) => ({ value: p, text: p }))}
             onSelectedChange={(value) => {

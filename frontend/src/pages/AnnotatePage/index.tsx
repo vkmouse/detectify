@@ -47,7 +47,7 @@ const ImageCollectionContainer = styled.div`
 const AnnotatePage = () => {
   const scalerRef = useRef<ImageScaler>(new ImageScaler());
   const { images } = useProjectInfo();
-  const { bboxes, select, pushBbox } = useAnnotation();
+  const { categoryList, bboxes, select, pushBbox } = useAnnotation();
   const [img, setImg] = useState<HTMLImageElement | null>(null);
   const [open, setOpen] = useState(false);
   const [state, dispatch] = useReducer(annotationReducer, {
@@ -95,6 +95,7 @@ const AnnotatePage = () => {
   return (
     <>
       <InputModal
+        categoryList={categoryList}
         open={open}
         onClose={() => setOpen(false)}
         onSuccess={(category) => {
