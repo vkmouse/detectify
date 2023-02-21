@@ -11,6 +11,11 @@ import {
 } from '../../components/InputFiled';
 import { projectNameOptions } from '../../utils/validate';
 import { ButtonGroup, OutlineButton, Button } from './styles';
+import styled from 'styled-components';
+
+const CustomModal = styled(Modal)`
+  width: 600px;
+`;
 
 const CreateProjectDialog = (props: { open: boolean; onClose: () => void }) => {
   const { open, onClose } = props;
@@ -42,7 +47,7 @@ const CreateProjectDialog = (props: { open: boolean; onClose: () => void }) => {
   }, [open]);
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <CustomModal open={open} onClose={onClose}>
       <ModalTitle>Create Project</ModalTitle>
       <form
         onSubmit={handleSubmit((data) =>
@@ -80,7 +85,7 @@ const CreateProjectDialog = (props: { open: boolean; onClose: () => void }) => {
           <Button type="submit">Create</Button>
         </ButtonGroup>
       </form>
-    </Modal>
+    </CustomModal>
   );
 };
 

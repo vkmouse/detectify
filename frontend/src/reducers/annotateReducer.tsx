@@ -1,19 +1,8 @@
-type Point = {
-  x: number;
-  y: number;
-};
-
-type Rect = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
+import { Point, Rect } from '../types/types';
 
 type State = {
   initialLocation: Point | null;
   labelingRoi: Rect | null;
-  onLabelFinish: (roi: Rect) => void;
 };
 
 enum Type {
@@ -57,11 +46,6 @@ const annotationReducer = (state: State, action: Action): State => {
       return state;
     }
     case Type.LABEL_END: {
-      if (state.labelingRoi) {
-        state.onLabelFinish(state.labelingRoi);
-      }
-      state.labelingRoi = null;
-      state.initialLocation = null;
       return {
         ...state,
         initialLocation: null,

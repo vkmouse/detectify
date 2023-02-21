@@ -54,9 +54,11 @@ const ModalImage = styled.img`
 
 const Modal = ({
   children,
+  className,
   open,
   onClose,
 }: {
+  className?: string;
   children?: ReactNode;
   open: boolean;
   onClose: () => void;
@@ -96,7 +98,9 @@ const Modal = ({
       <ModalOverlay>
         <ModalBackground onClick={onClose} />
         <ModalWrapper>
-          <ModalInnerContainer>{children}</ModalInnerContainer>
+          <ModalInnerContainer className={className}>
+            {children}
+          </ModalInnerContainer>
         </ModalWrapper>
       </ModalOverlay>
     </ModalContainer>
