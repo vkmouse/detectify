@@ -10,14 +10,16 @@ type AnnotationData = {
 
 type State = {
   isFetching: boolean;
-  selected: InferResponse[];
+  bboxes: InferResponse[];
   select: (url: string) => void;
+  pushBbox: (bbox: InferResponse) => void;
 };
 
 const initialState: State = {
   isFetching: true,
-  selected: [],
+  bboxes: [],
   select: () => void 0,
+  pushBbox: () => void 0,
 };
 
 const AnnotationContext = createContext<State>(initialState);
@@ -53,7 +55,7 @@ const parseXml = (xml: any) => {
 
 const AnnotationProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
-  const [selected, setSelected] = useState<InferResponse[]>([]);
+  const [bboxes, setBboxes] = useState<InferResponse[]>([]);
   const annotationDataRef = useRef<AnnotationData[]>([]);
   const urlRef = useRef('');
 
@@ -70,7 +72,7 @@ const AnnotationProvider = ({ children }: { children: ReactNode }) => {
         const { data: xml } = body;
         const bboxes = parseXml(xml);
         annotationDataRef.current.push({ url: urlRef.current, bboxes });
-        setSelected(bboxes);
+        setBboxes(bboxes);
       }
     },
   });
@@ -78,15 +80,26 @@ const AnnotationProvider = ({ children }: { children: ReactNode }) => {
   const select = (url: string) => {
     const arr = annotationDataRef.current.filter((p) => p.url === url);
     if (url && arr.length) {
-      setSelected(arr[0].bboxes);
+      setBboxes(arr[0].bboxes);
     } else {
       urlRef.current = url;
       queryClient.invalidateQueries(['annotation']);
     }
   };
 
+  const pushBbox = (bbox: InferResponse) => {
+    for (const data of annotationDataRef.current) {
+      if (data.url === urlRef.current) {
+        data.bboxes.push(bbox);
+        setBboxes((prev) => [...prev, bbox]);
+      }
+    }
+  };
+
   return (
-    <AnnotationContext.Provider value={{ isFetching, selected, select }}>
+    <AnnotationContext.Provider
+      value={{ isFetching, bboxes, select, pushBbox }}
+    >
       {children}
     </AnnotationContext.Provider>
   );

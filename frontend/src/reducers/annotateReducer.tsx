@@ -21,7 +21,8 @@ const labelMove = (location: Point): Action => {
   return { type: Type.LABEL_MOVE, payload: { location } };
 };
 
-const labelEnd = (location: Point): Action => {
+const labelEnd = (): Action => {
+  const location: Point = { x: 0, y: 0 };
   return { type: Type.LABEL_END, payload: { location } };
 };
 
