@@ -1,11 +1,12 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Canvas from '../../components/Canvas';
 import ImageCardCollection from '../../components/ImageCardCollection';
+import { useAnnotation } from '../../context/AnnotationContext';
 import { useProjectInfo } from '../../context/ProjectInfoContext';
 import { BatchUploadResponse } from '../../types/api';
 import { resizeCanvasAndCallCallback } from '../../utils/canvasUtils';
-import ImageScaler from '../../utils/ImageScale';
+import { ImageDrawer, ImageScaler } from '../../utils/ImageDrawer';
 import { Card } from '../ProjectsPage/styles';
 
 const Container = styled.div`
@@ -39,12 +40,10 @@ const ImageCollectionContainer = styled.div`
 
 const AnnotatePage = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const scalerRef = useRef<ImageScaler>(new ImageScaler());
+  const drawerRef = useRef<ImageDrawer | null>(null);
   const { images } = useProjectInfo();
-  const selectedRef = useRef<{
-    img: HTMLImageElement;
-    annotationURL: string;
-  } | null>(null);
-  const scalarRef = useRef<ImageScaler>(new ImageScaler());
+  const { select, selected: bboxes } = useAnnotation();
 
   const convertToCoordinates = (
     e: React.MouseEvent<HTMLCanvasElement, MouseEvent>
@@ -53,35 +52,8 @@ const AnnotatePage = () => {
     const rect = canvas.getBoundingClientRect();
     const canvasX = e.clientX - rect.left;
     const canvasY = e.clientY - rect.top;
-    const [imageX, imageY] = scalarRef.current.paintToImage(canvasX, canvasY);
+    const [imageX, imageY] = scalerRef.current.paintToImage(canvasX, canvasY);
     return { canvasX, canvasY, imageX, imageY };
-  };
-
-  const handleCanvasPaint = (
-    ctx: CanvasRenderingContext2D,
-    canvasWidth: number,
-    canvasHeight: number
-  ) => {
-    if (selectedRef.current) {
-      const { img } = selectedRef.current;
-      scalarRef.current.setPaintAndImageSizes(
-        canvasWidth,
-        canvasHeight,
-        img.naturalWidth,
-        img.naturalHeight
-      );
-      scalarRef.current.autoScale();
-      if (scalarRef.current.getScale() > 1) {
-        scalarRef.current.setScale(1);
-      }
-      const [x, y, width, height] = scalarRef.current.imageToPaintRect(
-        0,
-        0,
-        img.naturalWidth,
-        img.naturalHeight
-      );
-      ctx.drawImage(img, x, y, width, height);
-    }
   };
 
   const handleCanvasMouseDown = ({
@@ -126,20 +98,58 @@ const AnnotatePage = () => {
     console.log([canvasX, canvasY, imageX, imageY]);
   };
 
+  const draw = () => {
+    if (!drawerRef.current) {
+      return;
+    }
+    drawerRef.current.draw();
+  };
+
   const handleCardClick = (
     img: HTMLImageElement,
     { annotationURL }: BatchUploadResponse
   ) => {
-    selectedRef.current = { img, annotationURL };
-    resizeCanvasAndCallCallback(canvasRef?.current, handleCanvasPaint);
+    // request to update annotation
+    select(annotationURL);
+
+    // update image
+    drawerRef.current?.setImage(img);
+
+    // update scaler
+    const scaler = scalerRef.current;
+    scaler.setImageSize(img.naturalWidth, img.naturalHeight);
+    scaler.autoScale(1);
   };
+
+  useEffect(() => {
+    // update bboxes
+    drawerRef.current?.clearBboxes();
+    for (const box of bboxes) {
+      drawerRef.current?.pushBbox(box);
+    }
+
+    // repaint
+    resizeCanvasAndCallCallback(canvasRef?.current, draw);
+  }, [bboxes]);
+
+  useEffect(() => {
+    // initial drawer
+    resizeCanvasAndCallCallback(canvasRef?.current, (ctx) => {
+      drawerRef.current = new ImageDrawer(ctx, scalerRef.current);
+    });
+  }, []);
 
   return (
     <Container>
       <CanvasWrapper>
         <CustomCanvas
           ref={canvasRef}
-          onPaint={handleCanvasPaint}
+          onPaint={(_, w, h) => {
+            const scaler = scalerRef.current;
+            scaler.setPaintSize(w, h);
+            scaler.autoScale(1);
+            draw();
+          }}
           onMouseDown={(e) => handleCanvasMouseDown(convertToCoordinates(e))}
           onMouseMove={(e) => handleCanvasMouseMove(convertToCoordinates(e))}
           onMouseUp={(e) => handleCanvasMouseUp(convertToCoordinates(e))}

@@ -1,3 +1,5 @@
+import { InferResponse } from '../types/api';
+
 interface TransformValues {
   offsetX: number;
   offsetY: number;
@@ -123,28 +125,13 @@ class ImageScaler {
     return [newX, newY, newWidth, newHeight];
   }
 
-  autoScale() {
+  autoScale(min?: number) {
     const scaleX = this.paintWidth / this.imageWidth;
     const scaleY = this.paintHeight / this.imageHeight;
-
-    const transform = this.transformCoordinateSystem(
-      this.imageWidth,
-      this.imageHeight,
-      this.paintWidth,
-      this.paintHeight,
-      Math.min(scaleX, scaleY)
-    );
-
-    this.scale = transform.scale;
-    this.offsetX = transform.offsetX;
-    this.offsetY = transform.offsetY;
-  }
-
-  getScale() {
-    return this.scale;
-  }
-
-  setScale(scale: number) {
+    let scale = Math.min(scaleX, scaleY);
+    if (min) {
+      scale = Math.min(scale, min);
+    }
     const transform = this.transformCoordinateSystem(
       this.imageWidth,
       this.imageHeight,
@@ -159,4 +146,76 @@ class ImageScaler {
   }
 }
 
-export default ImageScaler;
+class ImageDrawer {
+  private ctx: CanvasRenderingContext2D;
+  private scaler: ImageScaler;
+  private image: HTMLImageElement | null;
+  private bboxes: InferResponse[];
+
+  constructor(ctx: CanvasRenderingContext2D, scaler: ImageScaler) {
+    this.ctx = ctx;
+    this.scaler = scaler;
+    this.image = null;
+    this.bboxes = [];
+  }
+
+  draw() {
+    if (this.image) {
+      this.drawImage(this.image);
+      for (const box of this.bboxes) {
+        this.drawRect(box.name, box.x, box.y, box.width, box.height);
+      }
+    }
+  }
+
+  drawImage(image: HTMLImageElement) {
+    const [x, y, width, height] = this.scaler.imageToPaintRect(
+      0,
+      0,
+      image.naturalWidth,
+      image.naturalHeight
+    );
+    this.ctx.drawImage(image, x, y, width, height);
+  }
+
+  drawRect(name: string, x: number, y: number, width: number, height: number) {
+    const [paintX, paintY, paintWidth, paintHeight] =
+      this.scaler.imageToPaintRect(x, y, width, height);
+    const fontSize = 18;
+    const color = '#FF0000';
+    this.ctx.font = `${fontSize}px Microsoft YaHei`;
+    this.ctx.strokeStyle = color;
+    this.ctx.fillStyle = color;
+    this.ctx.lineWidth = 3;
+
+    this.ctx.beginPath();
+    this.ctx.rect(paintX, paintY, paintWidth, paintHeight);
+    this.ctx.stroke();
+
+    const labelName = name;
+    const { width: textWidth } = this.ctx.measureText(labelName);
+    this.ctx.fillStyle = color;
+    this.ctx.fillRect(
+      paintX - this.ctx.lineWidth / 2,
+      paintY - fontSize - this.ctx.lineWidth / 2,
+      textWidth + this.ctx.lineWidth,
+      fontSize + this.ctx.lineWidth
+    );
+    this.ctx.fillStyle = '#fff';
+    this.ctx.fillText(labelName, paintX, paintY - this.ctx.lineWidth / 2);
+  }
+
+  setImage(image: HTMLImageElement) {
+    this.image = image;
+  }
+
+  pushBbox(bbox: InferResponse) {
+    this.bboxes.push(bbox);
+  }
+
+  clearBboxes() {
+    this.bboxes = [];
+  }
+}
+
+export { ImageScaler, ImageDrawer };

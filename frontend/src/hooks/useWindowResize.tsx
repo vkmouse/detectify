@@ -23,7 +23,7 @@ const useWindowSize = ({ onWindowResize }: { onWindowResize?: () => void }) => {
     window.addEventListener('resize', handleResize);
     handleResize();
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [windowWidth, windowHeight]);
 
   return { windowWidth, windowHeight };
 };
