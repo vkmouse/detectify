@@ -148,6 +148,10 @@ class ImageScaler {
   getPaintSize() {
     return { width: this.paintWidth, height: this.paintHeight };
   }
+
+  getImageSize() {
+    return { width: this.imageWidth, height: this.imageHeight };
+  }
 }
 
 class ImageDrawer {
@@ -217,7 +221,6 @@ class ImageDrawer {
 
   clearPaint() {
     const { width, height } = this.scaler.getPaintSize();
-    console.log(width, height);
     this.ctx.clearRect(0, 0, width, height);
   }
 

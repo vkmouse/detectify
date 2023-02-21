@@ -52,7 +52,7 @@ const AnnotatePage = () => {
   const [state, dispatch] = useReducer(annotationReducer, {
     initialLocation: null,
     labelingRoi: null,
-    onLabelFinish: () => void 0,
+    onLabelFinish: () => console.log('fin'),
   });
 
   const convertToCoordinates = (
@@ -62,7 +62,10 @@ const AnnotatePage = () => {
     const rect = canvas.getBoundingClientRect();
     const canvasX = e.clientX - rect.left;
     const canvasY = e.clientY - rect.top;
-    const [imageX, imageY] = scalerRef.current.paintToImage(canvasX, canvasY);
+    let [imageX, imageY] = scalerRef.current.paintToImage(canvasX, canvasY);
+    const { width, height } = scalerRef.current.getImageSize();
+    imageX = Math.min(Math.max(imageX, 0), width);
+    imageY = Math.min(Math.max(imageY, 0), height);
     return { canvasX, canvasY, imageX, imageY };
   };
 

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 import styled from 'styled-components';
 
 const ModalContainer = styled.div<{ open: boolean }>`
@@ -30,23 +30,34 @@ const ModalWrapper = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  max-width: calc(100vw - 40px);
   background: ${(props) => props.theme.colors.cardBackground};
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 2rem 0 rgb(41 48 66 / 10%);
 `;
 
-const Image = styled.img`
+const ModalInnerContainer = styled.div`
+  width: 100%;
+`;
+
+const ModalTitle = styled.div`
+  font-size: 125%;
+  font-weight: bold;
+  padding-bottom: 5px;
+`;
+
+const ModalImage = styled.img`
   max-width: 80vw;
   max-height: 80vh;
 `;
 
-const ImageModal = ({
-  src,
+const Modal = ({
+  children,
   open,
   onClose,
 }: {
-  src: string;
+  children?: ReactNode;
   open: boolean;
   onClose: () => void;
 }) => {
@@ -85,11 +96,12 @@ const ImageModal = ({
       <ModalOverlay>
         <ModalBackground onClick={onClose} />
         <ModalWrapper>
-          <Image src={src} alt="" />
+          <ModalInnerContainer>{children}</ModalInnerContainer>
         </ModalWrapper>
       </ModalOverlay>
     </ModalContainer>
   );
 };
 
-export default ImageModal;
+export default Modal;
+export { ModalTitle, ModalImage };

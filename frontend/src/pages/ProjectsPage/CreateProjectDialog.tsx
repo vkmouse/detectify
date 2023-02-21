@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import api from '../../api/api';
-import Dialog, { DialogTitle } from '../../components/Dialog';
+import Modal, { ModalTitle } from '../../components/Modal';
 import {
   InputField,
   InputContainer,
@@ -42,8 +42,8 @@ const CreateProjectDialog = (props: { open: boolean; onClose: () => void }) => {
   }, [open]);
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Create Project</DialogTitle>
+    <Modal open={open} onClose={onClose}>
+      <ModalTitle>Create Project</ModalTitle>
       <form
         onSubmit={handleSubmit((data) =>
           addProjectMutation.mutate({
@@ -80,7 +80,7 @@ const CreateProjectDialog = (props: { open: boolean; onClose: () => void }) => {
           <Button type="submit">Create</Button>
         </ButtonGroup>
       </form>
-    </Dialog>
+    </Modal>
   );
 };
 
