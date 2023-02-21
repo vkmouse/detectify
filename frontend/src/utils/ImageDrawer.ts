@@ -144,6 +144,10 @@ class ImageScaler {
     this.offsetX = transform.offsetX;
     this.offsetY = transform.offsetY;
   }
+
+  getPaintSize() {
+    return { width: this.paintWidth, height: this.paintHeight };
+  }
 }
 
 class ImageDrawer {
@@ -161,9 +165,11 @@ class ImageDrawer {
 
   draw() {
     if (this.image) {
+      this.clearPaint();
       this.drawImage(this.image);
       for (const box of this.bboxes) {
-        this.drawRect(box.name, box.x, box.y, box.width, box.height);
+        this.drawRect(box.x, box.y, box.width, box.height);
+        this.drawName(box.name, box.x, box.y);
       }
     }
   }
@@ -178,12 +184,10 @@ class ImageDrawer {
     this.ctx.drawImage(image, x, y, width, height);
   }
 
-  drawRect(name: string, x: number, y: number, width: number, height: number) {
+  drawRect(x: number, y: number, width: number, height: number) {
     const [paintX, paintY, paintWidth, paintHeight] =
       this.scaler.imageToPaintRect(x, y, width, height);
-    const fontSize = 18;
     const color = '#FF0000';
-    this.ctx.font = `${fontSize}px Microsoft YaHei`;
     this.ctx.strokeStyle = color;
     this.ctx.fillStyle = color;
     this.ctx.lineWidth = 3;
@@ -191,7 +195,13 @@ class ImageDrawer {
     this.ctx.beginPath();
     this.ctx.rect(paintX, paintY, paintWidth, paintHeight);
     this.ctx.stroke();
+  }
 
+  drawName(name: string, x: number, y: number) {
+    const color = '#FF0000';
+    const fontSize = 18;
+    this.ctx.font = `${fontSize}px Microsoft YaHei`;
+    const [paintX, paintY] = this.scaler.imageToPaint(x, y);
     const labelName = name;
     const { width: textWidth } = this.ctx.measureText(labelName);
     this.ctx.fillStyle = color;
@@ -203,6 +213,12 @@ class ImageDrawer {
     );
     this.ctx.fillStyle = '#fff';
     this.ctx.fillText(labelName, paintX, paintY - this.ctx.lineWidth / 2);
+  }
+
+  clearPaint() {
+    const { width, height } = this.scaler.getPaintSize();
+    console.log(width, height);
+    this.ctx.clearRect(0, 0, width, height);
   }
 
   setImage(image: HTMLImageElement) {

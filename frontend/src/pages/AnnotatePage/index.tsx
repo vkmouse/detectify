@@ -1,9 +1,14 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useReducer, useRef } from 'react';
 import styled from 'styled-components';
 import Canvas from '../../components/Canvas';
 import ImageCardCollection from '../../components/ImageCardCollection';
 import { useAnnotation } from '../../context/AnnotationContext';
 import { useProjectInfo } from '../../context/ProjectInfoContext';
+import annotationReducer, {
+  labelEnd,
+  labelMove,
+  labelStart,
+} from '../../reducers/annotateReducer';
 import { BatchUploadResponse } from '../../types/api';
 import { resizeCanvasAndCallCallback } from '../../utils/canvasUtils';
 import { ImageDrawer, ImageScaler } from '../../utils/ImageDrawer';
@@ -44,6 +49,11 @@ const AnnotatePage = () => {
   const drawerRef = useRef<ImageDrawer | null>(null);
   const { images } = useProjectInfo();
   const { select, selected: bboxes } = useAnnotation();
+  const [state, dispatch] = useReducer(annotationReducer, {
+    initialLocation: null,
+    labelingRoi: null,
+    onLabelFinish: () => void 0,
+  });
 
   const convertToCoordinates = (
     e: React.MouseEvent<HTMLCanvasElement, MouseEvent>
@@ -57,45 +67,33 @@ const AnnotatePage = () => {
   };
 
   const handleCanvasMouseDown = ({
-    canvasX,
-    canvasY,
     imageX,
     imageY,
   }: {
-    canvasX: number;
-    canvasY: number;
     imageX: number;
     imageY: number;
   }) => {
-    console.log([canvasX, canvasY, imageX, imageY]);
+    dispatch(labelStart({ x: imageX, y: imageY }));
   };
 
   const handleCanvasMouseMove = ({
-    canvasX,
-    canvasY,
     imageX,
     imageY,
   }: {
-    canvasX: number;
-    canvasY: number;
     imageX: number;
     imageY: number;
   }) => {
-    console.log([canvasX, canvasY, imageX, imageY]);
+    dispatch(labelMove({ x: imageX, y: imageY }));
   };
 
   const handleCanvasMouseUp = ({
-    canvasX,
-    canvasY,
     imageX,
     imageY,
   }: {
-    canvasX: number;
-    canvasY: number;
     imageX: number;
     imageY: number;
   }) => {
-    console.log([canvasX, canvasY, imageX, imageY]);
+    dispatch(labelEnd({ x: imageX, y: imageY }));
   };
 
   const draw = () => {
@@ -138,6 +136,15 @@ const AnnotatePage = () => {
       drawerRef.current = new ImageDrawer(ctx, scalerRef.current);
     });
   }, []);
+
+  useEffect(() => {
+    // repaint when labeling change
+    if (state.labelingRoi && scalerRef.current && drawerRef.current) {
+      const { x, y, width, height } = state.labelingRoi;
+      drawerRef.current.draw();
+      drawerRef.current.drawRect(x, y, width, height);
+    }
+  }, [state.labelingRoi]);
 
   return (
     <Container>
