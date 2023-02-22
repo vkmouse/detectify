@@ -2,7 +2,7 @@ import { ReactNode, useState } from 'react';
 import styled from 'styled-components';
 import { PrimaryButton } from '../../components/Button';
 import { Card } from '../../components/Card';
-import ImageModal from '../../components/ImageModal';
+import Modal, { ModalImage } from '../../components/Modal';
 import { H3 } from '../../components/Typography';
 
 const Container = styled(Card)`
@@ -82,7 +82,9 @@ const TutorialCard = ({
 
   return (
     <>
-      <ImageModal src={img} open={open} onClose={() => setOpen(false)} />
+      <Modal open={open} onClose={() => setOpen(false)}>
+        <ModalImage src={img} />
+      </Modal>
       <Container>
         <ImageContainer>
           <ImageOverlay onClick={() => setOpen(true)} />

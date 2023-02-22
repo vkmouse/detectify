@@ -25,6 +25,8 @@ const darkTheme: DefaultTheme = {
     navBackground: '#202634',
     dropdownHover: '#3e4555',
     dropdownBorderColor: '#4e5362',
+    dropdownActiveBackground: '#3f80ea',
+    dropdownActiveColor: '#fff',
   },
   buttonDisabledOpacity: 0.65,
 };
