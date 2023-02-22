@@ -1,5 +1,8 @@
+import axios from 'axios';
 import { useReducer, useRef, useState } from 'react';
 import styled from 'styled-components';
+import api from '../../api/api';
+import { PrimaryButton } from '../../components/Button';
 import Canvas from '../../components/Canvas';
 import ImageCardCollection from '../../components/ImageCardCollection';
 import { useAnnotation } from '../../context/AnnotationContext';
@@ -46,8 +49,9 @@ const ImageCollectionContainer = styled.div`
 
 const AnnotatePage = () => {
   const scalerRef = useRef<ImageScaler>(new ImageScaler());
-  const { images } = useProjectInfo();
-  const { categoryList, bboxes, select, pushBbox } = useAnnotation();
+  const { id: projectId, images } = useProjectInfo();
+  const { categoryList, bboxes, generateAnnotation, select, pushBbox } =
+    useAnnotation();
   const [img, setImg] = useState<HTMLImageElement | null>(null);
   const [open, setOpen] = useState(false);
   const [state, dispatch] = useReducer(labelingReducer, {
@@ -86,9 +90,9 @@ const AnnotatePage = () => {
 
   const handleCardClick = (
     img: HTMLImageElement,
-    { annotationURL }: BatchUploadResponse
+    { filename, annotationURL }: BatchUploadResponse
   ) => {
-    select(annotationURL);
+    select(filename, annotationURL, img.naturalWidth, img.naturalHeight);
     setImg(img);
   };
 
@@ -124,11 +128,42 @@ const AnnotatePage = () => {
         </CanvasWrapper>
         <ImageCollectionContainer>
           <ImageCardCollection
-            images={images.filter((p) => p.annotationURL.includes('.xml'))}
+            images={images}
             onImageCardClick={handleCardClick}
           />
         </ImageCollectionContainer>
       </Container>
+      <PrimaryButton
+        onClick={async () => {
+          const xmls = generateAnnotation();
+          const uploadedFiles = xmls.map((p) => ({
+            filename: p.filename,
+            imageExt: '',
+            annotationExt: '.xml',
+          }));
+
+          const resp = await api.createBatchUpload({
+            projectId,
+            uploadedFiles,
+          });
+
+          for (const xml of xmls) {
+            const presignedURL = resp.get(xml.filename)?.annotationURL;
+            if (presignedURL) {
+              const blob = new Blob([xml.xml], { type: 'text/xml' });
+              const file = new File([blob], xml.filename, {
+                type: 'text/xml',
+              });
+              const resp = await axios.put(presignedURL, file, {
+                headers: { 'Content-Type': 'text/xml' },
+              });
+              console.log(resp);
+            }
+          }
+        }}
+      >
+        Save
+      </PrimaryButton>
     </>
   );
 };

@@ -9,6 +9,7 @@ type AnnotationState = {
   bboxes: InferResponse[];
   categoryList: string[];
   annotationData: Record<string, InferResponse[]>;
+  modified: Set<string>;
   requestAnnotation: () => void;
 };
 
@@ -43,11 +44,20 @@ const annotationReducer = (
 ): AnnotationState => {
   switch (action.type) {
     case 'ADD_BBOX': {
+      const { url } = action.payload;
       const bboxes = [...state.bboxes, action.payload.bbox];
       const annotationData = {
         ...state.annotationData,
-        [action.payload.url]: bboxes,
+        [url]: bboxes,
       };
+      let modified: Set<string>;
+      if (state.modified.has(url)) {
+        modified = state.modified;
+      } else {
+        modified = new Set(state.modified);
+        modified.add(url);
+      }
+
       return {
         ...state,
         annotationData,
@@ -55,6 +65,7 @@ const annotationReducer = (
         categoryList: state.categoryList.includes(action.payload.bbox.name)
           ? state.categoryList
           : [...state.categoryList, action.payload.bbox.name],
+        modified,
       };
     }
     case 'ADD_ANNOTATION': {
