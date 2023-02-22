@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Grid421 as Grid } from '../../../components/Grid';
 import ImageCard from '../../../components/ImageCard';
-import ImageModal from '../../../components/ImageModal';
+import Modal, { ModalImage } from '../../../components/Modal';
 import { useProjectInfo } from '../../../context/ProjectInfoContext';
 
 const ImageList = () => {
@@ -11,11 +11,9 @@ const ImageList = () => {
 
   return (
     <>
-      <ImageModal
-        src={srcRef.current}
-        open={open}
-        onClose={() => setOpen(false)}
-      />
+      <Modal open={open} onClose={() => setOpen(false)}>
+        <ModalImage src={srcRef.current} />
+      </Modal>
       <Grid>
         {images.map((p, i) => (
           <ImageCard

@@ -26,6 +26,8 @@ declare module 'styled-components' {
       navBackground: string;
       dropdownHover: string;
       dropdownBorderColor: string;
+      dropdownActiveBackground: string;
+      dropdownActiveColor: string;
     };
     buttonDisabledOpacity: number;
   }

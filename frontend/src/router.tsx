@@ -1,5 +1,6 @@
 import { createBrowserRouter, Outlet } from 'react-router-dom';
 import { NavbarLayout, NavbarSidebarLayout } from './components/Layout';
+import { AnnotationProvider } from './context/AnnotationContext';
 import { ProjectInfoProvider } from './context/ProjectInfoContext';
 import { ServerInfoProvider } from './context/ServerInfoContext';
 import AnnotatePage from './pages/AnnotatePage';
@@ -68,7 +69,9 @@ function NavbarSidebarLayoutWrapper() {
   return (
     <ServerInfoProvider>
       <ProjectInfoProvider>
-        <NavbarSidebarLayout />
+        <AnnotationProvider>
+          <NavbarSidebarLayout />
+        </AnnotationProvider>
       </ProjectInfoProvider>
     </ServerInfoProvider>
   );

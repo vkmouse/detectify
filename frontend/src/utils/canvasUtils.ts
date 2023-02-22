@@ -51,4 +51,28 @@ const drawBoundingBoxes = (
   }
 };
 
-export { drawRect, drawBoundingBoxes };
+const resizeCanvasAndCallCallback = (
+  canvas: HTMLCanvasElement | null,
+  callback?: (
+    ctx: CanvasRenderingContext2D,
+    canvasWidth: number,
+    canvasHeight: number
+  ) => void
+) => {
+  const ctx = canvas?.getContext('2d');
+  if (
+    canvas &&
+    canvas?.width &&
+    canvas?.height &&
+    canvas?.parentElement?.clientWidth &&
+    canvas?.parentElement?.clientHeight &&
+    ctx
+  ) {
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = canvas.parentElement.clientHeight;
+    const { width, height } = canvas;
+    callback?.(ctx, width, height);
+  }
+};
+
+export { drawRect, drawBoundingBoxes, resizeCanvasAndCallCallback };

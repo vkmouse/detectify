@@ -54,4 +54,21 @@ const projectNameOptions: RegisterOptions = {
   },
 };
 
-export { emailOptions, nameOptions, passwordOptions, projectNameOptions };
+const categoryNameOptions: RegisterOptions = {
+  required: {
+    value: true,
+    message: 'Category name is required',
+  },
+  pattern: {
+    value: /^[a-zA-Z0-9]{1,20}$/,
+    message: 'Please enter only letters and numbers (1 to 20 characters)',
+  },
+};
+
+export {
+  categoryNameOptions,
+  emailOptions,
+  nameOptions,
+  passwordOptions,
+  projectNameOptions,
+};
