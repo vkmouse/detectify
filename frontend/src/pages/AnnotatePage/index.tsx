@@ -5,11 +5,11 @@ import ImageCardCollection from '../../components/ImageCardCollection';
 import { useAnnotation } from '../../context/AnnotationContext';
 import { useProjectInfo } from '../../context/ProjectInfoContext';
 import useImageDrawer from '../../hooks/useImageDrawer';
-import annotationReducer, {
+import labelingReducer, {
   labelEnd,
   labelMove,
   labelStart,
-} from '../../reducers/annotateReducer';
+} from '../../reducers/labelingReducer';
 import { BatchUploadResponse } from '../../types/api';
 import { ImageScaler } from '../../utils/ImageDrawer';
 import { Card } from '../ProjectsPage/styles';
@@ -50,7 +50,7 @@ const AnnotatePage = () => {
   const { categoryList, bboxes, select, pushBbox } = useAnnotation();
   const [img, setImg] = useState<HTMLImageElement | null>(null);
   const [open, setOpen] = useState(false);
-  const [state, dispatch] = useReducer(annotationReducer, {
+  const [state, dispatch] = useReducer(labelingReducer, {
     initialLocation: null,
     labelingRoi: null,
   });

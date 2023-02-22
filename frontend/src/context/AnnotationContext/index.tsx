@@ -1,12 +1,18 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { createContext, ReactNode, useContext, useRef, useState } from 'react';
-import { InferResponse } from '../types/api';
-
-type AnnotationData = {
-  url: string;
-  bboxes: InferResponse[];
-};
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useReducer,
+  useRef,
+} from 'react';
+import { InferResponse } from '../../types/api';
+import annotationReducer, {
+  addAnnotation,
+  addBox,
+  selectAnnotation,
+} from './annotationReducer';
 
 type State = {
   categoryList: string[];
@@ -15,14 +21,12 @@ type State = {
   pushBbox: (bbox: InferResponse) => void;
 };
 
-const initialState: State = {
+const AnnotationContext = createContext<State>({
   categoryList: [],
   bboxes: [],
   select: () => void 0,
   pushBbox: () => void 0,
-};
-
-const AnnotationContext = createContext<State>(initialState);
+});
 
 const parseXml = (xml: any) => {
   const parser = new DOMParser();
@@ -55,10 +59,15 @@ const parseXml = (xml: any) => {
 
 const AnnotationProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
-  const [bboxes, setBboxes] = useState<InferResponse[]>([]);
-  const [categoryList, setCategoryList] = useState<string[]>([]);
-  const annotationDataRef = useRef<AnnotationData[]>([]);
   const urlRef = useRef('');
+  const [state, dispatch] = useReducer(annotationReducer, {
+    bboxes: [],
+    categoryList: [],
+    annotationData: {},
+    requestAnnotation: () => {
+      queryClient.invalidateQueries(['annotation']);
+    },
+  });
 
   useQuery({
     queryKey: ['annotation'],
@@ -72,42 +81,27 @@ const AnnotationProvider = ({ children }: { children: ReactNode }) => {
       if (body) {
         const { data: xml } = body;
         const bboxes = parseXml(xml);
-        annotationDataRef.current.push({ url: urlRef.current, bboxes });
-        setBboxes(bboxes);
-        for (const bbox of bboxes) {
-          if (!categoryList.includes(bbox.name)) {
-            setCategoryList((prev) => [...prev, bbox.name]);
-          }
-        }
+        dispatch(addAnnotation({ url: urlRef.current, bboxes }));
       }
     },
   });
 
   const select = (url: string) => {
-    const arr = annotationDataRef.current.filter((p) => p.url === url);
-    if (url && arr.length) {
-      setBboxes(arr[0].bboxes);
-    } else {
-      urlRef.current = url;
-      queryClient.invalidateQueries(['annotation']);
-    }
+    urlRef.current = url;
+    dispatch(selectAnnotation(url));
   };
 
   const pushBbox = (bbox: InferResponse) => {
-    for (const data of annotationDataRef.current) {
-      if (data.url === urlRef.current) {
-        data.bboxes.push(bbox);
-        setBboxes((prev) => [...prev, bbox]);
-        if (!categoryList.includes(bbox.name)) {
-          setCategoryList((prev) => [...prev, bbox.name]);
-        }
-      }
-    }
+    dispatch(addBox({ url: urlRef.current, bbox }));
   };
 
   return (
     <AnnotationContext.Provider
-      value={{ categoryList, bboxes, select, pushBbox }}
+      value={{
+        ...state,
+        select,
+        pushBbox,
+      }}
     >
       {children}
     </AnnotationContext.Provider>

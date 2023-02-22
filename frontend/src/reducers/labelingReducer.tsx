@@ -26,7 +26,7 @@ const labelEnd = (): Action => {
   return { type: Type.LABEL_END, payload: { location } };
 };
 
-const annotationReducer = (state: State, action: Action): State => {
+const labelingReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case Type.LABEL_START: {
       return { ...state, initialLocation: action.payload.location };
@@ -59,5 +59,5 @@ const annotationReducer = (state: State, action: Action): State => {
   }
 };
 
-export default annotationReducer;
+export default labelingReducer;
 export { labelStart, labelMove, labelEnd };
