@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Card } from '../../ProjectsPage/styles';
+import { Card } from '../../../components/Card';
 import {
   ProgressContainer,
   ProgressWrapper,
@@ -11,9 +11,9 @@ import ProgressRow from './ProgressRow';
 const CardContainer = styled(Card)`
   display: flex;
   flex-direction: column;
-  border-radius: 10px;
   padding: 20px;
-  max-height: 300px;
+  margin-bottom: 10px;
+  min-height: 260px;
 `;
 
 const ProgressCard = ({

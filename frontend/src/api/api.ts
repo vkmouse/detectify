@@ -4,7 +4,6 @@ import {
   BatchUploadRequest,
   BatchUploadResponse,
   ServerStatusResponse,
-  InferRequest,
   InferResponse,
   LoginRequest,
   ProjectInfoResponse,
@@ -114,9 +113,34 @@ const api = {
   },
 
   // inference api
-  infer: async (props: InferRequest): Promise<InferResponse[]> => {
-    const response = await inferAxios.post('/predict', props);
-    return response.data as InferResponse[];
+  createInferRequest: async (modelURL: string): Promise<string> => {
+    const response = await inferAxios.post('/predict', { modelURL });
+    return response.data.data.requestId as string;
+  },
+  inferWithURL: async (
+    requestId: string,
+    imageURL: string
+  ): Promise<boolean> => {
+    const response = await inferAxios.post(`/predict/${requestId}`, {
+      imageURL,
+    });
+    return response.status === 202;
+  },
+  inferWithImage: async (requestId: string, image: File): Promise<boolean> => {
+    const formData = new FormData();
+    formData.append('image', image);
+    const response = await inferAxios.post(`/predict/${requestId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.status === 202;
+  },
+  getInferResult: async (
+    requestId: string
+  ): Promise<{ status: string; results: InferResponse[] }> => {
+    const response = await inferAxios.get(`/predict/${requestId}`);
+    return response.data.data as { status: string; results: InferResponse[] };
   },
 
   // training api

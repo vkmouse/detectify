@@ -1,6 +1,5 @@
 import defaultCover from '../../assets/default-cover.png';
 import {
-  Card,
   CreateProjectContainer,
   CreateProjectIcon,
   CreateProjectWrapper,
@@ -14,6 +13,7 @@ import CreateProjectDialog from './CreateProjectDialog';
 import { Link } from 'react-router-dom';
 import { Grid421 as Grid } from '../../components/Grid';
 import ImageCard from '../../components/ImageCard';
+import { Card } from '../../components/Card';
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState<ProjectResponse[]>([]);

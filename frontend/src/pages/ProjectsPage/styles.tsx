@@ -8,14 +8,6 @@ import {
 
 const borderRadius = 10;
 
-export const Card = styled.div`
-  cursor: pointer;
-  box-shadow: 0 0 2rem 0 rgb(41 48 66 / 15%);
-  font-size: 90%;
-  background-color: ${(props) => props.theme.colors.cardBackground};
-  border-radius: ${borderRadius}px;
-`;
-
 export const CreateProjectContainer = styled(OutlinePrimaryButton)`
   position: relative;
   width: 100%;

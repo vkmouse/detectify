@@ -1,16 +1,31 @@
-import { useRef, useEffect } from 'react';
-import { Button } from '../styles';
+import {
+  useRef,
+  useEffect,
+  InputHTMLAttributes,
+  DetailedHTMLProps,
+} from 'react';
+import { PrimaryButton } from './Button';
 
-const UploadButton = (props: {
-  children: string | JSX.Element | JSX.Element[];
-  accept?: string;
+interface Props
+  extends DetailedHTMLProps<
+    InputHTMLAttributes<HTMLInputElement>,
+    HTMLInputElement
+  > {
   directory?: boolean;
-  disabled?: boolean;
-  multiple?: boolean;
-  onChange?: (files: File[]) => void;
-}) => {
+  onUploadChange?: (files: File[]) => void;
+}
+
+const UploadButton = (props: Props) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
-  const { children, accept, directory, disabled, multiple, onChange } = props;
+  const {
+    className,
+    children,
+    accept,
+    directory,
+    disabled,
+    multiple,
+    onUploadChange,
+  } = props;
 
   useEffect(() => {
     if (directory && inputFileRef.current !== null) {
@@ -20,7 +35,11 @@ const UploadButton = (props: {
   }, [directory]);
 
   return (
-    <Button disabled={disabled} onClick={() => inputFileRef.current?.click()}>
+    <PrimaryButton
+      className={className}
+      disabled={disabled}
+      onClick={() => inputFileRef.current?.click()}
+    >
       {children}
       <input
         hidden
@@ -39,10 +58,10 @@ const UploadButton = (props: {
               }
             }
           }
-          onChange?.(results);
+          onUploadChange?.(results);
         }}
       />
-    </Button>
+    </PrimaryButton>
   );
 };
 
