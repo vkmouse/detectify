@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 import { DangerButton, PrimaryButton } from '../../components/Button';
-import { Card } from '../ProjectsPage/styles';
 import CopyIcon from '../../assets/copy.svg';
 import DeleteIcon from '../../assets/trash-2.svg';
 import ReloadIcon from '../../assets/rotate-cw.svg';
 import { useState } from 'react';
+import { Card } from '../../components/Card';
 
 const Container = styled(Card)`
   display: flex;

@@ -1,5 +1,6 @@
 import { createBrowserRouter, Outlet } from 'react-router-dom';
 import { NavbarLayout, NavbarSidebarLayout } from './components/Layout';
+import ProjectPageContainer from './components/ProjectPageContainer';
 import { AnnotationProvider } from './context/AnnotationContext';
 import { ProjectInfoProvider } from './context/ProjectInfoContext';
 import { ServerInfoProvider } from './context/ServerInfoContext';
@@ -7,6 +8,7 @@ import AnnotatePage from './pages/AnnotatePage';
 import { SignInPage, SignUpPage } from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import ImagePage from './pages/ImagePage';
+import OverviewPage from './pages/OverviewPage';
 import PredictPage from './pages/PredictPage';
 import Projects from './pages/ProjectsPage';
 import ServerPage from './pages/ServerPage';
@@ -35,10 +37,46 @@ export const router = createBrowserRouter([
         path: '/project/:projectId',
         element: <NavbarSidebarLayoutWrapper />,
         children: [
-          { path: 'images', element: <ImagePage /> },
-          { path: 'annotate', element: <AnnotatePage /> },
-          { path: 'train', element: <TrainPage /> },
-          { path: 'predict', element: <PredictPage /> },
+          {
+            path: '',
+            element: (
+              <ProjectPageContainer name="Overview">
+                <OverviewPage />
+              </ProjectPageContainer>
+            ),
+          },
+          {
+            path: 'images',
+            element: (
+              <ProjectPageContainer name="Image">
+                <ImagePage />
+              </ProjectPageContainer>
+            ),
+          },
+          {
+            path: 'annotate',
+            element: (
+              <ProjectPageContainer name="Annotate">
+                <AnnotatePage />
+              </ProjectPageContainer>
+            ),
+          },
+          {
+            path: 'train',
+            element: (
+              <ProjectPageContainer name="Train">
+                <TrainPage />
+              </ProjectPageContainer>
+            ),
+          },
+          {
+            path: 'predict',
+            element: (
+              <ProjectPageContainer name="Predict">
+                <PredictPage />
+              </ProjectPageContainer>
+            ),
+          },
         ],
       },
     ],

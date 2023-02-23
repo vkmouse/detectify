@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import api from '../../api/api';
 import { PrimaryButton } from '../../components/Button';
 import Canvas from '../../components/Canvas';
+import { Card } from '../../components/Card';
 import ImageCardCollection from '../../components/ImageCardCollection';
 import { useAnnotation } from '../../context/AnnotationContext';
 import { useProjectInfo } from '../../context/ProjectInfoContext';
@@ -15,12 +16,14 @@ import labelingReducer, {
 } from '../../reducers/labelingReducer';
 import { BatchUploadResponse } from '../../types/api';
 import { ImageScaler } from '../../utils/ImageDrawer';
-import { Card } from '../ProjectsPage/styles';
 import InputModal from './InputModal';
 
 const Container = styled.div`
   display: grid;
   grid-template-columns: 80% 20%;
+  column-gap: 10px;
+  row-gap: 10px;
+  margin-right: 10px;
 `;
 
 const CanvasWrapper = styled(Card)`
@@ -37,14 +40,6 @@ const CustomCanvas = styled(Canvas)`
   left: 0;
   width: 100%;
   height: 100%;
-`;
-
-const ImageCollectionContainer = styled.div`
-  display: flex;
-  position: relative;
-  padding-left: calc(100% - 5px);
-  padding-top: 100%;
-  margin-left: 5px;
 `;
 
 const AnnotatePage = () => {
@@ -96,6 +91,33 @@ const AnnotatePage = () => {
     setImg(img);
   };
 
+  const handleSaveClick = async () => {
+    const xmls = generateAnnotation();
+    const uploadedFiles = xmls.map((p) => ({
+      filename: p.filename,
+      imageExt: '',
+      annotationExt: '.xml',
+    }));
+
+    const resp = await api.createBatchUpload({
+      projectId,
+      uploadedFiles,
+    });
+
+    for (const xml of xmls) {
+      const presignedURL = resp.get(xml.filename)?.annotationURL;
+      if (presignedURL) {
+        const blob = new Blob([xml.xml], { type: 'text/xml' });
+        const file = new File([blob], xml.filename, {
+          type: 'text/xml',
+        });
+        await axios.put(presignedURL, file, {
+          headers: { 'Content-Type': 'text/xml' },
+        });
+      }
+    }
+  };
+
   return (
     <>
       <InputModal
@@ -126,44 +148,13 @@ const AnnotatePage = () => {
             onMouseUp={() => setOpen(true)}
           />
         </CanvasWrapper>
-        <ImageCollectionContainer>
-          <ImageCardCollection
-            images={images}
-            onImageCardClick={handleCardClick}
-          />
-        </ImageCollectionContainer>
+        <ImageCardCollection
+          images={images}
+          onImageCardClick={handleCardClick}
+        />
+        <div />
+        <PrimaryButton onClick={handleSaveClick}>Save</PrimaryButton>
       </Container>
-      <PrimaryButton
-        onClick={async () => {
-          const xmls = generateAnnotation();
-          const uploadedFiles = xmls.map((p) => ({
-            filename: p.filename,
-            imageExt: '',
-            annotationExt: '.xml',
-          }));
-
-          const resp = await api.createBatchUpload({
-            projectId,
-            uploadedFiles,
-          });
-
-          for (const xml of xmls) {
-            const presignedURL = resp.get(xml.filename)?.annotationURL;
-            if (presignedURL) {
-              const blob = new Blob([xml.xml], { type: 'text/xml' });
-              const file = new File([blob], xml.filename, {
-                type: 'text/xml',
-              });
-              const resp = await axios.put(presignedURL, file, {
-                headers: { 'Content-Type': 'text/xml' },
-              });
-              console.log(resp);
-            }
-          }
-        }}
-      >
-        Save
-      </PrimaryButton>
     </>
   );
 };

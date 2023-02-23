@@ -5,6 +5,7 @@ import Sidebar from './Sidebar';
 
 const navbarHeight = 70;
 const sidebarWidth = 200;
+const sidebarMinWidth = 32;
 const mainContentMaxWidth = 1200;
 const mainContentMarginX = 25;
 
@@ -25,6 +26,9 @@ const NavbarContainer = styled.div`
 
 const NavbarSidebarContainer = styled(NavbarContainer)`
   padding-left: ${sidebarWidth + 20}px;
+  @media (max-width: 960px) {
+    padding-left: ${sidebarMinWidth + 20}px;
+  }
 `;
 
 const NavbarLayout = () => {
@@ -59,6 +63,7 @@ export {
   NavbarSidebarLayout,
   navbarHeight,
   sidebarWidth,
+  sidebarMinWidth,
   mainContentMaxWidth,
   mainContentMarginX,
 };
