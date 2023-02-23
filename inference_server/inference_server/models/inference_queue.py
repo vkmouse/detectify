@@ -2,6 +2,7 @@ import queue
 import threading
 import time
 
+from inference_server.models.cache import Cache
 from inference_server.models.inferencer_builder import InferencerBuilder
 from inference_server.models.inference_request_pool import InferenceRequestPool
 
@@ -11,6 +12,7 @@ class InferenceQueue:
         self.infer_request_pool = infer_request_pool
         self.infer_builder = infer_builder
         self.queue = queue.Queue()
+        self.cache = Cache(10)
         self.lock = threading.Lock()
 
     def create_request(self, model_url: str) -> str:
@@ -30,8 +32,12 @@ class InferenceQueue:
             print('build inferener error')
             return False
 
-        req.set_pending()
-        self.queue.put((request_id, inferencer, image_path))
+        result = self.cache.get(image_path + inferencer.model_path)
+        if result:
+            req.set_result(result)
+        else:
+            req.set_pending()
+            self.queue.put((request_id, inferencer, image_path))
         return True
 
     def process_queue(self):
@@ -46,6 +52,7 @@ class InferenceQueue:
                 inferencer.compile()
                 detections = inferencer.infer(image_path)
                 self.infer_request_pool.get_request(request_id).set_result(detections)
+                self.cache.set(image_path + inferencer.model_path, detections)
             except:
                 print('infer error')
 

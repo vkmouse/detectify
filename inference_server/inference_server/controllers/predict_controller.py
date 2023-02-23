@@ -69,12 +69,13 @@ def get_result(request_id: str):
             "status": 200,
         }, 200
     if req.is_completed():
+        infer_request_pool.remove_request(request_id)
         return {
             "data": {
                 "status": "completed",
                 "results": req.get_result(),
             },
-            "message": "Success: Request is pending",
+            "message": "Success: Request is completed",
             "status": 200,
         }, 200
     return {
