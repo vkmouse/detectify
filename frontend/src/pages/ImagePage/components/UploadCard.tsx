@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import { Card } from '../../../components/Card';
-import { ButtonGroup } from '../styles';
-import UploadButton from './UploadButton';
+import { Button, ButtonGroup } from '../styles';
 import UploadIcon from '../../../assets/upload-cloud.svg';
 
 const CardContainer = styled(Card)`
@@ -43,22 +42,22 @@ const UploadCard = ({
           <UploadIcon width="100" height="100" />
           <p>Upload your images and annotation files</p>
           <ButtonGroup>
-            <UploadButton
+            <Button
               multiple
               accept=".jpg,.jpeg,.png,.xml"
               disabled={disabled}
-              onChange={onChange}
+              onUploadChange={onChange}
             >
               Select Files
-            </UploadButton>
-            <UploadButton
+            </Button>
+            <Button
               directory
               accept=".jpg,.jpeg,.png,.xml"
               disabled={disabled}
-              onChange={onChange}
+              onUploadChange={onChange}
             >
               Select Folder
-            </UploadButton>
+            </Button>
           </ButtonGroup>
         </UploadSection>
       </ImageUploadCard>

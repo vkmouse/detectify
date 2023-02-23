@@ -112,7 +112,7 @@ const SidebarLink = ({ active, children, badge, ...rest }: LinkProps) => {
     <Link {...rest}>
       <SidebarLinkContainer isActive={active}>
         <SidebarLinkAside>{children}</SidebarLinkAside>
-        {badge && <SidebarLinkBadge>{badge}</SidebarLinkBadge>}
+        {badge !== undefined && <SidebarLinkBadge>{badge}</SidebarLinkBadge>}
       </SidebarLinkContainer>
     </Link>
   );

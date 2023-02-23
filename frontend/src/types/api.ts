@@ -83,12 +83,6 @@ export type UploadProperty = {
   updateProgress: (progress: number) => void;
 };
 
-export type InferRequest = {
-  modelURL: string;
-  imageURL: string;
-  threshold: number;
-};
-
 export type InferResponse = {
   name: string;
   confidence: number;

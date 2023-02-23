@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { PrimaryButton } from '../../components/Button';
+import UploadButton from '../../components/UploadButton';
 
 export const UploadColumn = styled.div`
   display: flex;
@@ -50,7 +50,7 @@ export const ProgressWrapper = styled.div`
   height: 100%;
 `;
 
-export const Button = styled(PrimaryButton)`
+export const Button = styled(UploadButton)`
   margin: 3px 10px;
   max-width: 150px;
   width: 100%;

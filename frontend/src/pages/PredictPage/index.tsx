@@ -9,9 +9,11 @@ import useImageDrawer from '../../hooks/useImageDrawer';
 import { ImageScaler } from '../../utils/ImageDrawer';
 import { OutlinePrimaryButton, PrimaryButton } from '../../components/Button';
 import { InferResponse } from '../../types/api';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import HelpIcon from '../../assets/help-circle.svg';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
+import { Loading } from '../../components/Loading';
+import UploadButton from '../../components/UploadButton';
 
 const Container = styled.div`
   display: grid;
@@ -109,8 +111,31 @@ const Tooltip = styled.div`
   }
 `;
 
+const Overlay = styled.div`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+`;
+
+const OutlineUploadButton = styled(UploadButton)`
+  background: ${(props) => props.theme.colors.bodyBackground};
+  border: 1px solid ${(props) => props.theme.colors.primary};
+  color: ${(props) => props.theme.colors.primary};
+
+  &:hover {
+    background: ${(props) => props.theme.colors.primary};
+    color: white;
+    &:disabled {
+      background: ${(props) => props.theme.colors.bodyBackground};
+      color: ${(props) => props.theme.colors.primary};
+    }
+  }
+`;
+
 const PredictPage = () => {
+  const queryClient = useQueryClient();
   const scalerRef = useRef<ImageScaler>(new ImageScaler());
+  const requestId = useRef('');
   const [bboxes, setBboxes] = useState<InferResponse[]>([]);
   const [img, setImg] = useState<HTMLImageElement | null>(null);
   const [advance, setAdvance] = useState(false);
@@ -124,56 +149,103 @@ const PredictPage = () => {
     },
   });
 
-  const { isFetching, refetch } = useQuery({
-    queryKey: ['infer'],
-    queryFn: async () => {
-      if (img) {
-        return api.infer({
-          modelURL: irModel,
-          imageURL: img.src,
-          threshold: methods.getValues().threshold,
-        });
+  const inferWithURLMutate = useMutation<boolean, Error, string>(
+    async (imageURL) => {
+      requestId.current = await api.createInferRequest(irModel);
+      const success = await api.inferWithURL(requestId.current, imageURL);
+      if (success) {
+        return Promise.resolve(false);
       }
-      return Promise.resolve(null);
+      return Promise.reject(true);
     },
-    onSuccess: (body) => {
-      if (body) {
-        setBboxes(body);
+    { onSuccess: () => queryClient.invalidateQueries(['inferResult']) }
+  );
+
+  const inferWithImageMutate = useMutation<boolean, Error, File>(
+    async (image) => {
+      requestId.current = await api.createInferRequest(irModel);
+      const success = await api.inferWithImage(requestId.current, image);
+      if (success) {
+        return Promise.resolve(false);
+      }
+      return Promise.reject(true);
+    },
+    { onSuccess: () => queryClient.invalidateQueries(['inferResult']) }
+  );
+
+  useQuery({
+    queryKey: ['inferResult'],
+    queryFn: async () => api.getInferResult(requestId.current),
+    onSuccess: (data) => {
+      if (data.status === 'completed') {
+        const bboxes = data.results.filter(
+          (p) => p.confidence > methods.getValues().threshold
+        );
+        setBboxes(bboxes);
+        requestId.current = '';
       }
     },
-    enabled: false,
+    enabled: requestId.current !== '',
+    refetchInterval: 1000,
   });
+
+  const isLoading =
+    inferWithImageMutate.isLoading ||
+    inferWithURLMutate.isLoading ||
+    requestId.current !== '';
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(() => refetch())}>
-        <Container>
-          <CanvasWrapper>
-            <CustomCanvas ref={canvasRef} />
-          </CanvasWrapper>
-          <ImageCardCollection
-            images={images}
-            onImageCardClick={(img) => {
-              setImg(img);
-              setBboxes([]);
-            }}
-          />
-        </Container>
-        <AdvanceContainer>
-          <FlexContainer>
-            <AdvanceToggle
-              type="button"
-              onClick={() => setAdvance((advance) => !advance)}
+      <Container>
+        <CanvasWrapper>
+          <CustomCanvas ref={canvasRef} />
+          <Overlay>
+            <OutlineUploadButton
+              accept=".jpg,.jpeg,.png"
+              onUploadChange={(files) => {
+                if (files.length > 0) {
+                  inferWithImageMutate.mutate(files[0]);
+                  const url = URL.createObjectURL(files[0]);
+                  const image = new Image();
+                  image.src = url;
+                  image.onload = () => {
+                    setImg(image);
+                    setBboxes([]);
+                  };
+                }
+              }}
             >
-              Advance Option
-            </AdvanceToggle>
-            <Button type="submit" disabled={isFetching}>
-              Detection
-            </Button>
-          </FlexContainer>
-          <div>{advance && <Threshold />}</div>
-        </AdvanceContainer>
-      </form>
+              Try your image
+            </OutlineUploadButton>
+          </Overlay>
+          {isLoading && <Loading />}
+        </CanvasWrapper>
+        <ImageCardCollection
+          images={images}
+          onImageCardClick={(img) => {
+            setImg(img);
+            setBboxes([]);
+          }}
+        />
+      </Container>
+      <AdvanceContainer>
+        <FlexContainer>
+          <AdvanceToggle onClick={() => setAdvance((advance) => !advance)}>
+            Advance Option
+          </AdvanceToggle>
+          <Button
+            disabled={isLoading}
+            onClick={() => {
+              if (img) {
+                inferWithURLMutate.mutate(img?.src);
+              }
+            }}
+          >
+            Detection
+          </Button>
+        </FlexContainer>
+        <div>{advance && <Threshold />}</div>
+      </AdvanceContainer>
     </FormProvider>
   );
 };
