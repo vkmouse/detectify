@@ -6,7 +6,7 @@ import GridIcon from '../assets/grid.svg';
 import ImageIcon from '../assets/image.svg';
 import MaximizeIcon from '../assets/maximize.svg';
 import { useProjectInfo } from '../context/ProjectInfoContext';
-import { navbarHeight, sidebarWidth } from './Layout';
+import { navbarHeight, sidebarMinWidth, sidebarWidth } from './Layout';
 
 const SidebarContainer = styled.div`
   position: fixed;
@@ -15,6 +15,9 @@ const SidebarContainer = styled.div`
   margin-top: ${() => `${navbarHeight}px`};
   background-color: ${(props) => props.theme.colors.bodyBackground};
   z-index: 999;
+  @media (max-width: 960px) {
+    width: ${() => `${sidebarMinWidth}px`};
+  }
 `;
 
 const SidebarWrapper = styled.div`
@@ -27,6 +30,9 @@ const SidebarBrandContainer = styled.div`
   display: flex;
   align-items: center;
   padding: 20px 0;
+  @media (max-width: 960px) {
+    display: none;
+  }
 `;
 
 const SidebarBrandText = styled.span`
@@ -37,6 +43,9 @@ const SidebarBrandText = styled.span`
 const HorizontalLine = styled.hr`
   border-color: ${(props) => props.theme.colors.gray500};
   margin: 0;
+  @media (max-width: 960px) {
+    display: none;
+  }
 `;
 
 const activeColor = `
@@ -74,6 +83,15 @@ const SidebarLinkBadge = styled.div`
   border-radius: 3px;
   text-align: center;
   color: white;
+  @media (max-width: 960px) {
+    display: none;
+  }
+`;
+
+const Text = styled.div`
+  @media (max-width: 960px) {
+    display: none;
+  }
 `;
 
 const SidebarBrand = ({ name }: { name: string }) => {
@@ -107,7 +125,13 @@ const IconContainer = styled.div`
 `;
 
 const Sidebar = () => {
-  const [page, setPage] = useState('');
+  const { pathname } = window.location;
+  const segments = pathname.split('/');
+  const lastSegment = segments[segments.length - 1];
+  const uuidRegex =
+    /^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$/i;
+  const isUuid = uuidRegex.test(lastSegment);
+  const [page, setPage] = useState(isUuid ? '' : lastSegment);
   const { images, name } = useProjectInfo();
 
   return (
@@ -115,6 +139,12 @@ const Sidebar = () => {
       <SidebarWrapper>
         <SidebarBrand name={name ? name : ''} />
         <HorizontalLine />
+        <SidebarLink active={page === ''} to="" onClick={() => setPage('')}>
+          <IconContainer>
+            <ImageIcon />
+          </IconContainer>
+          <Text>Overview</Text>
+        </SidebarLink>
         <SidebarLink
           active={page === 'images'}
           to="images"
@@ -124,7 +154,7 @@ const Sidebar = () => {
           <IconContainer>
             <ImageIcon />
           </IconContainer>
-          Images
+          <Text>Images</Text>
         </SidebarLink>
         <SidebarLink
           active={page === 'annotate'}
@@ -134,7 +164,7 @@ const Sidebar = () => {
           <IconContainer>
             <MaximizeIcon />
           </IconContainer>
-          Annotate
+          <Text>Annotate</Text>
         </SidebarLink>
         <SidebarLink
           active={page === 'train'}
@@ -144,7 +174,7 @@ const Sidebar = () => {
           <IconContainer>
             <GridIcon />
           </IconContainer>
-          Train
+          <Text>Train</Text>
         </SidebarLink>
         <SidebarLink
           active={page === 'predict'}
@@ -154,7 +184,7 @@ const Sidebar = () => {
           <IconContainer>
             <TrendingUpIcon />
           </IconContainer>
-          Predict
+          <Text>Predict</Text>
         </SidebarLink>
       </SidebarWrapper>
     </SidebarContainer>

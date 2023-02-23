@@ -3,8 +3,14 @@ import { BatchUploadResponse } from '../types/api';
 import { Card } from './Card';
 import ImageCard from './ImageCard';
 
-const ImageGroup = styled(Card)`
+const Container = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
+const Wrapper = styled(Card)`
   display: grid;
+  grid-template-columns: 100%;
   row-gap: 5px;
   position: absolute;
   width: 100%;
@@ -27,18 +33,18 @@ const ImageCardCollection = ({
   ) => void;
 }) => {
   return (
-    <ImageGroup style={{ height: height }}>
-      {images.map((p, i) => {
-        return (
+    <Container>
+      <Wrapper style={{ height: height }}>
+        {images.map((p, i) => (
           <ImageCard
             key={i}
             onClick={(e) => onImageCardClick?.(e, p)}
             src={p.imageURL}
             title={p.filename}
           />
-        );
-      })}
-    </ImageGroup>
+        ))}
+      </Wrapper>
+    </Container>
   );
 };
 

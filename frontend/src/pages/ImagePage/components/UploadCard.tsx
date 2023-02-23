@@ -7,7 +7,9 @@ import UploadIcon from '../../../assets/upload-cloud.svg';
 const CardContainer = styled(Card)`
   display: flex;
   flex-direction: column;
-  border-radius: 10px;
+  margin-bottom: 10px;
+  padding: 20px;
+  min-height: 260px;
 `;
 
 const ImageUploadCard = styled.div`
@@ -22,10 +24,9 @@ const UploadSection = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  margin: 20px;
   flex-grow: 1;
+  padding: 20px;
   border: 1px dashed ${(props) => props.theme.colors.bodyColor};
-  border-radius: 10px;
 `;
 
 const UploadCard = ({
