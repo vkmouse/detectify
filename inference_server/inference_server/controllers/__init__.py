@@ -1,0 +1,1 @@
+from inference_server.controllers import predict_controller
