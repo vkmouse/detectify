@@ -8,7 +8,6 @@ import AnnotatePage from './pages/AnnotatePage';
 import { SignInPage, SignUpPage } from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import ImagePage from './pages/ImagePage';
-import OverviewPage from './pages/OverviewPage';
 import PredictPage from './pages/PredictPage';
 import Projects from './pages/ProjectsPage';
 import ServerPage from './pages/ServerPage';
@@ -41,7 +40,7 @@ export const router = createBrowserRouter([
             path: '',
             element: (
               <ProjectPageContainer name="Overview">
-                <OverviewPage />
+                <PredictPage />
               </ProjectPageContainer>
             ),
           },
@@ -66,14 +65,6 @@ export const router = createBrowserRouter([
             element: (
               <ProjectPageContainer name="Train">
                 <TrainPage />
-              </ProjectPageContainer>
-            ),
-          },
-          {
-            path: 'predict',
-            element: (
-              <ProjectPageContainer name="Predict">
-                <PredictPage />
               </ProjectPageContainer>
             ),
           },

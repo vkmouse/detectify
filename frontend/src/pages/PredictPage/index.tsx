@@ -21,13 +21,16 @@ const Container = styled.div`
   column-gap: 10px;
   row-gap: 10px;
   margin-right: 10px;
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
 `;
 
 const CanvasWrapper = styled(Card)`
   position: relative;
   width: 100%;
   height: 0;
-  padding-top: 75%;
+  padding-top: 66.67%;
 `;
 
 const CustomCanvas = styled(Canvas)`
