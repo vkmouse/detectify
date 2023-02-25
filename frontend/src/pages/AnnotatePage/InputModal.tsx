@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import { PrimaryButton, OutlineDangerButton } from '../../components/Button';
@@ -55,6 +55,8 @@ const InputModal = ({
     register,
     handleSubmit,
     setValue,
+    getValues,
+    setFocus,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -67,6 +69,10 @@ const InputModal = ({
     onClose();
   };
 
+  useEffect(() => {
+    setFocus('category');
+  }, [open]);
+
   return (
     <CustomModal open={open} onClose={handleCancel}>
       <form
@@ -74,6 +80,7 @@ const InputModal = ({
           onSuccess?.(category);
           onClose();
         })}
+        onChange={() => setCategory(getValues('category'))}
       >
         <ModalTitle>Category Name</ModalTitle>
         <InputField>
@@ -81,9 +88,6 @@ const InputModal = ({
             <Input
               placeholder="Enter category name"
               {...register('category', categoryNameOptions)}
-              onChange={(e) => {
-                setCategory(e.target.value);
-              }}
             />
           </InputContainer>
           <ErrorMessage>
@@ -93,6 +97,7 @@ const InputModal = ({
             value={category}
             items={categoryList.map((p) => ({ value: p, text: p }))}
             onSelectedChange={(value) => {
+              setFocus('category');
               setValue('category', value);
               setCategory(value);
             }}
