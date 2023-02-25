@@ -8,6 +8,7 @@ import (
 	"detectify/internal/response"
 	"detectify/internal/validator"
 	"detectify/pkg/r2"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -132,7 +133,7 @@ func GetProjectImages(ctx *gin.Context) {
 		return
 	}
 
-	images, err := repository.QueryProjectImagesByProjectID(projectID)
+	images, err := repository.QueryPublishedProjectImagesByProjectID(projectID)
 	if err != nil {
 		response.Response(ctx, errmsg.ERROR)
 		return
@@ -150,10 +151,54 @@ func GetProjectImages(ctx *gin.Context) {
 	response.ResponseWithData(ctx, errmsg.SUCCESS, gin.H{"data": results})
 }
 
+func DeleteProjectImage(ctx *gin.Context) {
+	projectID := ctx.Query("projectId")
+	filename := ctx.Query("filename")
+	userID := ctx.GetString("userID")
+	if !repository.VerifyProjectAccess(userID, projectID) {
+		response.Response(ctx, errmsg.ERROR_FORBIDDEN)
+		return
+	}
+
+	images, err := repository.QueryProjectImagesByFilename(projectID, filename)
+	if err != nil {
+		response.Response(ctx, errmsg.ERROR)
+		return
+	}
+	image := images[0]
+
+	if image.ImagePublished {
+		err = r2.DeleteItem(getImagePath(projectID, image.ID, image.ImageExt))
+		if err != nil {
+			response.Response(ctx, errmsg.ERROR)
+			return
+		}
+	}
+
+	if image.AnnotationPublished {
+		err = r2.DeleteItem(getAnnotationPath(projectID, image.ID, image.AnnotationExt))
+		if err != nil {
+			response.Response(ctx, errmsg.ERROR)
+			return
+		}
+	}
+
+	err = repository.DeleteProjectImageByFilename(projectID, filename)
+	if err != nil {
+		response.Response(ctx, errmsg.ERROR)
+		return
+	}
+
+	response.Response(ctx, errmsg.SUCCESS)
+	return
+}
+
 func getImagePath(projectId string, imageId string, ext string) string {
+	fmt.Println(projectId + "/" + imageId + ext)
 	return projectId + "/" + imageId + ext
 }
 
 func getAnnotationPath(projectId string, annotationId string, ext string) string {
+	fmt.Println(projectId + "/" + annotationId + ext)
 	return projectId + "/" + annotationId + ext
 }

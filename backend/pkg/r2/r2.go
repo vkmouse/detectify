@@ -70,6 +70,20 @@ func ListBucketItems() (map[string]int, error) {
 	return results, nil
 }
 
+func DeleteItem(filename string) error {
+	bucket := cfg.R2BucketName
+
+	_, err := client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(filename),
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func getFileNameWithoutExtension(fileNameWithExt string) string {
 	return strings.TrimSuffix(path.Base(fileNameWithExt), path.Ext(fileNameWithExt))
 }

@@ -21,10 +21,12 @@ func InitRouter() *gin.Engine {
 	engine.POST("user/auth/refresh", api.Refresh)
 	engine.POST("project", middleware.JwtMiddleware(), api.AddProject)
 	engine.GET("project/:projectID", middleware.JwtMiddleware(), api.GetProject)
+	engine.DELETE("project/:projectID", middleware.JwtMiddleware(), api.DeleteProject)
 	engine.GET("projects", middleware.JwtMiddleware(), api.GetProjects)
 	engine.POST("image/upload", middleware.JwtMiddleware(), api.CreateBatchUpload)
 	engine.PUT("image/upload", middleware.JwtMiddleware(), api.PublishBatchUpload)
 	engine.GET("images", middleware.JwtMiddleware(), api.GetProjectImages)
+	engine.DELETE("images", middleware.JwtMiddleware(), api.DeleteProjectImage)
 
 	return engine
 }
