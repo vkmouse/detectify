@@ -47,10 +47,21 @@ const TrainingInfoProvider = ({ children }: { children: ReactNode }) => {
     },
   });
 
+  const getProgress = () => {
+    if (trainingInfo.progress === null) {
+      return null;
+    }
+    let progress = trainingInfo.progress * 0.8;
+    progress += trainingInfo.status === 'Training' ? 10 : 0;
+    progress += trainingInfo.status === 'Exporting' ? 10 : 0;
+    return progress;
+  };
+
   return (
     <TrainingInfoContext.Provider
       value={{
         ...trainingInfo,
+        progress: getProgress(),
         isTraining,
         reloadServerInfo,
       }}

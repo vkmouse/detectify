@@ -28,6 +28,10 @@ const FiledTitle = styled.div`
 const TrainingStatus = () => {
   const status = useTrainingInfo();
 
+  const isStopped = status.status === null;
+  const isIdle = status.status === 'Idle';
+  const color = isStopped ? 'red' : isIdle ? '#169D5A' : '#DA874A';
+
   return (
     <Card>
       <Form>
@@ -36,7 +40,9 @@ const TrainingStatus = () => {
         </TitleContainer>
         <Filed>
           <FiledTitle>Status:</FiledTitle>
-          <Text>{status.status !== null ? status.status : '---'}</Text>
+          <Text style={{ color: color }}>
+            {isStopped ? 'Stopped' : status.status}
+          </Text>
         </Filed>
         <Filed>
           <FiledTitle>Started:</FiledTitle>

@@ -24,11 +24,11 @@ const CreateProjectDialog = (props: { open: boolean; onClose: () => void }) => {
     register,
     handleSubmit,
     setFocus,
+    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
       projectName: '',
-      projectDescription: '',
     },
   });
 
@@ -37,6 +37,7 @@ const CreateProjectDialog = (props: { open: boolean; onClose: () => void }) => {
     onSuccess: () => {
       queryClient.invalidateQueries(['projects']);
       onClose();
+      reset();
     },
   });
 
@@ -50,11 +51,11 @@ const CreateProjectDialog = (props: { open: boolean; onClose: () => void }) => {
     <CustomModal open={open} onClose={onClose}>
       <ModalTitle>Create Project</ModalTitle>
       <form
-        onSubmit={handleSubmit((data) =>
+        onSubmit={handleSubmit((data) => {
           addProjectMutation.mutate({
             name: data.projectName,
-          })
-        )}
+          });
+        })}
       >
         <InputField>
           <span>Project Name</span>
@@ -67,16 +68,6 @@ const CreateProjectDialog = (props: { open: boolean; onClose: () => void }) => {
           <ErrorMessage>
             {errors.projectName ? errors.projectName.message : <>&nbsp;</>}
           </ErrorMessage>
-        </InputField>
-        <InputField>
-          <span>Project Description</span>
-          <InputContainer>
-            <Input
-              placeholder="Enter your project description"
-              {...register('projectDescription')}
-            />
-          </InputContainer>
-          &nbsp;
         </InputField>
         <ButtonGroup>
           <OutlineButton type="button" onClick={onClose}>

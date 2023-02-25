@@ -69,6 +69,10 @@ const api = {
     const { data } = await response.data;
     return data;
   },
+  removeProject: async (projectId: string): Promise<boolean> => {
+    const response = await authAxios.delete(`/project/${projectId}`);
+    return 200 <= response.status && response.status < 300;
+  },
 
   // project image api
   createBatchUpload: async (
@@ -106,10 +110,19 @@ const api = {
   getProjectImages: async (
     projectId: string
   ): Promise<BatchUploadResponse[]> => {
-    const response = await authAxios.get(`/images`, {
+    const response = await authAxios.get('/images', {
       params: { projectId },
     });
     return response.data.data as BatchUploadResponse[];
+  },
+  removeProjectImage: async (
+    projectId: string,
+    filename: string
+  ): Promise<boolean> => {
+    const response = await authAxios.delete('/images', {
+      params: { projectId, filename },
+    });
+    return 200 <= response.status && response.status < 300;
   },
 
   // inference api
