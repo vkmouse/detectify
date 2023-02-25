@@ -4,12 +4,12 @@ import ProjectPageContainer from './components/ProjectPageContainer';
 import { AnnotationProvider } from './context/AnnotationContext';
 import { ProjectInfoProvider } from './context/ProjectInfoContext';
 import { ServerInfoProvider } from './context/ServerInfoContext';
+import { TrainingInfoProvider } from './context/TrainingInfoContext';
 import AnnotatePage from './pages/AnnotatePage';
 import { SignInPage, SignUpPage } from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import ImagePage from './pages/ImagePage';
-import OverviewPage from './pages/OverviewPage';
-import PredictPage from './pages/PredictPage';
+import PredictPage from './pages/OverviewPage';
 import Projects from './pages/ProjectsPage';
 import ServerPage from './pages/ServerPage';
 import TrainPage from './pages/TrainPage';
@@ -41,7 +41,7 @@ export const router = createBrowserRouter([
             path: '',
             element: (
               <ProjectPageContainer name="Overview">
-                <OverviewPage />
+                <PredictPage />
               </ProjectPageContainer>
             ),
           },
@@ -69,14 +69,6 @@ export const router = createBrowserRouter([
               </ProjectPageContainer>
             ),
           },
-          {
-            path: 'predict',
-            element: (
-              <ProjectPageContainer name="Predict">
-                <PredictPage />
-              </ProjectPageContainer>
-            ),
-          },
         ],
       },
     ],
@@ -98,7 +90,9 @@ function ContextWrapper() {
 function NavbarLayoutWrapper() {
   return (
     <ServerInfoProvider>
-      <NavbarLayout />
+      <TrainingInfoProvider>
+        <NavbarLayout />
+      </TrainingInfoProvider>
     </ServerInfoProvider>
   );
 }
@@ -106,11 +100,13 @@ function NavbarLayoutWrapper() {
 function NavbarSidebarLayoutWrapper() {
   return (
     <ServerInfoProvider>
-      <ProjectInfoProvider>
-        <AnnotationProvider>
-          <NavbarSidebarLayout />
-        </AnnotationProvider>
-      </ProjectInfoProvider>
+      <TrainingInfoProvider>
+        <ProjectInfoProvider>
+          <AnnotationProvider>
+            <NavbarSidebarLayout />
+          </AnnotationProvider>
+        </ProjectInfoProvider>
+      </TrainingInfoProvider>
     </ServerInfoProvider>
   );
 }

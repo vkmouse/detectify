@@ -35,7 +35,7 @@ func QueryProjectsWithCountsByUser(userID string) ([]ProjectResponse, error) {
 				projects.name,
 				count(distinct project_images.id) as images_count`).
 		Joins(`left join project_images on project_images.project_id = projects.id`).
-		Where("projects.user_id = ?", userID).
+		Where("projects.user_id = ? and projects.deleted_at IS NULL", userID).
 		Group("projects.id").
 		Order("projects.created_at desc").
 		Scan(&projects).
@@ -47,7 +47,11 @@ func QueryProject(userID string, projectID string) (model.Project, error) {
 	var project model.Project
 	err := db.
 		Select("id, name, model_url").
-		Where("user_id = ? AND id = ?", userID, projectID).
+		Where("user_id = ? AND id = ? AND deleted_at IS NULL", userID, projectID).
 		First(&project).Error
 	return project, err
+}
+
+func DeleteProject(userID string, projectID string) error {
+	return db.Where("user_id = ? and id = ?", userID, projectID).Delete(&model.Project{}).Error
 }

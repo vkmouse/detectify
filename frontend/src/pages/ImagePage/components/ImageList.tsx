@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import ImageCard from '../../../components/ImageCard';
 import Modal, { ModalImage } from '../../../components/Modal';
 import { useProjectInfo } from '../../../context/ProjectInfoContext';
+import DeleteIcon from '../../../assets/trash-2.svg';
+import { DangerButton } from '../../../components/Button';
 
 const Grid = styled.div`
   display: grid;
@@ -20,10 +22,33 @@ const Grid = styled.div`
   }
 `;
 
+const CardContainer = styled.div`
+  position: relative;
+  width: 100%;
+  padding-top: 66.67%;
+`;
+
+const CardWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+`;
+
+const DeleteButton = styled(DangerButton)`
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 4px 2px;
+  margin: 0;
+  z-index: 1;
+`;
+
 const ImageList = () => {
   const [open, setOpen] = useState(false);
   const srcRef = useRef('');
-  const { images } = useProjectInfo();
+  const { images, removeProjectImage } = useProjectInfo();
 
   return (
     <>
@@ -32,15 +57,21 @@ const ImageList = () => {
       </Modal>
       <Grid>
         {images.map((p, i) => (
-          <ImageCard
-            key={i}
-            src={p.imageURL}
-            title={p.filename}
-            onClick={() => {
-              srcRef.current = p.imageURL;
-              setOpen(true);
-            }}
-          />
+          <CardContainer key={i}>
+            <CardWrapper>
+              <ImageCard
+                src={p.imageURL}
+                title={p.filename}
+                onClick={() => {
+                  srcRef.current = p.imageURL;
+                  setOpen(true);
+                }}
+              />
+            </CardWrapper>
+            <DeleteButton onClick={() => removeProjectImage(p.filename)}>
+              <DeleteIcon />
+            </DeleteButton>
+          </CardContainer>
         ))}
       </Grid>
     </>

@@ -14,12 +14,7 @@ import api from '../../api/api';
 import { useProjectInfo } from '../../context/ProjectInfoContext';
 import { useServerInfo } from '../../context/ServerInfoContext';
 import { useTrainingInfo } from '../../context/TrainingInfoContext';
-
-const ButtonContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: end;
-`;
+import { Link } from 'react-router-dom';
 
 const AdvanceToggle = styled(OutlinePrimaryButton)`
   display: flex;
@@ -60,6 +55,21 @@ const Tooltip = styled.div`
   }
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  position: relative;
+  &:hover ${TooltipText} {
+    visibility: visible;
+    opacity: 1;
+  }
+`;
+
+const CustomLink = styled(Link)`
+  text-decoration: underline;
+`;
+
 const TrainingConfig = () => {
   const { id: projectId, images, exportedModel } = useProjectInfo();
   const {
@@ -68,6 +78,7 @@ const TrainingConfig = () => {
   } = useServerInfo();
   const [advance, setAdvance] = useState(false);
   const { isTraining, reloadServerInfo } = useTrainingInfo();
+  const { isDefaultServerAlive, isServerAlive } = useServerInfo();
   const methods = useForm({
     defaultValues: {
       batchSize: 4,
@@ -109,6 +120,8 @@ const TrainingConfig = () => {
     trainModel(data);
   });
 
+  const disabled = !(isDefaultServerAlive || isServerAlive) || isTraining;
+
   return (
     <Card>
       <FormProvider {...methods}>
@@ -116,9 +129,15 @@ const TrainingConfig = () => {
           <InputGroup>
             <Title>Training Configuration</Title>
             <ButtonContainer>
-              <PrimaryButton disabled={isTraining}>
-                Start Training
-              </PrimaryButton>
+              <PrimaryButton disabled={disabled}>Start Training</PrimaryButton>
+              {disabled && (
+                <TooltipText>
+                  Before you begin training, make sure to check the status of
+                  the server to ensure it is ready.
+                  <br />
+                  <CustomLink to="/server">Go to server page</CustomLink>.
+                </TooltipText>
+              )}
             </ButtonContainer>
           </InputGroup>
           <AdvanceToggle
@@ -331,7 +350,6 @@ async function generateLabelMap(dataset: BatchUploadResponse[]) {
 
 async function prepareLabels(dataset: BatchUploadResponse[]) {
   const labelMap = await generateLabelMap(dataset);
-  console.log(labelMap);
 
   const labels: string[] = [];
   labelMap.forEach((value: boolean, key: string) => {

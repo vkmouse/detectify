@@ -32,13 +32,13 @@ const ModalWrapper = styled.div`
   transform: translate(-50%, -50%);
   max-width: calc(100vw - 40px);
   background: ${(props) => props.theme.colors.cardBackground};
-  padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 2rem 0 rgb(41 48 66 / 10%);
 `;
 
 const ModalInnerContainer = styled.div`
   width: 100%;
+  padding: 20px;
 `;
 
 const ModalTitle = styled.div`

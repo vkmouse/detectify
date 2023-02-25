@@ -65,10 +65,26 @@ func QueryBatchProjectImageByFilename(projectID string, filenames []string) ([]m
 	return images, err
 }
 
-func QueryProjectImagesByProjectID(projectID string) ([]model.ProjectImage, error) {
+func QueryPublishedProjectImagesByProjectID(projectID string) ([]model.ProjectImage, error) {
 	var projectImages []model.ProjectImage
 	err := db.
 		Where("project_id = ? and image_published = true", projectID).
+		Find(&projectImages).Error
+	return projectImages, err
+}
+
+func QueryProjectImagesByFilename(projectID string, filename string) ([]model.ProjectImage, error) {
+	var projectImages []model.ProjectImage
+	err := db.
+		Where("project_id = ? and filename = ?", projectID, filename).
+		Find(&projectImages).Error
+	return projectImages, err
+}
+
+func QueryProjectImagesByProjectID(projectID string) ([]model.ProjectImage, error) {
+	var projectImages []model.ProjectImage
+	err := db.
+		Where("project_id = ?", projectID).
 		Find(&projectImages).Error
 	return projectImages, err
 }
@@ -81,4 +97,12 @@ func UpdateProjectImagePublishedByFilename(projectID string, images []model.Proj
 		}).Create(&images).Error
 	}
 	return nil
+}
+
+func DeleteProjectImageByFilename(projectID string, filename string) error {
+	return db.Where("project_id = ? and filename = ?", projectID, filename).Delete(&model.ProjectImage{}).Error
+}
+
+func DeleteProjectImages(projectID string) error {
+	return db.Where("project_id = ?", projectID).Delete(&model.ProjectImage{}).Error
 }

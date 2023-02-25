@@ -1,3 +1,4 @@
+from typing import Union
 import uuid
 import threading
 
@@ -22,7 +23,7 @@ class InferenceRequestPool:
             if request_id in self.requests:
                 del self.requests[request_id]
 
-    def get_request(self, request_id: str) -> InferenceRequest | None:
+    def get_request(self, request_id: str) -> Union[InferenceRequest, None]:
         with self.lock:
             if request_id in self.requests:
                 return self.requests[request_id]

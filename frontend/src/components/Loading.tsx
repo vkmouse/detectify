@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import Modal from './Modal';
 
 const LoaderContainer = styled.div`
   display: flex;
@@ -58,6 +59,10 @@ const LoadingOverlay = styled.div`
   top: 0;
 `;
 
+const CustomModal = styled(Modal)`
+  padding: 0;
+`;
+
 const Loader = () => {
   return (
     <LoaderContainer>
@@ -66,17 +71,31 @@ const Loader = () => {
   );
 };
 
-const Loading = () => {
+const Loading = ({ className }: { className?: string }) => {
   return (
-    <>
+    <div className={className}>
       <LoadingBackground />
       <LoadingOverlay>
         <LoaderContainer>
           <DualRing />
         </LoaderContainer>
       </LoadingOverlay>
-    </>
+    </div>
   );
 };
 
-export { Loader, Loading };
+const LoadingModal = ({ isLoading }: { isLoading: boolean }) => {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    setOpen(isLoading);
+  }, [isLoading]);
+
+  return (
+    <CustomModal open={open} onClose={() => void 0}>
+      <Loading />
+    </CustomModal>
+  );
+};
+
+export { Loader, Loading, LoadingModal };

@@ -15,6 +15,7 @@ import ImageList from './components/ImageList';
 import ProgressCard from './components/ProgressCard';
 import UploadCard from './components/UploadCard';
 import { useProjectInfo } from '../../context/ProjectInfoContext';
+import { LoadingModal } from '../../components/Loading';
 
 type State = {
   uploadQueue: {
@@ -90,7 +91,7 @@ const reducer = (state: State, action: Action): State => {
 
 // TODO: Refactor component
 const ImagePage = () => {
-  const { id: projectId } = useProjectInfo();
+  const { id: projectId, isProjectImagesLoading } = useProjectInfo();
   const [state, dispatch] = useReducer(reducer, initialState);
   const { isUploading, uploadFiles } = useBatchUpload();
   const queryClient = useQueryClient();
@@ -159,21 +160,24 @@ const ImagePage = () => {
     state.uploadQueue.filter((p) => p.progress !== 100).length === 0; // all is uploaded
 
   return (
-    <UploadContainer>
-      <UploadLayout>
-        <UploadCard
-          disabled={selectionButtonDisabled}
-          onChange={handleSelectFiles}
-        />
-        <ProgressCard
-          queue={state.uploadQueue}
-          disabled={uploadButtonDisabled}
-          onUpload={createBatchUpload}
-          onDelete={(filename) => dispatch(deleteFromQueue(filename))}
-        />
-      </UploadLayout>
-      <ImageList />
-    </UploadContainer>
+    <>
+      <LoadingModal isLoading={isProjectImagesLoading} />
+      <UploadContainer>
+        <UploadLayout>
+          <UploadCard
+            disabled={selectionButtonDisabled}
+            onChange={handleSelectFiles}
+          />
+          <ProgressCard
+            queue={state.uploadQueue}
+            disabled={uploadButtonDisabled}
+            onUpload={createBatchUpload}
+            onDelete={(filename) => dispatch(deleteFromQueue(filename))}
+          />
+        </UploadLayout>
+        <ImageList />
+      </UploadContainer>
+    </>
   );
 };
 

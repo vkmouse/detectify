@@ -18,6 +18,7 @@ const Container = styled.div`
   width: 100%;
   max-width: ${mainContentMaxWidth}px;
   margin: 0 ${() => `${mainContentMarginX}px`};
+  padding-bottom: 200px;
 `;
 
 const NavbarContainer = styled.div`

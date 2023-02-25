@@ -5,6 +5,7 @@ import (
 	"detectify/internal/model"
 	"detectify/internal/repository"
 	"detectify/internal/response"
+	"detectify/pkg/r2"
 
 	"github.com/gin-gonic/gin"
 )
@@ -55,4 +56,48 @@ func GetProject(ctx *gin.Context) {
 		"irModel":       project.ModelURL + "/ir_model.zip",
 		"exportedModel": project.ModelURL + "/exported_model.zip",
 	}})
+}
+
+func DeleteProject(ctx *gin.Context) {
+	projectID := ctx.Param("projectID")
+	userID := ctx.GetString("userID")
+
+	images, err := repository.QueryProjectImagesByProjectID(projectID)
+	if err != nil {
+		response.Response(ctx, errmsg.ERROR)
+		return
+	}
+
+	for _, image := range images {
+		if image.ImagePublished {
+			err = r2.DeleteItem(getImagePath(projectID, image.ID, image.ImageExt))
+			if err != nil {
+				response.Response(ctx, errmsg.ERROR)
+				return
+			}
+		}
+
+		if image.AnnotationPublished {
+			err = r2.DeleteItem(getAnnotationPath(projectID, image.ID, image.AnnotationExt))
+			if err != nil {
+				response.Response(ctx, errmsg.ERROR)
+				return
+			}
+		}
+	}
+
+	err = repository.DeleteProjectImages(projectID)
+	if err != nil {
+		response.Response(ctx, errmsg.ERROR)
+		return
+	}
+
+	err = repository.DeleteProject(userID, projectID)
+	if err != nil {
+		response.Response(ctx, errmsg.ERROR)
+		return
+	}
+
+	response.Response(ctx, errmsg.SUCCESS)
+	return
 }

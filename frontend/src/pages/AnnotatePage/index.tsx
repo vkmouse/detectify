@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { useReducer, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -6,6 +7,7 @@ import { PrimaryButton } from '../../components/Button';
 import Canvas from '../../components/Canvas';
 import { Card } from '../../components/Card';
 import ImageCardCollection from '../../components/ImageCardCollection';
+import { LoadingModal } from '../../components/Loading';
 import { useAnnotation } from '../../context/AnnotationContext';
 import { useProjectInfo } from '../../context/ProjectInfoContext';
 import useImageDrawer from '../../hooks/useImageDrawer';
@@ -24,13 +26,16 @@ const Container = styled.div`
   column-gap: 10px;
   row-gap: 10px;
   margin-right: 10px;
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
 `;
 
 const CanvasWrapper = styled(Card)`
   position: relative;
   width: 100%;
   height: 0;
-  padding-top: 75%;
+  padding-top: 66.67%;
   cursor: crosshair;
 `;
 
@@ -91,35 +96,42 @@ const AnnotatePage = () => {
     setImg(img);
   };
 
-  const handleSaveClick = async () => {
-    const xmls = generateAnnotation();
-    const uploadedFiles = xmls.map((p) => ({
-      filename: p.filename,
-      imageExt: '',
-      annotationExt: '.xml',
-    }));
-
-    const resp = await api.createBatchUpload({
-      projectId,
-      uploadedFiles,
-    });
-
-    for (const xml of xmls) {
-      const presignedURL = resp.get(xml.filename)?.annotationURL;
-      if (presignedURL) {
-        const blob = new Blob([xml.xml], { type: 'text/xml' });
-        const file = new File([blob], xml.filename, {
-          type: 'text/xml',
-        });
-        await axios.put(presignedURL, file, {
-          headers: { 'Content-Type': 'text/xml' },
-        });
+  const { isLoading, mutate } = useMutation({
+    mutationFn: async () => {
+      const xmls = generateAnnotation();
+      if (xmls.length === 0) {
+        return;
       }
-    }
-  };
+
+      const uploadedFiles = xmls.map((p) => ({
+        filename: p.filename,
+        imageExt: '',
+        annotationExt: '.xml',
+      }));
+
+      const resp = await api.createBatchUpload({
+        projectId,
+        uploadedFiles,
+      });
+
+      for (const xml of xmls) {
+        const presignedURL = resp.get(xml.filename)?.annotationURL;
+        if (presignedURL) {
+          const blob = new Blob([xml.xml], { type: 'text/xml' });
+          const file = new File([blob], xml.filename, {
+            type: 'text/xml',
+          });
+          await axios.put(presignedURL, file, {
+            headers: { 'Content-Type': 'text/xml' },
+          });
+        }
+      }
+    },
+  });
 
   return (
     <>
+      <LoadingModal isLoading={isLoading} />
       <InputModal
         categoryList={categoryList}
         open={open}
@@ -153,7 +165,7 @@ const AnnotatePage = () => {
           onImageCardClick={handleCardClick}
         />
         <div />
-        <PrimaryButton onClick={handleSaveClick}>Save</PrimaryButton>
+        <PrimaryButton onClick={() => mutate()}>Save</PrimaryButton>
       </Container>
     </>
   );
