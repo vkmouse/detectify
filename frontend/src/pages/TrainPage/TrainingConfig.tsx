@@ -15,12 +15,6 @@ import { useProjectInfo } from '../../context/ProjectInfoContext';
 import { useServerInfo } from '../../context/ServerInfoContext';
 import { useTrainingInfo } from '../../context/TrainingInfoContext';
 
-const ButtonContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: end;
-`;
-
 const AdvanceToggle = styled(OutlinePrimaryButton)`
   display: flex;
   justify-content: center;
@@ -60,6 +54,17 @@ const Tooltip = styled.div`
   }
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  position: relative;
+  &:hover ${TooltipText} {
+    visibility: visible;
+    opacity: 1;
+  }
+`;
+
 const TrainingConfig = () => {
   const { id: projectId, images, exportedModel } = useProjectInfo();
   const {
@@ -68,6 +73,7 @@ const TrainingConfig = () => {
   } = useServerInfo();
   const [advance, setAdvance] = useState(false);
   const { isTraining, reloadServerInfo } = useTrainingInfo();
+  const { isDefaultServerAlive, isServerAlive } = useServerInfo();
   const methods = useForm({
     defaultValues: {
       batchSize: 4,
@@ -109,6 +115,8 @@ const TrainingConfig = () => {
     trainModel(data);
   });
 
+  const disabled = !(isDefaultServerAlive || isServerAlive) || isTraining;
+
   return (
     <Card>
       <FormProvider {...methods}>
@@ -116,9 +124,15 @@ const TrainingConfig = () => {
           <InputGroup>
             <Title>Training Configuration</Title>
             <ButtonContainer>
-              <PrimaryButton disabled={isTraining}>
-                Start Training
-              </PrimaryButton>
+              <PrimaryButton disabled={disabled}>Start Training</PrimaryButton>
+              {disabled && (
+                <TooltipText>
+                  Before you begin training, make sure to check the status of
+                  the server to ensure it is ready. If the server is currently
+                  in a training or stop state, it cannot start a new training
+                  task. For more information, please refer to the server page.
+                </TooltipText>
+              )}
             </ButtonContainer>
           </InputGroup>
           <AdvanceToggle

@@ -1,11 +1,7 @@
 import styled from 'styled-components';
+import { PrimaryButton } from '../../../components/Button';
 import { Card } from '../../../components/Card';
-import {
-  ProgressContainer,
-  ProgressWrapper,
-  ButtonGroup,
-  Button,
-} from '../styles';
+import { ProgressContainer, ProgressWrapper, ButtonGroup } from '../styles';
 import ProgressRow from './ProgressRow';
 
 const CardContainer = styled(Card)`
@@ -13,7 +9,7 @@ const CardContainer = styled(Card)`
   flex-direction: column;
   padding: 20px;
   margin-bottom: 10px;
-  min-height: 260px;
+  height: 260px;
 `;
 
 const ProgressCard = ({
@@ -47,9 +43,9 @@ const ProgressCard = ({
         </ProgressWrapper>
       </ProgressContainer>
       <ButtonGroup>
-        <Button disabled={disabled} onClick={onUpload}>
+        <PrimaryButton disabled={disabled} onClick={onUpload}>
           Upload
-        </Button>
+        </PrimaryButton>
       </ButtonGroup>
     </CardContainer>
   );

@@ -7,7 +7,8 @@ import ServerCard from './ServerCard';
 import PlusIcon from '../../assets/plus-circle.svg';
 import { Loader } from '../../components/Loading';
 import { Card } from '../../components/Card';
-import Tutorial from './Tutorial';
+import Tutorial from '../../components/Tutorial';
+import TutorialInfo from './TutorialInfo';
 
 const CardContainer = styled(Card)`
   display: flex;
@@ -35,7 +36,7 @@ const ServerPage = () => {
   const {
     token,
     isServerAlive,
-    isdefaultServerAlive,
+    isDefaultServerAlive: isdefaultServerAlive,
     reloadIsServerAlive,
     reloadIsDefaultServerAlive,
   } = useServerInfo();
@@ -80,7 +81,7 @@ const ServerPage = () => {
           </Button>
         </ButtonContainer>
       )}
-      <Tutorial />
+      <Tutorial tutorialInfo={TutorialInfo} />
     </div>
   );
 };

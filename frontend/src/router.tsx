@@ -8,7 +8,7 @@ import AnnotatePage from './pages/AnnotatePage';
 import { SignInPage, SignUpPage } from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import ImagePage from './pages/ImagePage';
-import PredictPage from './pages/PredictPage';
+import PredictPage from './pages/OverviewPage';
 import Projects from './pages/ProjectsPage';
 import ServerPage from './pages/ServerPage';
 import TrainPage from './pages/TrainPage';

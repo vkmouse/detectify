@@ -5,7 +5,7 @@ import api from '../api/api';
 type State = {
   token: string | null;
   isServerAlive: boolean;
-  isdefaultServerAlive: boolean;
+  isDefaultServerAlive: boolean;
   reloadIsServerAlive: () => void;
   reloadIsDefaultServerAlive: () => void;
 };
@@ -13,7 +13,7 @@ type State = {
 const initialState: State = {
   token: null,
   isServerAlive: false,
-  isdefaultServerAlive: false,
+  isDefaultServerAlive: false,
   reloadIsServerAlive: () => void 0,
   reloadIsDefaultServerAlive: () => void 0,
 };
@@ -59,7 +59,7 @@ const ServerInfoProvider = ({ children }: { children: ReactNode }) => {
     <ServeInfoContext.Provider
       value={{
         token,
-        isdefaultServerAlive: isDefaultServerAlive,
+        isDefaultServerAlive: isDefaultServerAlive,
         isServerAlive: isServerAlive,
         reloadIsServerAlive,
         reloadIsDefaultServerAlive,

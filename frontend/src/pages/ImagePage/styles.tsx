@@ -12,10 +12,10 @@ export const UploadContainer = styled.div`
 
 export const UploadLayout = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, 50%);
   grid-column-gap: 10px;
   @media (max-width: 960px) {
-    grid-template-columns: repeat(1, 1fr);
+    grid-template-columns: 100%;
     grid-column-gap: 0;
   }
 `;

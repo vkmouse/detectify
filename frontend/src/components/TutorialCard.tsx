@@ -1,9 +1,9 @@
 import { ReactNode, useState } from 'react';
 import styled from 'styled-components';
-import { PrimaryButton } from '../../components/Button';
-import { Card } from '../../components/Card';
-import Modal, { ModalImage } from '../../components/Modal';
-import { H3 } from '../../components/Typography';
+import { PrimaryButton } from './Button';
+import { Card } from './Card';
+import Modal, { ModalImage } from './Modal';
+import { H3 } from './Typography';
 
 const Container = styled(Card)`
   display: grid;

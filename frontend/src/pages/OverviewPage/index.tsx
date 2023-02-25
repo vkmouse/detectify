@@ -14,6 +14,8 @@ import HelpIcon from '../../assets/help-circle.svg';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { Loading } from '../../components/Loading';
 import UploadButton from '../../components/UploadButton';
+import Tutorial from '../../components/Tutorial';
+import TutorialInfo from './TutorialInfo';
 
 const Container = styled.div`
   display: grid;
@@ -249,6 +251,9 @@ const PredictPage = () => {
         </FlexContainer>
         <div>{advance && <Threshold />}</div>
       </AdvanceContainer>
+      <br />
+      <br />
+      <Tutorial tutorialInfo={TutorialInfo} />
     </FormProvider>
   );
 };
