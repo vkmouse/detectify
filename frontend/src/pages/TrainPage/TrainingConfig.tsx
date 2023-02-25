@@ -14,6 +14,7 @@ import api from '../../api/api';
 import { useProjectInfo } from '../../context/ProjectInfoContext';
 import { useServerInfo } from '../../context/ServerInfoContext';
 import { useTrainingInfo } from '../../context/TrainingInfoContext';
+import { Link } from 'react-router-dom';
 
 const AdvanceToggle = styled(OutlinePrimaryButton)`
   display: flex;
@@ -63,6 +64,10 @@ const ButtonContainer = styled.div`
     visibility: visible;
     opacity: 1;
   }
+`;
+
+const CustomLink = styled(Link)`
+  text-decoration: underline;
 `;
 
 const TrainingConfig = () => {
@@ -128,9 +133,9 @@ const TrainingConfig = () => {
               {disabled && (
                 <TooltipText>
                   Before you begin training, make sure to check the status of
-                  the server to ensure it is ready. If the server is currently
-                  in a training or stop state, it cannot start a new training
-                  task. For more information, please refer to the server page.
+                  the server to ensure it is ready.
+                  <br />
+                  <CustomLink to="/server">Go to server page</CustomLink>.
                 </TooltipText>
               )}
             </ButtonContainer>
@@ -345,7 +350,6 @@ async function generateLabelMap(dataset: BatchUploadResponse[]) {
 
 async function prepareLabels(dataset: BatchUploadResponse[]) {
   const labelMap = await generateLabelMap(dataset);
-  console.log(labelMap);
 
   const labels: string[] = [];
   labelMap.forEach((value: boolean, key: string) => {

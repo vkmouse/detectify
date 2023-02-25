@@ -1,7 +1,14 @@
-import { createContext, ReactNode, useContext, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { BatchUploadResponse } from '../types/api';
 import api from '../api/api';
+import { useTrainingInfo } from './TrainingInfoContext';
 
 type State = {
   id: string;
@@ -34,6 +41,7 @@ const ProjectInfoProvider = ({ children }: { children: ReactNode }) => {
   const [irModel, setIRModel] = useState('');
   const [exportedModel, setExportedModel] = useState('');
   const [images, setImages] = useState<BatchUploadResponse[]>([]);
+  const { status: trainingStatus } = useTrainingInfo();
 
   useQuery({
     queryKey: ['projectInfo'],
@@ -67,6 +75,12 @@ const ProjectInfoProvider = ({ children }: { children: ReactNode }) => {
       setImages((prev) => prev.filter((p) => p.filename !== filename));
     },
   });
+
+  useEffect(() => {
+    if (trainingStatus === 'Completed') {
+      queryClient.invalidateQueries(['projectInfo']);
+    }
+  }, [trainingStatus]);
 
   return (
     <ProjectInfoContext.Provider
