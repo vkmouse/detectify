@@ -134,58 +134,52 @@ const Sidebar = () => {
   const [page, setPage] = useState(isUuid ? '' : lastSegment);
   const { images, name } = useProjectInfo();
 
+  const pageInfo = [
+    {
+      active: page === '',
+      badge: undefined,
+      children: 'Overview',
+      icon: <GridIcon />,
+      to: '',
+      onClick: () => setPage(''),
+    },
+    {
+      active: page === 'images',
+      badge: images.length,
+      children: 'Images',
+      icon: <ImageIcon />,
+      to: 'images',
+      onClick: () => setPage('images'),
+    },
+    {
+      active: page === 'annotate',
+      badge: undefined,
+      children: 'Annotate',
+      icon: <MaximizeIcon />,
+      to: 'annotate',
+      onClick: () => setPage('annotate'),
+    },
+    {
+      active: page === 'train',
+      badge: undefined,
+      children: 'Train',
+      icon: <TrendingUpIcon />,
+      to: 'train',
+      onClick: () => setPage('train'),
+    },
+  ];
+
   return (
     <SidebarContainer>
       <SidebarWrapper>
         <SidebarBrand name={name ? name : ''} />
         <HorizontalLine />
-        <SidebarLink active={page === ''} to="" onClick={() => setPage('')}>
-          <IconContainer>
-            <ImageIcon />
-          </IconContainer>
-          <Text>Overview</Text>
-        </SidebarLink>
-        <SidebarLink
-          active={page === 'images'}
-          to="images"
-          badge={images.length}
-          onClick={() => setPage('images')}
-        >
-          <IconContainer>
-            <ImageIcon />
-          </IconContainer>
-          <Text>Images</Text>
-        </SidebarLink>
-        <SidebarLink
-          active={page === 'annotate'}
-          to="annotate"
-          onClick={() => setPage('annotate')}
-        >
-          <IconContainer>
-            <MaximizeIcon />
-          </IconContainer>
-          <Text>Annotate</Text>
-        </SidebarLink>
-        <SidebarLink
-          active={page === 'train'}
-          to="train"
-          onClick={() => setPage('train')}
-        >
-          <IconContainer>
-            <GridIcon />
-          </IconContainer>
-          <Text>Train</Text>
-        </SidebarLink>
-        <SidebarLink
-          active={page === 'predict'}
-          to="predict"
-          onClick={() => setPage('predict')}
-        >
-          <IconContainer>
-            <TrendingUpIcon />
-          </IconContainer>
-          <Text>Predict</Text>
-        </SidebarLink>
+        {pageInfo.map((p, i) => (
+          <SidebarLink key={i} active={p.active} to={p.to} onClick={p.onClick}>
+            <IconContainer>{p.icon}</IconContainer>
+            <Text>{p.children}</Text>
+          </SidebarLink>
+        ))}
       </SidebarWrapper>
     </SidebarContainer>
   );

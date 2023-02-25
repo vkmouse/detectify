@@ -1,14 +1,10 @@
-import { useState } from 'react';
-import { H3 } from '../../components/Typography';
-import { RadioButton, RadioButtonGroup } from './RadioButtonGroup';
-import TutorialCard from './TutorialCard';
+import styled from 'styled-components';
 import createSpaceIcon from '../../assets/CreateSpace.png';
 import checkStatusIcon from '../../assets/CheckStatus.png';
 import openColabIcon from '../../assets/OpenColab.png';
 import enableGPUIcon from '../../assets/EnableGPU.png';
 import installPackagesIcon from '../../assets/InstallPackages.png';
 import startServerIcon from '../../assets/StartServer.png';
-import styled from 'styled-components';
 
 const Bold = styled.span`
   font-weight: bold;
@@ -99,56 +95,24 @@ const CheckServerStatusInfo = {
   ),
 };
 
-const infoArray = [
-  CreateSpaceInfo,
-  OpenColabInfo,
-  EnableGPUInfo,
-  InstallPackagesInfo,
-  StartServerInfo,
-  CheckServerStatusInfo,
-];
-
-const Tutorial = () => {
-  const [info, setInfo] = useState(infoArray[0]);
-  const [selected, setSelected] = useState(0);
-
-  const handleClick = (index: number) => {
-    if (selected !== index) {
-      setSelected(index);
-      setInfo(infoArray[index]);
-    }
-  };
-
-  return (
+const TutorialInfo = {
+  title: 'Prepare your own server on Colab',
+  description: (
     <>
-      <H3>Prepare your own server on Colab</H3>
       While using default servers on Detectify, limited computing resources may
       not always be available when needed. To overcome this limitation, it is
       recommended to set up your own server. We provide the ability to set up
       your own server on Colab with GPU computing resources.
-      <RadioButtonGroup>
-        {infoArray.map((p, i) => (
-          <RadioButton
-            key={i}
-            selected={selected === i}
-            onClick={() => handleClick(i)}
-          >
-            {p.name}
-          </RadioButton>
-        ))}
-      </RadioButtonGroup>
-      <TutorialCard
-        {...info}
-        onPrevStepClick={
-          selected !== 0 ? () => handleClick(selected - 1) : undefined
-        }
-        onNextStepClick={
-          selected !== infoArray.length - 1
-            ? () => handleClick(selected + 1)
-            : undefined
-        }
-      />
     </>
-  );
+  ),
+  cards: [
+    CreateSpaceInfo,
+    OpenColabInfo,
+    EnableGPUInfo,
+    InstallPackagesInfo,
+    StartServerInfo,
+    CheckServerStatusInfo,
+  ],
 };
-export default Tutorial;
+
+export default TutorialInfo;

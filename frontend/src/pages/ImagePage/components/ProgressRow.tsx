@@ -26,6 +26,8 @@ const ProgressIconContainer = styled.div`
 
 const ProgressDetailsContainer = styled.div`
   flex-grow: 1;
+  overflow-x: hidden;
+  word-wrap: break-word;
 `;
 
 const DeleteButton = styled(XCircle)`
