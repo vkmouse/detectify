@@ -135,7 +135,6 @@ const Navbar = () => {
               <ChevronDown />
               {showDropdown && (
                 <DropdownMenu>
-                  <DropdownItem>Profile</DropdownItem>
                   <DropdownItem onClick={logout}>Sign out</DropdownItem>
                 </DropdownMenu>
               )}
