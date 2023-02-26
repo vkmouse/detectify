@@ -321,7 +321,9 @@ function WarmupSteps() {
 function prepareDataset(dataset: BatchUploadResponse[]) {
   return dataset.filter(
     (p) =>
-      (p.imageURL.includes('.png') || p.imageURL.includes('.jpg')) &&
+      (p.imageURL.includes('.png') ||
+        p.imageURL.includes('.jpg') ||
+        p.imageURL.includes('.jpeg')) &&
       p.annotationURL.includes('.xml')
   );
 }

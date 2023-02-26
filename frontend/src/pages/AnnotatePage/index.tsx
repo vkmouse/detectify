@@ -90,15 +90,28 @@ const AnnotatePage = () => {
 
   const handleCardClick = (
     img: HTMLImageElement,
-    { filename, annotationURL }: BatchUploadResponse
+    { filename, annotationURL, imageURL }: BatchUploadResponse
   ) => {
-    select(filename, annotationURL, img.naturalWidth, img.naturalHeight);
+    const extension = imageURL.split('.').pop();
+    if (!extension) {
+      return;
+    }
+
+    select(
+      `${filename}.${extension}`,
+      annotationURL,
+      img.naturalWidth,
+      img.naturalHeight
+    );
     setImg(img);
   };
 
   const { isLoading, mutate } = useMutation({
     mutationFn: async () => {
-      const xmls = generateAnnotation();
+      const xmls = generateAnnotation().map((p) => ({
+        filename: p.filename.split('.')[0] ? p.filename.split('.')[0] : '',
+        xml: p.xml,
+      }));
       if (xmls.length === 0) {
         return;
       }
@@ -116,6 +129,7 @@ const AnnotatePage = () => {
 
       for (const xml of xmls) {
         const presignedURL = resp.get(xml.filename)?.annotationURL;
+
         if (presignedURL) {
           const blob = new Blob([xml.xml], { type: 'text/xml' });
           const file = new File([blob], xml.filename, {

@@ -82,8 +82,8 @@ const generateXml = (
   let xmlContent =
     `<annotation verified="yes">\n` +
     `  <folder>Pictures</folder>\n` +
-    `  <filename>${filename}.png</filename>\n` +
-    `  <path>${filename}.png</path>\n` +
+    `  <filename>${filename}</filename>\n` +
+    `  <path>${filename}</path>\n` +
     `  <source>\n` +
     `    <database>Unknown</database>\n` +
     `  </source>\n` +

@@ -48,6 +48,7 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
     background: ${(props) => props.theme.colors.bodyBackground};
     color: ${(props) => props.theme.colors.bodyColor};
+    overflow-y: overlay;
   }
 
   button {
