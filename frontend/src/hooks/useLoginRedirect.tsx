@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../store/store';
 
-const publicPages = ['/signin', '/signup'];
+const publicPages = ['/', '/signin', '/signup'];
 
 const useLoginRedirect = () => {
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ const useLoginRedirect = () => {
       const isAuth = userInfo !== null;
       loginRedirect(isAuth);
     }
-  }, [isInit, isFetching, userInfo]);
+  }, [isInit, isFetching, userInfo, window.location.pathname]);
 
   return loginRedirect;
 };

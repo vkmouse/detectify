@@ -40,11 +40,15 @@ function getFilenameExtension(filename: string): string {
 }
 
 function checkImageExtenstion(ext?: string) {
-  return ext === '.png' || ext === '.jpg' || ext === '.jpeg';
+  return (
+    ext?.toLowerCase() === '.png' ||
+    ext?.toLowerCase() === '.jpg' ||
+    ext?.toLowerCase() === '.jpeg'
+  );
 }
 
 function checkAnnotationExtenstion(ext?: string) {
-  return ext === '.xml';
+  return ext?.toLowerCase() === '.xml';
 }
 
 export {
