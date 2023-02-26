@@ -1,5 +1,11 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { createContext, ReactNode, useContext, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import api from '../api/api';
 import { TrainingStatusResponse } from '../types/api';
 
@@ -23,13 +29,14 @@ const TrainingInfoContext = createContext<State>(initialState);
 
 const TrainingInfoProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
-  const [isTraining, setIsTraining] = useState(false);
+  const [isTraining, setIsTraining] = useState(true);
   const [trainingInfo, setTrainingInfo] = useState<TrainingStatusResponse>({
     ...initialState,
   });
 
   const reloadServerInfo = () => {
     queryClient.invalidateQueries(['trainingInfo']);
+    setIsTraining(true);
   };
 
   useQuery({
@@ -38,13 +45,10 @@ const TrainingInfoProvider = ({ children }: { children: ReactNode }) => {
       return api.getTrainingStatus();
     },
     onSuccess: (data) => {
-      const isTraining = data.progress !== null;
       setTrainingInfo(data);
-      setIsTraining(isTraining);
-      if (isTraining) {
-        setTimeout(() => reloadServerInfo(), 5000);
-      }
     },
+    refetchInterval: 5000,
+    enabled: isTraining,
   });
 
   const getProgress = () => {
@@ -54,8 +58,15 @@ const TrainingInfoProvider = ({ children }: { children: ReactNode }) => {
     let progress = trainingInfo.progress * 0.8;
     progress += trainingInfo.status === 'Training' ? 10 : 0;
     progress += trainingInfo.status === 'Exporting' ? 10 : 0;
+    progress = trainingInfo.status === 'Completed' ? 100 : progress;
     return progress;
   };
+
+  useEffect(() => {
+    setIsTraining(
+      !(trainingInfo.status === null || trainingInfo.status === 'Idle')
+    );
+  }, [trainingInfo.status]);
 
   return (
     <TrainingInfoContext.Provider

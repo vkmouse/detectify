@@ -16,6 +16,9 @@ const Title = styled(H1)`
   font-size: 36px;
   max-width: 800px;
   color: white;
+  @media (max-width: 600px) {
+    font-size: 24px;
+  }
 `;
 
 const Description = styled(H3)`
@@ -23,6 +26,9 @@ const Description = styled(H3)`
   max-width: 800px;
   font-size: 24px;
   color: white;
+  @media (max-width: 600px) {
+    font-size: 16px;
+  }
 `;
 
 const ButtonContainer = styled.div`
@@ -30,12 +36,20 @@ const ButtonContainer = styled.div`
   grid-template-columns: repeat(2, 1fr);
   margin-top: 20px;
   column-gap: 30px;
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
 `;
 
 const Button = styled(PrimaryButton)`
   width: 250px;
   height: 55px;
   font-size: 24px;
+  @media (max-width: 600px) {
+    width: 180px;
+    height: 40px;
+    font-size: 16px;
+  }
 `;
 
 const Banner = () => {

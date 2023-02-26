@@ -30,7 +30,7 @@ const TrainingStatus = () => {
 
   const isStopped = status.status === null;
   const isIdle = status.status === 'Idle';
-  const color = isStopped ? 'red' : isIdle ? '#169D5A' : '#DA874A';
+  const color = isStopped ? '#D9534F' : isIdle ? '#169D5A' : '#DA874A';
 
   return (
     <Card>

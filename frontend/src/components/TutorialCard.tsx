@@ -4,6 +4,8 @@ import { PrimaryButton } from './Button';
 import { Card } from './Card';
 import Modal, { ModalImage } from './Modal';
 import { H3 } from './Typography';
+import LeftIcon from '../assets/arrow-left.svg';
+import RightIcon from '../assets/arrow-right.svg';
 
 const Container = styled(Card)`
   display: grid;
@@ -62,7 +64,9 @@ const BottomContainer = styled.div`
 `;
 
 const StepButton = styled(PrimaryButton)`
-  width: 150px;
+  width: 40px;
+  margin: 0;
+  padding: 5px;
 `;
 
 const TutorialCard = ({
@@ -96,12 +100,16 @@ const TutorialCard = ({
           <BottomContainer>
             <div>
               {onPrevStepClick && (
-                <StepButton onClick={onPrevStepClick}>Previous Step</StepButton>
+                <StepButton onClick={onPrevStepClick}>
+                  <LeftIcon />
+                </StepButton>
               )}
             </div>
             <div>
               {onNextStepClick && (
-                <StepButton onClick={onNextStepClick}>Next Step</StepButton>
+                <StepButton onClick={onNextStepClick}>
+                  <RightIcon />
+                </StepButton>
               )}
             </div>
           </BottomContainer>

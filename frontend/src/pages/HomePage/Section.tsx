@@ -10,6 +10,7 @@ const Container = styled(Card)`
   border-radius: 10px;
   margin: 200px 0;
   @media (max-width: 960px) {
+    padding: 40px 24px;
     grid-template-columns: repeat(1, 1fr);
     grid-column-gap: 0;
     grid-row-gap: 24px;
@@ -18,11 +19,17 @@ const Container = styled(Card)`
 
 const Title = styled.h1`
   font-size: 36px;
+  @media (max-width: 600px) {
+    font-size: 24px;
+  }
 `;
 
 const Description = styled.h3`
   margin-top: 20px;
   font-size: 24px;
+  @media (max-width: 600px) {
+    font-size: 16px;
+  }
 `;
 
 const Image = styled.img`

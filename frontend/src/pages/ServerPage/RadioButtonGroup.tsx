@@ -7,6 +7,12 @@ const ButtonGroup = styled.div<{ cols: number }>`
   grid-template-columns: repeat(${(props) => props.cols}, 1fr);
   column-gap: 10px;
   padding: 32px 0;
+  @media (max-width: 960px) {
+    grid-template-columns: repeat(
+      ${(props) => (props.cols > 3 ? 3 : props.cols)},
+      1fr
+    );
+  }
 `;
 
 const RadioButton = ({
