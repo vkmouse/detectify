@@ -24,11 +24,11 @@ const useUploadFiles = () => {
           updateProgress(progress);
         }
       };
-      const ext = getFilenameExtension(file.name);
+      const ext = getFilenameExtension(file.name).toLowerCase();
       let contentType = 'image/png';
       if (ext === '.png') {
         contentType = 'image/png';
-      } else if (ext === '.jpg' || ext === 'jpeg') {
+      } else if (ext === '.jpg' || ext === '.jpeg') {
         contentType = 'image/jpeg';
       } else {
         contentType = 'text/xml';
