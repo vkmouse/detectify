@@ -129,14 +129,18 @@ const Navbar = () => {
                 setShowDropdown((showDropdown) => !showDropdown);
               }}
             >
-              <span>
-                {isFetching ? 'isFetching' : userInfo && userInfo.name}
-              </span>
-              <ChevronDown />
-              {showDropdown && (
-                <DropdownMenu>
-                  <DropdownItem onClick={logout}>Sign out</DropdownItem>
-                </DropdownMenu>
+              {userInfo && (
+                <>
+                  <span>
+                    {isFetching ? 'isFetching' : userInfo && userInfo.name}
+                  </span>
+                  <ChevronDown />
+                  {showDropdown && (
+                    <DropdownMenu>
+                      <DropdownItem onClick={logout}>Sign out</DropdownItem>
+                    </DropdownMenu>
+                  )}
+                </>
               )}
             </NavbarToggler>
           </NavbarCollapse>
