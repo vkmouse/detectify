@@ -92,7 +92,10 @@ const ProjectsPage = () => {
                 </ImageCard>
               </CardWrapper>
             </Link>
-            <DeleteButton onClick={() => mutate(project.id)}>
+            <DeleteButton
+              disabled={project.name === 'Wally'}
+              onClick={() => mutate(project.id)}
+            >
               <DeleteIcon />
             </DeleteButton>
           </CardContainer>

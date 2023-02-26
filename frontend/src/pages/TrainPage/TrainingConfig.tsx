@@ -9,7 +9,6 @@ import HelpIcon from '../../assets/help-circle.svg';
 import { Form, InputGroup, Title } from './components/styles';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { BatchUploadResponse } from '../../types/api';
-import axios from 'axios';
 import api from '../../api/api';
 import { useProjectInfo } from '../../context/ProjectInfoContext';
 import { useServerInfo } from '../../context/ServerInfoContext';
@@ -97,15 +96,12 @@ const TrainingConfig = () => {
     warmupSteps: number;
   }) => {
     const dataset = prepareDataset(images);
-    const labels = await prepareLabels(dataset);
-
-    if (dataset.length > 0 && labels.length > 0) {
+    if (dataset.length > 0) {
       api
         .trainModel({
           ...props,
           projectId,
           dataset,
-          labels,
           pretrainedModelURL: exportedModel,
         })
         .then(() => {
@@ -328,35 +324,6 @@ function prepareDataset(dataset: BatchUploadResponse[]) {
       (p.imageURL.includes('.png') || p.imageURL.includes('.jpg')) &&
       p.annotationURL.includes('.xml')
   );
-}
-
-async function generateLabelMap(dataset: BatchUploadResponse[]) {
-  const labelMap = new Map<string, boolean>();
-  const parser = new DOMParser();
-  for (const data of dataset) {
-    const response = await axios.get(data.annotationURL);
-    const xml = response.data;
-    const xmlDoc = parser.parseFromString(xml, 'text/xml');
-    const objects = xmlDoc.getElementsByTagName('object');
-    for (let i = 0; i < objects.length; i++) {
-      const label = objects[i].getElementsByTagName('name')[0].textContent;
-      if (label) {
-        labelMap.set(label, true);
-      }
-    }
-  }
-  return labelMap;
-}
-
-async function prepareLabels(dataset: BatchUploadResponse[]) {
-  const labelMap = await generateLabelMap(dataset);
-
-  const labels: string[] = [];
-  labelMap.forEach((value: boolean, key: string) => {
-    labels.push(key);
-  });
-
-  return labels;
 }
 
 export default TrainingConfig;

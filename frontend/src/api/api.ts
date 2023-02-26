@@ -180,10 +180,12 @@ const api = {
   trainModel: async (data: {
     projectId: string;
     dataset: BatchUploadResponse[];
-    labels: string[];
+    pretrainedModelURL: string;
     batchSize: number;
     numSteps: number;
-    pretrainedModelURL: string;
+    learningRateBase: number;
+    warmupLearningRate: number;
+    warmupSteps: number;
   }) => {
     const response = await trainingAxios.post('/model/train', data);
     return response.data;

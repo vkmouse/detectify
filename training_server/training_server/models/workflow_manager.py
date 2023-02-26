@@ -1,5 +1,6 @@
 import datetime
 import os
+import shutil
 from training_server.models.dataset_builder import DatasetBuilder
 from training_server.models.model_exporter import ModelExporter
 from training_server.models.training_model_builder import TrainingModelBuilder
@@ -102,20 +103,26 @@ class WorkflowManager:
         self.status = TRAINER_COMPLETED
 
     def update_progress(self):
-        line = None
-        with open(self.models_checkpoint, 'r') as file:
-            line = file.readline()
-        total_ckpt = self.get_num_steps() / 100
-        ckpt = int(line.split('ckpt-')[1][:-2])
-        if ckpt < 2:
-            self.progress = 0
-        else:
-            self.progress = round(((ckpt - 1) / total_ckpt) * 100, 2)
+        if os.path.exists(self.models_checkpoint):
+            ckpt = -1
+            for file_name in os.listdir(trainer.models_dir):
+                if file_name.endswith(".index"):
+                    ckpt_num = int(file_name.split("-")[-1].split(".")[0])
+                    if ckpt_num > ckpt:
+                        ckpt = ckpt_num
+
+            total_ckpt = self.get_num_steps() / 100
+            if ckpt < 2:
+                self.progress = 0
+            else:
+                self.progress = round(((ckpt - 1) / total_ckpt) * 100, 2)
 
     def get_num_steps(self):
-        with open(trainer.models_pipeline, "r") as f:
+        shutil.copy(trainer.models_pipeline, "models_pipeline_copy")
+        with open("models_pipeline_copy", "r") as f:
             content = f.read()
         num_steps = content.split("num_steps: ")[1].split(" # ")[0]
+        os.remove("models_pipeline_copy")
         return int(num_steps)
 
     def get_duration(self):
