@@ -16,6 +16,8 @@ import { Loading } from '../../components/Loading';
 import UploadButton from '../../components/UploadButton';
 import Tutorial from '../../components/Tutorial';
 import TutorialInfo from './TutorialInfo';
+import * as tf from '@tensorflow/tfjs';
+import '@tensorflow/tfjs-backend-webgl';
 
 const Container = styled.div`
   display: grid;
@@ -199,6 +201,42 @@ const PredictPage = () => {
     inferWithURLMutate.isLoading ||
     requestId.current !== '';
 
+  const runModel = async (img: HTMLImageElement) => {
+    const image = new Image(320, 320);
+    image.onload = async () => {
+      image.onload = null;
+
+      const model = await tf.loadGraphModel(
+        'https://pub-524340b28b994541ba4d1f39e64d2b3d.r2.dev/web_model/model.json'
+      );
+      const tensor = tf.browser.fromPixels(image).expandDims(0);
+      const result = (await model.executeAsync(tensor)) as tf.Tensor[];
+      const detectionBoxes = (result[0].arraySync() as number[][][])[0];
+      const detectionClasses = (result[2].arraySync() as number[][])[0];
+      const numDetections = (result[3].arraySync() as number[])[0];
+      const detectionScores = (result[6].arraySync() as number[][])[0];
+
+      const bboxes: InferResponse[] = [];
+      for (let i = 0; i < numDetections; i++) {
+        if (detectionScores[i] > methods.getValues().threshold) {
+          const box = detectionBoxes[i];
+          const name = detectionClasses[i] + '';
+          bboxes.push({
+            name: name,
+            confidence: detectionScores[i],
+            x: box[1] * img.naturalWidth,
+            y: box[0] * img.naturalHeight,
+            width: (box[3] - box[1]) * img.naturalWidth,
+            height: (box[2] - box[0]) * img.naturalHeight,
+          });
+        }
+      }
+      setBboxes(bboxes);
+    };
+    image.setAttribute('crossOrigin', '');
+    image.src = img.src + '?' + new Date().getTime();
+  };
+
   return (
     <FormProvider {...methods}>
       <Container>
@@ -230,6 +268,7 @@ const PredictPage = () => {
           onImageCardClick={(img) => {
             setImg(img);
             setBboxes([]);
+            runModel(img);
           }}
         />
       </Container>
