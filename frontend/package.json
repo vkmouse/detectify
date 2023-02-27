@@ -16,6 +16,8 @@
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.1",
     "@tanstack/react-query": "^4.22.0",
+    "@tensorflow/tfjs": "^4.2.0",
+    "@tensorflow/tfjs-backend-webgl": "^4.2.0",
     "axios": "^1.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
