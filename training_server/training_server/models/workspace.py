@@ -13,6 +13,7 @@ class Workspace:
         self.ir_model_dir = os.path.join(workspace_path, 'ir_model')
         self.models_dir = os.path.join(workspace_path, 'models')
         self.pretrained_model_dir = os.path.join(workspace_path, 'pre-trained-model')
+        self.tfjs_model_dir = os.path.join(workspace_path, 'tfjs_model')
 
     def prepare(self):
         clear_directory(self.path)

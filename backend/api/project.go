@@ -55,6 +55,7 @@ func GetProject(ctx *gin.Context) {
 		"projectName":   project.Name,
 		"irModel":       project.ModelURL + "/ir_model.zip",
 		"exportedModel": project.ModelURL + "/exported_model.zip",
+		"webModel":      project.ModelURL + "/web_model",
 	}})
 }
 

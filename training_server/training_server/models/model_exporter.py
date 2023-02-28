@@ -10,6 +10,7 @@ class ModelExporter:
         models_dir: str,
         exported_model_dir: str,
         ir_model_dir: str,
+        tfjs_model_dir: str,
         labels_path: str,
     ):
         self.exporter_main_v2 = os.path.join(site_pkg_path, 'object_detection', 'exporter_main_v2.py')
@@ -19,25 +20,40 @@ class ModelExporter:
         self.models_dir = models_dir
         self.exported_model_dir = exported_model_dir
         self.ir_model_dir = ir_model_dir
+        self.tfjs_model_dir = tfjs_model_dir
         self.labels_path = labels_path
         self.models_pipeline = os.path.join(models_dir, 'pipeline.config')
         self.exported_saved_model = os.path.join(exported_model_dir, 'saved_model')
         self.exported_model_pipeline = os.path.join(exported_model_dir, 'pipeline.config')
-        self.ir_model_data = os.path.join(ir_model_dir, 'data.meta')
 
     def export(self):
-        self.export_model(self.models_dir)
+        self.export_tf_model()
         self.export_ir_model()
-        self.export_model_data()
+        self.export_tfjs_model()
+        self.export_model_data(os.path.join(self.ir_model_dir, 'data.meta'))
+        self.export_model_data(os.path.join(self.tfjs_model_dir, 'data.meta'))
 
-    def export_model(self, models_dir: str):
+    def export_tf_model(self):
         subprocess.run(
             [
                 "python",
                 self.exporter_main_v2,
-                f"--trained_checkpoint_dir={models_dir}",
+                f"--trained_checkpoint_dir={self.models_dir}",
                 f"--pipeline_config_path={self.models_pipeline}",
                 f"--output_directory={self.exported_model_dir}",
+            ]
+        )
+
+    def export_tfjs_model(self):
+        subprocess.run(
+            [
+                "tensorflowjs_converter",
+                "--input_format=tf_saved_model",
+                "--output_format=tfjs_graph_model",
+                "--signature_name=serving_default",
+                "--saved_model_tags=serve",
+                f"{self.exported_saved_model}",
+                f"{self.tfjs_model_dir}",
             ]
         )
 
@@ -53,7 +69,7 @@ class ModelExporter:
             ]
         )
 
-    def export_model_data(self):
+    def export_model_data(self, output_path: str):
         with open(self.models_pipeline, "r") as f:
             content = f.read()
         model_width = content.split("width: ")[1].split("\n")[0]
@@ -68,7 +84,7 @@ class ModelExporter:
             name_str = item.split("name: '")[1].split("'\n")[0].strip()
             label_map[int(id_str)] = name_str
 
-        with open(self.ir_model_data, "w") as f:
+        with open(output_path, "w") as f:
             f.write(
                 json.dumps(
                     {

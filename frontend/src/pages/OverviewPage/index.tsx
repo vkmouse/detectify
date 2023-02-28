@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-import api from '../../api/api';
 import styled from 'styled-components';
 import { useProjectInfo } from '../../context/ProjectInfoContext';
 import Canvas from '../../components/Canvas';
@@ -7,9 +6,8 @@ import { Card } from '../../components/Card';
 import ImageCardCollection from '../../components/ImageCardCollection';
 import useImageDrawer from '../../hooks/useImageDrawer';
 import { ImageScaler } from '../../utils/ImageDrawer';
-import { OutlinePrimaryButton, PrimaryButton } from '../../components/Button';
+import { OutlinePrimaryButton } from '../../components/Button';
 import { InferResponse } from '../../types/api';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import HelpIcon from '../../assets/help-circle.svg';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { Loading } from '../../components/Loading';
@@ -56,13 +54,7 @@ const AdvanceToggle = styled(OutlinePrimaryButton)`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: calc(80% - 10px);
-  margin: 0 10px 0 0;
-`;
-
-const Button = styled(PrimaryButton)`
-  flex-grow: 1;
-  margin: 0 0 0 10px;
+  width: 100%;
 `;
 
 const InputContainer = styled.div`
@@ -138,15 +130,13 @@ const OutlineUploadButton = styled(UploadButton)`
 `;
 
 const PredictPage = () => {
-  const queryClient = useQueryClient();
   const scalerRef = useRef<ImageScaler>(new ImageScaler());
-  const requestId = useRef('');
   const [bboxes, setBboxes] = useState<InferResponse[]>([]);
   const [img, setImg] = useState<HTMLImageElement | null>(null);
   const [advance, setAdvance] = useState(false);
   const canvasRef = useImageDrawer(bboxes, null, img, scalerRef.current);
-  const { irModel } = useProjectInfo();
-  const { images } = useProjectInfo();
+  const { images, webModel } = useProjectInfo();
+  const [isDetecting, setIsDetecting] = useState(false);
 
   const methods = useForm({
     defaultValues: {
@@ -154,50 +144,12 @@ const PredictPage = () => {
     },
   });
 
-  const inferWithURLMutate = useMutation<boolean, Error, string>(
-    async (imageURL) => {
-      requestId.current = await api.createInferRequest(irModel);
-      const success = await api.inferWithURL(requestId.current, imageURL);
-      if (success) {
-        return Promise.resolve(false);
-      }
-      return Promise.reject(true);
-    },
-    { onSuccess: () => queryClient.invalidateQueries(['inferResult']) }
-  );
-
-  const inferWithImageMutate = useMutation<boolean, Error, File>(
-    async (image) => {
-      requestId.current = await api.createInferRequest(irModel);
-      const success = await api.inferWithImage(requestId.current, image);
-      if (success) {
-        return Promise.resolve(false);
-      }
-      return Promise.reject(true);
-    },
-    { onSuccess: () => queryClient.invalidateQueries(['inferResult']) }
-  );
-
-  useQuery({
-    queryKey: ['inferResult'],
-    queryFn: async () => api.getInferResult(requestId.current),
-    onSuccess: (data) => {
-      if (data.status === 'completed') {
-        const bboxes = data.results.filter(
-          (p) => p.confidence > methods.getValues().threshold
-        );
-        setBboxes(bboxes);
-        requestId.current = '';
-      }
-    },
-    enabled: requestId.current !== '',
-    refetchInterval: 1000,
-  });
-
-  const isLoading =
-    inferWithImageMutate.isLoading ||
-    inferWithURLMutate.isLoading ||
-    requestId.current !== '';
+  const detect = async (url: string) => {
+    setIsDetecting(true);
+    const bboxes = await webModel.detect(url, methods.getValues().threshold);
+    setBboxes(bboxes);
+    setIsDetecting(false);
+  };
 
   return (
     <FormProvider {...methods}>
@@ -209,13 +161,13 @@ const PredictPage = () => {
               accept=".jpg,.jpeg,.png"
               onUploadChange={(files) => {
                 if (files.length > 0) {
-                  inferWithImageMutate.mutate(files[0]);
-                  const url = URL.createObjectURL(files[0]);
                   const image = new Image();
+                  const url = URL.createObjectURL(files[0]);
                   image.src = url;
                   image.onload = () => {
                     setImg(image);
                     setBboxes([]);
+                    detect(image.src);
                   };
                 }
               }}
@@ -223,13 +175,14 @@ const PredictPage = () => {
               Try your image
             </OutlineUploadButton>
           </Overlay>
-          {isLoading && <Loading />}
+          {isDetecting && <Loading />}
         </CanvasWrapper>
         <ImageCardCollection
           images={images}
           onImageCardClick={(img) => {
             setImg(img);
             setBboxes([]);
+            detect(img.src);
           }}
         />
       </Container>
@@ -238,16 +191,6 @@ const PredictPage = () => {
           <AdvanceToggle onClick={() => setAdvance((advance) => !advance)}>
             Advance Option
           </AdvanceToggle>
-          <Button
-            disabled={isLoading}
-            onClick={() => {
-              if (img) {
-                inferWithURLMutate.mutate(img?.src);
-              }
-            }}
-          >
-            Detection
-          </Button>
         </FlexContainer>
         <div>{advance && <Threshold />}</div>
       </AdvanceContainer>

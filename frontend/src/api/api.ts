@@ -4,7 +4,6 @@ import {
   BatchUploadRequest,
   BatchUploadResponse,
   ServerStatusResponse,
-  InferResponse,
   LoginRequest,
   ProjectInfoResponse,
   ProjectResponse,
@@ -14,7 +13,6 @@ import {
 } from '../types/api';
 import {
   authAxios,
-  inferAxios,
   normalAxios,
   removeToken,
   trainingAxios,
@@ -123,37 +121,6 @@ const api = {
       params: { projectId, filename },
     });
     return 200 <= response.status && response.status < 300;
-  },
-
-  // inference api
-  createInferRequest: async (modelURL: string): Promise<string> => {
-    const response = await inferAxios.post('/predict', { modelURL });
-    return response.data.data.requestId as string;
-  },
-  inferWithURL: async (
-    requestId: string,
-    imageURL: string
-  ): Promise<boolean> => {
-    const response = await inferAxios.post(`/predict/${requestId}`, {
-      imageURL,
-    });
-    return response.status === 202;
-  },
-  inferWithImage: async (requestId: string, image: File): Promise<boolean> => {
-    const formData = new FormData();
-    formData.append('image', image);
-    const response = await inferAxios.post(`/predict/${requestId}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.status === 202;
-  },
-  getInferResult: async (
-    requestId: string
-  ): Promise<{ status: string; results: InferResponse[] }> => {
-    const response = await inferAxios.get(`/predict/${requestId}`);
-    return response.data.data as { status: string; results: InferResponse[] };
   },
 
   // training api

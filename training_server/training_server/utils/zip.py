@@ -28,5 +28,4 @@ def zip_directory(directory):
 
 def zip_directory_and_upload(directory, presigned_url):
     zip_file = zip_directory(directory)
-    upload_successful = upload_zip_file(zip_file, presigned_url)
-    return not upload_successful
+    return upload_zip_file(zip_file, presigned_url)

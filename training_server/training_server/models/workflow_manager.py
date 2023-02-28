@@ -34,6 +34,7 @@ model_exporter = ModelExporter(
     models_dir=workspace.models_dir,
     exported_model_dir=workspace.exported_model_dir,
     ir_model_dir=workspace.ir_model_dir,
+    tfjs_model_dir=workspace.tfjs_model_dir,
     labels_path=workspace.annotations_label_map_path,
 )
 
@@ -42,6 +43,7 @@ class WorkflowManager:
     def __init__(self):
         self.exported_model_dir = workspace.exported_model_dir
         self.ir_model_dir = workspace.ir_model_dir
+        self.tfjs_model_dir = workspace.tfjs_model_dir
         self.models_checkpoint = os.path.join(trainer.models_dir, 'checkpoint')
         self.start_time = None
         self.end_time = None

@@ -59,13 +59,18 @@ func TrainModel(ctx *gin.Context) {
 
 func TrainModelCompleted(ctx *gin.Context) {
 	var body struct {
-		UserID    string `json:"userId"`
-		ProjectID string `json:"projectId"`
+		Data struct {
+			Files []string `json:"files"`
+		} `json:"Data"`
+		SenderData struct {
+			UserID    string `json:"userId"`
+			ProjectID string `json:"projectId"`
+		} `json:"senderData"`
 	}
 	ctx.BindJSON(&body)
 
 	// Get host
-	host := "http://" + body.UserID + ".localhost:8080"
+	host := "http://" + body.SenderData.UserID + ".localhost:8080"
 	if !validateServerStatus(host) {
 		host = "http://training.localhost:8080"
 	}
@@ -77,16 +82,25 @@ func TrainModelCompleted(ctx *gin.Context) {
 	}
 
 	// make request to export model
+	webModelURL := make(map[string]string)
+	for _, file := range body.Data.Files {
+		webModelURL[file] = r2.GeneratingPresignedURL(fmt.Sprintf("%s/web_model/%s", body.SenderData.ProjectID, file))
+	}
 	err := makeRequestWithData("POST", host+"/model/export", gin.H{
-		"exportedModelURL": r2.GeneratingPresignedURL(fmt.Sprintf("%s/exported_model.zip", body.ProjectID)),
-		"irModelURL":       r2.GeneratingPresignedURL(fmt.Sprintf("%s/ir_model.zip", body.ProjectID)),
+		"webModelURL":      webModelURL,
+		"exportedModelURL": r2.GeneratingPresignedURL(fmt.Sprintf("%s/exported_model.zip", body.SenderData.ProjectID)),
+		"irModelURL":       r2.GeneratingPresignedURL(fmt.Sprintf("%s/ir_model.zip", body.SenderData.ProjectID)),
 	})
 	if err != nil {
 		log.Println(err)
 	}
 
 	// update database
-	err = repository.UpdateProjectModelURL(body.UserID, body.ProjectID, config.R2AccessURL+body.ProjectID)
+	err = repository.UpdateProjectModelURL(
+		body.SenderData.UserID,
+		body.SenderData.ProjectID,
+		config.R2AccessURL+body.SenderData.ProjectID,
+	)
 	if err != nil {
 		log.Println(err)
 	}
