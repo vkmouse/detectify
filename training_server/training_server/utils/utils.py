@@ -1,6 +1,5 @@
 import ast
 import base64
-import zipfile
 import requests
 
 
@@ -24,3 +23,10 @@ def download_file(url, output_path: str):
     except requests.exceptions.RequestException as e:
         raise e
     return output_path
+
+
+def upload_file(file_path, presigned_url):
+    with open(file_path, 'rb') as file:
+        data = file.read()
+        response = requests.put(presigned_url, data=data)
+        return response.status_code == 200
