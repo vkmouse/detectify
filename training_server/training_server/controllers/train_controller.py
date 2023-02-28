@@ -1,8 +1,10 @@
+import os
 import threading
 import requests
 
 from training_server.models import WorkflowManager
 from training_server.utils import zip_directory_and_upload
+from training_server.utils import upload_file
 
 workflow = WorkflowManager()
 training_completed_hooks = {}
@@ -51,8 +53,8 @@ def release():
     return False
 
 
-def add_training_completed_hook(url, data):
-    training_completed_hooks[url] = data
+def add_training_completed_hook(url, sender_data):
+    training_completed_hooks[url] = sender_data
 
 
 def remove_training_completed_hook(url):
@@ -65,9 +67,15 @@ def call_training_completed_hooks():
         send_training_completed(url, hooks[url])
 
 
-def send_training_completed(url, data):
+def send_training_completed(url, sender_data):
     try:
-        resp = requests.post(url, json=data)
+        resp = requests.post(
+            url,
+            json={
+                "data": {"files": os.listdir(workflow.tfjs_model_dir)},
+                "senderData": sender_data,
+            },
+        )
     except:
         print(resp)
 
@@ -78,3 +86,11 @@ def upload_exported_model(url):
 
 def upload_ir_model(url):
     return zip_directory_and_upload(workflow.ir_model_dir, url)
+
+
+def upload_web_model(url_dict):
+    for filename, url in url_dict.items():
+        file_path = os.path.join(workflow.tfjs_model_dir, filename)
+        if not upload_file(file_path, url):
+            return False
+    return True

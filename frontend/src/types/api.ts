@@ -53,6 +53,7 @@ export type ProjectInfoResponse = {
   projectName: string;
   irModel: string;
   exportedModel: string;
+  webModel: string;
 };
 
 export type BatchUploadData = {

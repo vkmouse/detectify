@@ -7,7 +7,13 @@ import { ThemeProvider } from './context/ThemeContext';
 import { router } from './router';
 import store from './store/store';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

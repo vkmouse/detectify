@@ -15,7 +15,6 @@ import ImageList from './components/ImageList';
 import ProgressCard from './components/ProgressCard';
 import UploadCard from './components/UploadCard';
 import { useProjectInfo } from '../../context/ProjectInfoContext';
-import { LoadingModal } from '../../components/Loading';
 
 type State = {
   uploadQueue: {
@@ -91,7 +90,7 @@ const reducer = (state: State, action: Action): State => {
 
 // TODO: Refactor component
 const ImagePage = () => {
-  const { id: projectId, isProjectImagesLoading } = useProjectInfo();
+  const { id: projectId } = useProjectInfo();
   const [state, dispatch] = useReducer(reducer, initialState);
   const { isUploading, uploadFiles } = useBatchUpload();
   const queryClient = useQueryClient();
@@ -161,7 +160,6 @@ const ImagePage = () => {
 
   return (
     <>
-      <LoadingModal isLoading={isProjectImagesLoading} />
       <UploadContainer>
         <UploadLayout>
           <UploadCard
