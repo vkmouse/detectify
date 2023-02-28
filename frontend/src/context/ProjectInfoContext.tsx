@@ -6,17 +6,22 @@ import {
   useState,
 } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { BatchUploadResponse } from '../types/api';
+import { BatchUploadResponse, InferResponse } from '../types/api';
 import api from '../api/api';
 import { useTrainingInfo } from './TrainingInfoContext';
+import useWebModel from '../hooks/useWebModel';
 
 type State = {
   id: string;
   name: string | null;
   images: BatchUploadResponse[];
   irModel: string;
-  isProjectImagesLoading: boolean;
+  isLoading: boolean;
   exportedModel: string;
+  webModel: {
+    isLoading: boolean;
+    detect: (url: string, threshold: number) => Promise<InferResponse[]>;
+  };
   removeProjectImage: (imageId: string) => void;
 };
 
@@ -25,8 +30,12 @@ const initialState: State = {
   name: null,
   images: [],
   irModel: '',
-  isProjectImagesLoading: false,
+  isLoading: false,
   exportedModel: '',
+  webModel: {
+    isLoading: false,
+    detect: async () => [],
+  },
   removeProjectImage: () => void 0,
 };
 
@@ -40,10 +49,12 @@ const ProjectInfoProvider = ({ children }: { children: ReactNode }) => {
   const [name, setName] = useState('');
   const [irModel, setIRModel] = useState('');
   const [exportedModel, setExportedModel] = useState('');
+  const [webModelURL, setWebModelURL] = useState('');
   const [images, setImages] = useState<BatchUploadResponse[]>([]);
   const { status: trainingStatus } = useTrainingInfo();
+  const webModel = useWebModel(webModelURL);
 
-  useQuery({
+  const { isFetching: isInfoFetching } = useQuery({
     queryKey: ['projectInfo'],
     queryFn: () => {
       return api.getProject(id);
@@ -52,10 +63,11 @@ const ProjectInfoProvider = ({ children }: { children: ReactNode }) => {
       setName(data.projectName);
       setIRModel(data.irModel);
       setExportedModel(data.exportedModel);
+      setWebModelURL(data.webModel);
     },
   });
 
-  const { isFetching } = useQuery({
+  const { isFetching: isImageFetching } = useQuery({
     queryKey: ['projectImages'],
     queryFn: async () => {
       return await api.getProjectImages(id);
@@ -65,7 +77,11 @@ const ProjectInfoProvider = ({ children }: { children: ReactNode }) => {
     },
   });
 
-  const { isLoading, mutate } = useMutation<string, Error, string>({
+  const { isLoading: isRemovingImage, mutate } = useMutation<
+    string,
+    Error,
+    string
+  >({
     mutationFn: async (filename) => {
       await api.removeProjectImage(id, filename);
       return Promise.resolve(filename);
@@ -89,9 +105,14 @@ const ProjectInfoProvider = ({ children }: { children: ReactNode }) => {
         name,
         images,
         irModel,
-        isProjectImagesLoading: isFetching || isLoading,
+        isLoading:
+          isImageFetching ||
+          isRemovingImage ||
+          webModel.isLoading ||
+          isInfoFetching,
         exportedModel,
         removeProjectImage: mutate,
+        webModel,
       }}
     >
       {children}

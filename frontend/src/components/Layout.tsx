@@ -1,5 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
+import { useProjectInfo } from '../context/ProjectInfoContext';
+import { LoadingModal } from './Loading';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 
@@ -46,12 +48,14 @@ const NavbarLayout = () => {
 };
 
 const NavbarSidebarLayout = () => {
+  const { isLoading: isProjectImagesLoading } = useProjectInfo();
   return (
     <Main>
       <Navbar />
       <Container>
         <Sidebar />
         <NavbarSidebarContainer>
+          <LoadingModal isLoading={isProjectImagesLoading} />
           <Outlet />
         </NavbarSidebarContainer>
       </Container>

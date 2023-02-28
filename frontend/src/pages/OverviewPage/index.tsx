@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-import api from '../../api/api';
 import styled from 'styled-components';
 import { useProjectInfo } from '../../context/ProjectInfoContext';
 import Canvas from '../../components/Canvas';
@@ -7,17 +6,14 @@ import { Card } from '../../components/Card';
 import ImageCardCollection from '../../components/ImageCardCollection';
 import useImageDrawer from '../../hooks/useImageDrawer';
 import { ImageScaler } from '../../utils/ImageDrawer';
-import { OutlinePrimaryButton, PrimaryButton } from '../../components/Button';
+import { OutlinePrimaryButton } from '../../components/Button';
 import { InferResponse } from '../../types/api';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import HelpIcon from '../../assets/help-circle.svg';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { Loading } from '../../components/Loading';
 import UploadButton from '../../components/UploadButton';
 import Tutorial from '../../components/Tutorial';
 import TutorialInfo from './TutorialInfo';
-import * as tf from '@tensorflow/tfjs';
-import '@tensorflow/tfjs-backend-webgl';
 
 const Container = styled.div`
   display: grid;
@@ -58,13 +54,7 @@ const AdvanceToggle = styled(OutlinePrimaryButton)`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: calc(80% - 10px);
-  margin: 0 10px 0 0;
-`;
-
-const Button = styled(PrimaryButton)`
-  flex-grow: 1;
-  margin: 0 0 0 10px;
+  width: 100%;
 `;
 
 const InputContainer = styled.div`
@@ -140,15 +130,13 @@ const OutlineUploadButton = styled(UploadButton)`
 `;
 
 const PredictPage = () => {
-  const queryClient = useQueryClient();
   const scalerRef = useRef<ImageScaler>(new ImageScaler());
-  const requestId = useRef('');
   const [bboxes, setBboxes] = useState<InferResponse[]>([]);
   const [img, setImg] = useState<HTMLImageElement | null>(null);
   const [advance, setAdvance] = useState(false);
   const canvasRef = useImageDrawer(bboxes, null, img, scalerRef.current);
-  const { irModel } = useProjectInfo();
-  const { images } = useProjectInfo();
+  const { images, webModel } = useProjectInfo();
+  const [isDetecting, setIsDetecting] = useState(false);
 
   const methods = useForm({
     defaultValues: {
@@ -156,85 +144,11 @@ const PredictPage = () => {
     },
   });
 
-  const inferWithURLMutate = useMutation<boolean, Error, string>(
-    async (imageURL) => {
-      requestId.current = await api.createInferRequest(irModel);
-      const success = await api.inferWithURL(requestId.current, imageURL);
-      if (success) {
-        return Promise.resolve(false);
-      }
-      return Promise.reject(true);
-    },
-    { onSuccess: () => queryClient.invalidateQueries(['inferResult']) }
-  );
-
-  const inferWithImageMutate = useMutation<boolean, Error, File>(
-    async (image) => {
-      requestId.current = await api.createInferRequest(irModel);
-      const success = await api.inferWithImage(requestId.current, image);
-      if (success) {
-        return Promise.resolve(false);
-      }
-      return Promise.reject(true);
-    },
-    { onSuccess: () => queryClient.invalidateQueries(['inferResult']) }
-  );
-
-  useQuery({
-    queryKey: ['inferResult'],
-    queryFn: async () => api.getInferResult(requestId.current),
-    onSuccess: (data) => {
-      if (data.status === 'completed') {
-        const bboxes = data.results.filter(
-          (p) => p.confidence > methods.getValues().threshold
-        );
-        setBboxes(bboxes);
-        requestId.current = '';
-      }
-    },
-    enabled: requestId.current !== '',
-    refetchInterval: 1000,
-  });
-
-  const isLoading =
-    inferWithImageMutate.isLoading ||
-    inferWithURLMutate.isLoading ||
-    requestId.current !== '';
-
-  const runModel = async (img: HTMLImageElement) => {
-    const image = new Image(320, 320);
-    image.onload = async () => {
-      image.onload = null;
-
-      const model = await tf.loadGraphModel(
-        'https://pub-524340b28b994541ba4d1f39e64d2b3d.r2.dev/web_model/model.json'
-      );
-      const tensor = tf.browser.fromPixels(image).expandDims(0);
-      const result = (await model.executeAsync(tensor)) as tf.Tensor[];
-      const detectionBoxes = (result[0].arraySync() as number[][][])[0];
-      const detectionClasses = (result[2].arraySync() as number[][])[0];
-      const numDetections = (result[3].arraySync() as number[])[0];
-      const detectionScores = (result[6].arraySync() as number[][])[0];
-
-      const bboxes: InferResponse[] = [];
-      for (let i = 0; i < numDetections; i++) {
-        if (detectionScores[i] > methods.getValues().threshold) {
-          const box = detectionBoxes[i];
-          const name = detectionClasses[i] + '';
-          bboxes.push({
-            name: name,
-            confidence: detectionScores[i],
-            x: box[1] * img.naturalWidth,
-            y: box[0] * img.naturalHeight,
-            width: (box[3] - box[1]) * img.naturalWidth,
-            height: (box[2] - box[0]) * img.naturalHeight,
-          });
-        }
-      }
-      setBboxes(bboxes);
-    };
-    image.setAttribute('crossOrigin', '');
-    image.src = img.src + '?' + new Date().getTime();
+  const detect = async (url: string) => {
+    setIsDetecting(true);
+    const bboxes = await webModel.detect(url, methods.getValues().threshold);
+    setBboxes(bboxes);
+    setIsDetecting(false);
   };
 
   return (
@@ -247,13 +161,13 @@ const PredictPage = () => {
               accept=".jpg,.jpeg,.png"
               onUploadChange={(files) => {
                 if (files.length > 0) {
-                  inferWithImageMutate.mutate(files[0]);
-                  const url = URL.createObjectURL(files[0]);
                   const image = new Image();
+                  const url = URL.createObjectURL(files[0]);
                   image.src = url;
                   image.onload = () => {
                     setImg(image);
                     setBboxes([]);
+                    detect(image.src);
                   };
                 }
               }}
@@ -261,14 +175,14 @@ const PredictPage = () => {
               Try your image
             </OutlineUploadButton>
           </Overlay>
-          {isLoading && <Loading />}
+          {isDetecting && <Loading />}
         </CanvasWrapper>
         <ImageCardCollection
           images={images}
           onImageCardClick={(img) => {
             setImg(img);
             setBboxes([]);
-            runModel(img);
+            detect(img.src);
           }}
         />
       </Container>
@@ -277,16 +191,6 @@ const PredictPage = () => {
           <AdvanceToggle onClick={() => setAdvance((advance) => !advance)}>
             Advance Option
           </AdvanceToggle>
-          <Button
-            disabled={isLoading}
-            onClick={() => {
-              if (img) {
-                inferWithURLMutate.mutate(img?.src);
-              }
-            }}
-          >
-            Detection
-          </Button>
         </FlexContainer>
         <div>{advance && <Threshold />}</div>
       </AdvanceContainer>
