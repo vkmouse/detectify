@@ -105,7 +105,7 @@ const NavbarCollapse = styled.div`
 `;
 
 const Navbar = () => {
-  const { isFetching, userInfo } = useUserInfo();
+  const { userInfo } = useUserInfo();
   const loginRedirect = useLoginRedirect();
   const logout = useLogout(() => loginRedirect(false));
   const [showDropdown, setShowDropdown] = useState(false);
@@ -117,34 +117,37 @@ const Navbar = () => {
           <LogoIcon width="35" height={navbarHeight} />
           <LogoText width="90" height={navbarHeight} />
         </NavbarBrand>
-        <NavbarExpand>
-          <NavbarItems>
-            <NavbarItem to="/projects">Projects</NavbarItem>
-            <NavbarItem to="/server">Server</NavbarItem>
-          </NavbarItems>
-          <NavbarCollapse>
-            <ThemeToggler />
-            <NavbarToggler
-              onClick={() => {
-                setShowDropdown((showDropdown) => !showDropdown);
-              }}
-            >
-              {userInfo && (
-                <>
-                  <span>
-                    {isFetching ? 'isFetching' : userInfo && userInfo.name}
-                  </span>
-                  <ChevronDown />
-                  {showDropdown && (
-                    <DropdownMenu>
-                      <DropdownItem onClick={logout}>Sign out</DropdownItem>
-                    </DropdownMenu>
-                  )}
-                </>
-              )}
-            </NavbarToggler>
-          </NavbarCollapse>
-        </NavbarExpand>
+        {userInfo ? (
+          <NavbarExpand>
+            <NavbarItems>
+              <NavbarItem to="/projects">Projects</NavbarItem>
+              <NavbarItem to="/server">Server</NavbarItem>
+            </NavbarItems>
+            <NavbarCollapse>
+              <ThemeToggler />
+              <NavbarToggler
+                onClick={() => {
+                  setShowDropdown((showDropdown) => !showDropdown);
+                }}
+              >
+                <span>{userInfo.name}</span>
+                <ChevronDown />
+                {showDropdown && (
+                  <DropdownMenu>
+                    <DropdownItem onClick={logout}>Sign out</DropdownItem>
+                  </DropdownMenu>
+                )}
+              </NavbarToggler>
+            </NavbarCollapse>
+          </NavbarExpand>
+        ) : (
+          <NavbarExpand>
+            <NavbarItems />
+            <NavbarCollapse>
+              <ThemeToggler />
+            </NavbarCollapse>
+          </NavbarExpand>
+        )}
       </NavbarInnerContainer>
     </NavbarContainer>
   );

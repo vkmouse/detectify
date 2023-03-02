@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { PrimaryButton } from '../../components/Button';
 import { H1, H3 } from '../../components/Typography';
+import useUserInfo from '../../hooks/useUserInfo';
 
 const Wrapper = styled.div`
   display: flex;
@@ -15,7 +16,6 @@ const Wrapper = styled.div`
 const Title = styled(H1)`
   font-size: 36px;
   max-width: 800px;
-  color: white;
   @media (max-width: 600px) {
     font-size: 24px;
   }
@@ -25,7 +25,6 @@ const Description = styled(H3)`
   margin-top: 40px;
   max-width: 800px;
   font-size: 24px;
-  color: white;
   @media (max-width: 600px) {
     font-size: 16px;
   }
@@ -53,6 +52,8 @@ const Button = styled(PrimaryButton)`
 `;
 
 const Banner = () => {
+  const { userInfo } = useUserInfo();
+
   return (
     <Wrapper>
       <Title>Easily Create an Object Detection Service</Title>
@@ -61,12 +62,25 @@ const Banner = () => {
         Detectify provides annotation and training capabilities to help you.
       </Description>
       <ButtonContainer>
-        <Link to="signin">
-          <Button>Log In</Button>
-        </Link>
-        <Link to="signup">
-          <Button>Create Account</Button>
-        </Link>
+        {userInfo ? (
+          <>
+            <Link to="projects">
+              <Button>Go to projects</Button>
+            </Link>
+            <Link to="server">
+              <Button>Go to server</Button>
+            </Link>
+          </>
+        ) : (
+          <>
+            <Link to="signin">
+              <Button>Log In</Button>
+            </Link>
+            <Link to="signup">
+              <Button>Create Account</Button>
+            </Link>
+          </>
+        )}
       </ButtonContainer>
     </Wrapper>
   );
