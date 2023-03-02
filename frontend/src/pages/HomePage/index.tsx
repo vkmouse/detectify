@@ -6,6 +6,8 @@ import AnnotatePageImage from '../../assets/AnnotatePage.png';
 import ExportModelImage from '../../assets/ExportModel.png';
 import TrainPageImage from '../../assets/TrainPage.png';
 import TryModelImage from '../../assets/TryModel.png';
+import useUserInfo from '../../hooks/useUserInfo';
+import { LoadingModal } from '../../components/Loading';
 
 const Container = styled.div`
   position: absolute;
@@ -14,7 +16,7 @@ const Container = styled.div`
   width: calc(100vw - 8px);
   height: 630px;
   padding-top: ${navbarHeight}px;
-  background: #293042;
+  background: ${(props) => props.theme.colors.cardBackground};
 `;
 
 const SectionContainer = styled.div`
@@ -22,35 +24,43 @@ const SectionContainer = styled.div`
 `;
 
 const HomePage = () => {
+  const { isFetching } = useUserInfo();
+
   return (
     <>
-      <Container>
-        <Banner />
-      </Container>
-      <SectionContainer>
-        <Section
-          img={TryModelImage}
-          title="Try Object Detection Service"
-          description="Easily experiment with object detection using an available service and customize it as needed"
-          imageLeft
-        />
-        <Section
-          img={AnnotatePageImage}
-          title="Provide Image Annotation"
-          description="Get annotation and object detection in a single platform for a seamless user experience"
-        />
-        <Section
-          img={TrainPageImage}
-          title="Colab Resource Integration"
-          description="Integrate colab resources for model training and streamline object detection service development"
-          imageLeft
-        />
-        <Section
-          img={ExportModelImage}
-          title="Export Tensorflow and OpenVINO models"
-          description="Access Tensorflow and OpenVINO models for exporting to boost object detection capabilities"
-        />
-      </SectionContainer>
+      {isFetching ? (
+        <LoadingModal isLoading={isFetching} />
+      ) : (
+        <>
+          <Container>
+            <Banner />
+          </Container>
+          <SectionContainer>
+            <Section
+              img={TryModelImage}
+              title="Try Object Detection Service"
+              description="Easily experiment with object detection using an available service and customize it as needed"
+              imageLeft
+            />
+            <Section
+              img={AnnotatePageImage}
+              title="Provide Image Annotation"
+              description="Get annotation and object detection in a single platform for a seamless user experience"
+            />
+            <Section
+              img={TrainPageImage}
+              title="Colab Resource Integration"
+              description="Integrate colab resources for model training and streamline object detection service development"
+              imageLeft
+            />
+            <Section
+              img={ExportModelImage}
+              title="Export Tensorflow and OpenVINO models"
+              description="Access Tensorflow and OpenVINO models for exporting to boost object detection capabilities"
+            />
+          </SectionContainer>
+        </>
+      )}
     </>
   );
 };

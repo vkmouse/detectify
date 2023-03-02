@@ -14,7 +14,7 @@ const useLoginRedirect = () => {
     const isAuthPage = !publicPages.includes(window.location.pathname);
 
     if (!isAuth && isAuthPage) {
-      navigate('/signin');
+      navigate('/');
     } else if (isAuth && !isAuthPage) {
       navigate('/');
     }
