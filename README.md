@@ -95,19 +95,24 @@ Integrate Colab computing resources for setting up a personal training server
 
 ## Frontend Technique
 
-- Axios: A promise-based HTTP client for the browser and Node.js.
-- Babel: A JavaScript compiler that allows us to use modern JavaScript features in older browsers.
-- ESLint: A tool that helps find and fix problems in our JavaScript code.
-- Prettier: An opinionated code formatter that keeps our code consistent and easy to read.
-- React (with hooks): A library for building single-page applications (SPAs) using functional components.
-- React Router: A library for handling client-side routing in our SPA.
-- React Hook Form: A lightweight library for form validation using React hooks.
-- React Query: A library for fetching, caching, and updating data in our React components.
-- Redux (with redux-toolkit): A state management library for managing login member information.
-- Styled Components: A library that allows us to write CSS in JavaScript, making it easy to style our React components.
-- TensorFlow.js: A library that allows us to develop machine learning models in JavaScript, right in the browser.
-- TypeScript: A strongly-typed programming language that extends JavaScript, making it easier to write and maintain complex code.
-- webpack: A module bundler for JavaScript files, allowing us to bundle all our code and dependencies into a single file that can be loaded in a browser.
+### React Hooks
+
+<img src="https://github.com/vkmouse/detectify/blob/main/docs/ReactComponents.png" width=500 />
+
+### Package
+
+- Axios
+- Babel
+- ESLint
+- Prettier
+- React Router
+- React Hook Form
+- React Query
+- Redux (with redux-toolkit)
+- Styled Components
+- TensorFlow.js
+- TypeScript
+- webpack
 
 ## API Documentation
 
