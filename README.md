@@ -10,6 +10,10 @@
 <br/>
 🔗 Website URL: https://detectify.tw/  
 <br/>
+🔖 Training server API: https://app.swaggerhub.com/apis-docs/vkmouse/Detectify-Training-Server/1.0.0  
+<br/>
+🔖 Training proxy server API: https://app.swaggerhub.com/apis-docs/vkmouse/Detectify-Training-Proxy-Server/1.0.0  
+<br/>
 ⚒️ Test account and password
 
 |Account|Password|
@@ -26,7 +30,7 @@
 - [Database Schema](#database-schema)
 - [Backend Technique](#backend-technique)
 - [Frontend Technique](#frontend-technique)
-- [API Documentation](#api-documentation)
+- [Sequence Diagram](#sequence-diagram)
 
 ## Main Features
 
@@ -55,7 +59,7 @@ Integrate Colab computing resources for setting up a personal training server
 - Our training server, built with the Python Flask framework, is hosted on Colab.
 - Users can actively access their own training servers on Colab through the training proxy using SSH tunneling, even if they are located within a private network.
 
-<img src="https://github.com/vkmouse/detectify/blob/main/docs/Architecture.png" width=500 />
+<img src="https://github.com/vkmouse/detectify/blob/main/docs/Architecture.png" width=800 />
 
 ## Database Schema
 
@@ -69,13 +73,12 @@ Integrate Colab computing resources for setting up a personal training server
 
 ### Framework
 
-- Gin (Go)
-- Flask (Python)
+- Gin (Go) for backend and training proxy server
+- Flask (Python) for training server
 
 ### Infrastructure
 
 - Docker
-- docker-compose
 - DNS
 - NGINX
 - SSL (SSL For Free)
@@ -99,7 +102,7 @@ Integrate Colab computing resources for setting up a personal training server
 
 <img src="https://github.com/vkmouse/detectify/blob/main/docs/ReactComponents.png" width=500 />
 
-### Package
+### Packages
 
 - Axios
 - Babel
@@ -114,7 +117,19 @@ Integrate Colab computing resources for setting up a personal training server
 - TypeScript
 - webpack
 
-## API Documentation
+## Sequence Diagram
 
-- [Training server API](https://app.swaggerhub.com/apis-docs/vkmouse/Detectify-Training-Server/1.0.0)
-- [Training proxy server API](https://app.swaggerhub.com/apis-docs/vkmouse/Detectify-Training-Proxy-Server/1.0.0)
+### Detection
+
+Frontend obtain the model and perform the detection directly on the client side.  
+<img src="https://github.com/vkmouse/detectify/blob/main/docs/DetectionSequenceDiagram.png" width=500 />
+
+### Training process
+Proxy server add a hook to the training server, the training server will notify the proxy server to update the model when training completed.  
+<img src="https://github.com/vkmouse/detectify/blob/main/docs/TrainingProcessSequenceDiagram.png" width=500 />
+
+### Training requestment
+
+When accessing the training server, the request is routed through a proxy server. The proxy server uses the user ID to determine which server to redirect.  
+<img src="https://github.com/vkmouse/detectify/blob/main/docs/TrainingRequestmentSequenceDiagram.png" width=500 />
+
