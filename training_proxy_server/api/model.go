@@ -96,27 +96,58 @@ func TrainModelCompleted(ctx *gin.Context) {
 	}
 
 	// update database
-	err = repository.UpdateProjectModelURL(
-		body.SenderData.UserID,
-		body.SenderData.ProjectID,
-		config.R2AccessURL+body.SenderData.ProjectID,
-	)
-	if err != nil {
-		log.Println(err)
-	}
+	updateDBDone := make(chan error)
+	go func() {
+		err := repository.UpdateProjectModelURL(
+			body.SenderData.UserID,
+			body.SenderData.ProjectID,
+			config.R2AccessURL+body.SenderData.ProjectID,
+		)
+		updateDBDone <- err
+	}()
 
 	// make request release training
-	err = makeRequest("DELETE", host+"/model")
-	if err != nil {
-		log.Println(err)
-	}
+	makeRequestTrainingDone := make(chan error)
+	go func() {
+		err := makeRequest("DELETE", host+"/model")
+		makeRequestTrainingDone <- err
+	}()
 
 	// make request unregister webhook
-	err = makeRequestWithData("DELETE", host+"/webhooks/model/completed", gin.H{
-		"url": config.DomainName + "/model/completed",
-	})
-	if err != nil {
-		log.Println(err)
+	unregisterWebhookDone := make(chan error)
+	go func() {
+		err := makeRequestWithData("DELETE", host+"/webhooks/model/completed", gin.H{
+			"url": config.DomainName + "/model/completed",
+		})
+		unregisterWebhookDone <- err
+	}()
+
+	// Wait for all goroutines to complete
+	var allErr error
+	for i := 0; i < 3; i++ {
+		select {
+		case err := <-updateDBDone:
+			if err != nil {
+				log.Println(err)
+				allErr = fmt.Errorf("%w", err)
+			}
+		case err := <-makeRequestTrainingDone:
+			if err != nil {
+				log.Println(err)
+				allErr = fmt.Errorf("%w", err)
+			}
+		case err := <-unregisterWebhookDone:
+			if err != nil {
+				log.Println(err)
+				allErr = fmt.Errorf("%w", err)
+			}
+		}
+	}
+
+	if allErr != nil {
+		response.Response(ctx, errmsg.ERROR)
+	} else {
+		response.Response(ctx, errmsg.SUCCESS)
 	}
 }
 
